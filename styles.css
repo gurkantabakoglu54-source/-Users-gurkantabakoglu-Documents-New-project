@@ -1110,7 +1110,7 @@ body {
 
 .main-header {
   height: 132px;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   box-shadow: 0 10px 30px rgba(7, 29, 54, 0.12);
 }
 
@@ -1119,9 +1119,17 @@ body {
   height: 132px;
 }
 
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+}
+
 .brand-logo img {
-  width: 292px;
-  max-height: 124px;
+  width: 342px;
+  max-height: 132px;
+  object-fit: contain;
 }
 
 .topbar {
@@ -1130,17 +1138,17 @@ body {
 
 .sidebar {
   top: 132px;
-  width: 320px;
+  width: 360px;
   border-right: 1px solid var(--line);
   box-shadow: none;
 }
 
 .sidebar-collapsed .sidebar {
-  transform: translateX(-320px);
+  transform: translateX(-360px);
 }
 
 .content {
-  margin-left: 320px;
+  margin-left: 360px;
   padding-top: 156px;
 }
 
@@ -1148,6 +1156,20 @@ body {
   min-height: 48px;
   color: #273746;
   font-size: 16px;
+}
+
+.nav-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--module-color) 12%, white);
+  color: var(--module-color);
+}
+
+.nav-icon svg {
+  width: 19px;
+  height: 19px;
 }
 
 .side-nav button:hover,
@@ -1181,6 +1203,35 @@ body {
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.executive-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-month-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-weight: 900;
+}
+
+.dashboard-month-picker select {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 900;
+}
+
+.dashboard-month-picker option {
+  color: #071d36;
 }
 
 .executive-hero h2 {
@@ -1217,6 +1268,7 @@ body {
   align-content: center;
   gap: 6px;
   padding: 18px;
+  border-left: 5px solid #8ca0b3;
   text-align: left;
 }
 
@@ -1228,6 +1280,27 @@ body {
 .kpi-card span {
   color: var(--muted);
   font-weight: 800;
+}
+
+.kpi-card.good {
+  border-left-color: #16a34a;
+}
+
+.kpi-card.bad {
+  border-left-color: #dc2626;
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.08), #fff 42%);
+}
+
+.kpi-card.neutral {
+  border-left-color: #2563eb;
+}
+
+.kpi-card.good strong {
+  color: #116b43;
+}
+
+.kpi-card.bad strong {
+  color: #b91c1c;
 }
 
 .ops-panel {
@@ -1270,6 +1343,34 @@ body {
   border-top: 0;
   border-left: 4px solid var(--soft-orange);
   box-shadow: 0 10px 24px rgba(7, 29, 54, 0.08);
+}
+
+.dash-card.cyan {
+  border-left-color: #0ea5a3;
+}
+
+.dash-card.green {
+  border-left-color: #f59e0b;
+}
+
+.dash-card.orange {
+  border-left-color: #16a34a;
+}
+
+.dash-card.red {
+  border-left-color: #7c3aed;
+}
+
+.dash-card.purple {
+  border-left-color: #2563eb;
+}
+
+.dash-card.blue {
+  border-left-color: #0891b2;
+}
+
+.dash-card.dark-green {
+  border-left-color: #b45309;
 }
 
 .dash-card .inner {
@@ -1482,6 +1583,19 @@ tbody tr.selected {
   .brand-logo img {
     width: min(260px, 76vw);
     max-height: 88px;
+  }
+
+  .executive-headline {
+    display: grid;
+    gap: 10px;
+  }
+
+  .dashboard-month-picker {
+    justify-content: space-between;
+  }
+
+  .dashboard-month-picker select {
+    width: 150px;
   }
 
   .topbar {

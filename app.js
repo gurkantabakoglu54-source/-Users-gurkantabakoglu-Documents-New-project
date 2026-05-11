@@ -420,6 +420,7 @@ let selectedRecordId = "";
 let filterValue = "";
 let selectedMonth = "05.2026";
 let selectedDay = 4;
+let dashboardMonth = "05.2026";
 let currentUser = null;
 let remoteReady = false;
 let remoteSaveQueue = Promise.resolve();
@@ -433,6 +434,25 @@ const moduleQuickFilters = {
   payroll: { key: "payrollStatus", options: ["Tümü", "Hazırlandı", "Onay Bekliyor", "Onaylandı", "Personele Açıldı"] },
   tasks: { key: "status", options: ["Tümü", "Bekliyor", "Devam Ediyor", "Tamamlandı"] },
   leaves: { key: "approval", options: ["Tümü", "Bekliyor", "Onaylandı", "Reddedildi"] },
+};
+
+const moduleAccentColors = {
+  panel: "#2f80ed",
+  companies: "#0ea5a3",
+  projects: "#f59e0b",
+  users: "#7c3aed",
+  personnel: "#16a34a",
+  presentations: "#2563eb",
+  attendance: "#0891b2",
+  leaves: "#db2777",
+  trainings: "#9333ea",
+  assets: "#475569",
+  tasks: "#ef4444",
+  invoices: "#f97316",
+  reports: "#0f766e",
+  archive: "#64748b",
+  audit: "#1d4ed8",
+  payroll: "#b45309",
 };
 
 function loadLocalRecords() {
@@ -767,7 +787,7 @@ function renderSideNav() {
     .map(
       (module) => `
         <button class="${module.id === activeModuleId ? "active" : ""}" type="button" data-nav="${module.id}">
-          <span data-icon="${module.icon}"></span>
+          <span class="nav-icon" style="--module-color:${moduleAccentColors[module.id] || "#0d3154"}" data-icon="${module.icon}"></span>
           <span>${escapeHtml(module.title)}</span>
         </button>
         ${(module.children ?? [])
@@ -791,22 +811,58 @@ function renderBreadcrumb(module) {
     .join("");
 }
 
+function getDashboardMonths() {
+  const months = new Set([
+    dashboardMonth,
+    selectedMonth,
+    ...getModule("attendance").records.map((record) => record.period).filter(Boolean),
+    ...getModule("payroll").records.map((record) => record.period).filter(Boolean),
+  ]);
+
+  ["05.2026", "04.2026", "03.2026", "02.2026", "01.2026", "12.2025"].forEach((month) => months.add(month));
+  return Array.from(months).filter(Boolean).slice(0, 12);
+}
+
+function isSameMonth(value, month) {
+  const text = String(value ?? "");
+  if (!text || !month) return false;
+  if (text === month) return true;
+  const [monthPart, yearPart] = month.split(".");
+  return text.includes(`${yearPart}-${monthPart}`) || text.includes(`${monthPart}/${yearPart}`) || text.includes(month);
+}
+
+function hasDocumentForPerson(person, documents) {
+  return documents.some((documentRecord) => {
+    const samePerson = normalizeText(documentRecord.person) === normalizeText(person.name);
+    const files = Array.isArray(documentRecord.file) ? documentRecord.file : documentRecord.file ? [documentRecord.file] : [];
+    return samePerson && files.length > 0;
+  });
+}
+
+function getKpiState(value, positiveWhenZero = true) {
+  const number = Number.parseFloat(String(value).replace(",", "."));
+  if (!Number.isFinite(number)) return "neutral";
+  return positiveWhenZero ? (number === 0 ? "good" : "bad") : (number > 0 ? "good" : "bad");
+}
+
 function renderDashboard() {
   const projects = getModule("projects").records;
   const invoices = getModule("invoices").records;
   const personnel = getModule("personnel").records;
-  const attendance = getModule("attendance").records;
+  const attendance = getModule("attendance").records.filter((record) => record.period === dashboardMonth);
   const payroll = getModule("payroll").records;
   const documents = getModule("presentations").records;
   const leaves = getModule("leaves").records;
   const tasks = getModule("tasks").records;
   const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
+  const passiveProjects = projects.filter((record) => normalizeText(record.status) === "pasif").length;
+  const issuedInvoices = invoices.filter((record) => record.status === "Fatura Kesildi").length;
   const pendingInvoices = invoices.filter((record) => record.status !== "Fatura Kesildi").length;
   const totalHours = attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
   const totalOvertime = attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours), 0);
   const pendingPayroll = payroll.filter((record) => record.payrollStatus !== "Personele Açıldı").length;
   const missingDocuments = personnel.filter(
-    (person) => !documents.some((documentRecord) => normalizeText(documentRecord.person) === normalizeText(person.name)),
+    (person) => !hasDocumentForPerson(person, documents),
   ).length;
   const pendingLeaves = leaves.filter((record) => record.approval === "Bekliyor").length;
   const openTasks = tasks.filter((record) => record.status !== "Tamamlandı").length;
@@ -817,12 +873,14 @@ function renderDashboard() {
     pendingLeaves ? `${pendingLeaves} izin talebi onay bekliyor.` : "",
   ].filter(Boolean);
   const kpis = [
-    ["Aktif Proje", activeProjects, "projects"],
-    ["Bekleyen Fatura", pendingInvoices, "invoices"],
-    ["Toplam Çalışma", `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance"],
-    ["Toplam Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance"],
-    ["Eksik Özlük", missingDocuments, "presentations"],
-    ["Açık Görev", openTasks, "tasks"],
+    ["Aktif Proje", activeProjects, "projects", "good"],
+    ["Pasif Proje", passiveProjects, "projects", passiveProjects > 0 ? "neutral" : "good"],
+    ["Fatura Kesilen", issuedInvoices, "invoices", "good"],
+    ["Kesilmeyen Fatura", pendingInvoices, "invoices", getKpiState(pendingInvoices)],
+    [`${dashboardMonth} Çalışma`, `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
+    [`${dashboardMonth} Mesai`, `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
+    ["Eksik Özlük", missingDocuments, "presentations", getKpiState(missingDocuments)],
+    ["Açık Görev", openTasks, "tasks", getKpiState(openTasks)],
   ];
   const cards = [
     { id: "companies", value: getRecordCount("companies"), label: "Firmalar", icon: "building", color: "cyan" },
@@ -844,16 +902,26 @@ function renderDashboard() {
   document.querySelector("#pageContent").innerHTML = `
     <section class="executive-dashboard">
       <div class="executive-hero">
-        <span>Yönetici Özeti</span>
+        <div class="executive-headline">
+          <span>Yönetici Özeti</span>
+          <label class="dashboard-month-picker">
+            Ay
+            <select id="dashboardMonthSelect">
+              ${getDashboardMonths()
+                .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
+                .join("")}
+            </select>
+          </label>
+        </div>
         <h2>Artı Destek operasyon görünümü</h2>
-        <p>Projeler, insan kaynakları, bordro ve finans süreçlerini tek ekranda izleyin.</p>
+        <p>${dashboardMonth} döneminde projeler, insan kaynakları, bordro ve finans süreçlerini tek ekranda izleyin.</p>
       </div>
       <div class="kpi-grid">
         ${kpis
           .filter(([, , moduleId]) => canAccessModule(getModule(moduleId)))
           .map(
-            ([label, value, moduleId]) => `
-              <button class="kpi-card" type="button" data-nav="${moduleId}">
+            ([label, value, moduleId, state]) => `
+              <button class="kpi-card ${state}" type="button" data-nav="${moduleId}">
                 <strong>${escapeHtml(value)}</strong>
                 <span>${escapeHtml(label)}</span>
               </button>
@@ -2018,6 +2086,10 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.id === "dashboardMonthSelect") {
+    return;
+  }
+
   const manageButton = event.target.closest("[data-action]");
   if (!manageButton) {
     const quickButton = event.target.closest("[data-quick-filter]");
@@ -2084,6 +2156,13 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("input", (event) => {
+  if (event.target.id === "dashboardMonthSelect") {
+    dashboardMonth = event.target.value;
+    renderDashboard();
+    renderIcons();
+    return;
+  }
+
   if (event.target.id !== "filterInput") return;
   filterValue = event.target.value;
   renderDataPage(getModule());
