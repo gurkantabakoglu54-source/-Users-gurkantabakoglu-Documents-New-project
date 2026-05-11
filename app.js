@@ -1384,7 +1384,7 @@ function renderDataPage(module) {
         </label>
       </div>
       <div class="table-wrap">
-        <table>
+        <table class="data-table">
           <thead>
             <tr>
               ${canEdit ? '<th class="sortable">İşlemler</th>' : ""}
@@ -1400,10 +1400,10 @@ function renderDataPage(module) {
                         <tr class="${record.id === selectedRecordId ? "selected" : ""}" data-record="${record.id}">
                           ${
                             canEdit
-                              ? `<td>${renderRowActions(module, record)}</td>`
+                              ? `<td data-label="İşlemler">${renderRowActions(module, record)}</td>`
                               : ""
                           }
-                          ${visibleColumns.map(([key], index) => renderCell(module, record, key, index)).join("")}
+                          ${visibleColumns.map(([key, label], index) => renderCell(module, record, key, index, label)).join("")}
                         </tr>
                       `,
                     )
@@ -1422,19 +1422,20 @@ function renderDataPage(module) {
   `;
 }
 
-function renderCell(module, record, key, index) {
+function renderCell(module, record, key, index, label = "") {
   const value = record[key] ?? "";
   const column = module.columns.find(([columnKey]) => columnKey === key);
   const type = column?.[2];
-  if (type === "file") return `<td>${renderFileCell(value)}</td>`;
-  if (type === "files") return `<td>${renderFilesCell(value)}</td>`;
-  if (type === "date") return `<td>${escapeHtml(formatDate(value))}</td>`;
-  if (module.id === "attendance" && key === "totalHours") return `<td><strong>${escapeHtml(calculateAttendanceTotal(record))}</strong></td>`;
-  if (key === "bankIban") return `<td class="iban-cell">${escapeHtml(value)}</td>`;
+  const labelAttr = `data-label="${escapeHtml(label)}"`;
+  if (type === "file") return `<td ${labelAttr}>${renderFileCell(value)}</td>`;
+  if (type === "files") return `<td ${labelAttr}>${renderFilesCell(value)}</td>`;
+  if (type === "date") return `<td ${labelAttr}>${escapeHtml(formatDate(value))}</td>`;
+  if (module.id === "attendance" && key === "totalHours") return `<td ${labelAttr}><strong>${escapeHtml(calculateAttendanceTotal(record))}</strong></td>`;
+  if (key === "bankIban") return `<td ${labelAttr} class="iban-cell">${escapeHtml(value)}</td>`;
   if (key === "status" && ["AKTİF", "PASİF"].includes(String(value).toLocaleUpperCase("tr"))) {
     return canManageRecords()
-      ? `<td>${renderStatusButton(module, record)}</td>`
-      : `<td><span class="${value === "AKTİF" ? "badge-green" : "status-red"}">${escapeHtml(value)}</span></td>`;
+      ? `<td ${labelAttr}>${renderStatusButton(module, record)}</td>`
+      : `<td ${labelAttr}><span class="${value === "AKTİF" ? "badge-green" : "status-red"}">${escapeHtml(value)}</span></td>`;
   }
 
   const titleLike = index === 0 || key === "code" || key === "part" || key === "email";
@@ -1443,11 +1444,11 @@ function renderCell(module, record, key, index) {
   const greenStatus = ["Onaylı", "Onaylandı", "AKTİF", "Aktif", "Ödendi", "Kesildi", "Fatura Kesildi", "Hazır", "Personele Açıldı", "Görüldü", "Tamamlandı"].includes(valueText);
   const orangeStatus = ["Onay Bekliyor", "Hazırlandı", "Taslak", "Devam Ediyor", "Beklemede", "Fatura Beklemede"].includes(valueText);
 
-  if (redStatus) return `<td><span class="status-red">${escapeHtml(value)}</span></td>`;
-  if (orangeStatus) return `<td><span class="status-orange">${escapeHtml(value)}</span></td>`;
-  if (greenStatus) return `<td><span class="${valueText === "AKTİF" ? "badge-green" : "status-green"}">${escapeHtml(value)}</span></td>`;
-  if (titleLike) return `<td><a href="#${module.id}-${record.id}">${escapeHtml(value)}</a></td>`;
-  return `<td>${escapeHtml(value)}</td>`;
+  if (redStatus) return `<td ${labelAttr}><span class="status-red">${escapeHtml(value)}</span></td>`;
+  if (orangeStatus) return `<td ${labelAttr}><span class="status-orange">${escapeHtml(value)}</span></td>`;
+  if (greenStatus) return `<td ${labelAttr}><span class="${valueText === "AKTİF" ? "badge-green" : "status-green"}">${escapeHtml(value)}</span></td>`;
+  if (titleLike) return `<td ${labelAttr}><a href="#${module.id}-${record.id}">${escapeHtml(value)}</a></td>`;
+  return `<td ${labelAttr}>${escapeHtml(value)}</td>`;
 }
 
 function renderStatusButton(module, record) {

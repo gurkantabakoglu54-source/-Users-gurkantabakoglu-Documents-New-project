@@ -1668,14 +1668,92 @@ tbody tr.selected {
     -webkit-overflow-scrolling: touch;
   }
 
-  table {
-    min-width: 760px;
+  .data-table {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 13px;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody {
+    display: grid;
+    gap: 10px;
+    padding: 0 10px 10px;
+  }
+
+  .data-table tr {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid #dfe6ee;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(7, 29, 54, 0.06);
+  }
+
+  .data-table tr.selected {
+    border-color: #d88a2d;
+    background: #fff;
+  }
+
+  .data-table td {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.38fr) minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 0;
+    border-bottom: 1px solid #edf1f5;
+    overflow-wrap: anywhere;
+  }
+
+  .data-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .data-table td::before {
+    color: #6f7a86;
+    font-size: 12px;
+    font-weight: 900;
+    content: attr(data-label);
+  }
+
+  .data-table td[colspan] {
+    display: block;
+    text-align: center;
+  }
+
+  .data-table td[colspan]::before {
+    content: "";
   }
 
   th,
   td {
     padding: 9px 8px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .icon-action {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #dfe6ee;
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+
+  .iban-cell {
+    min-width: 0;
+    white-space: normal;
   }
 
   .payroll-summary,
