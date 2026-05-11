@@ -1537,7 +1537,21 @@ tbody tr.selected {
   .content,
   .sidebar-collapsed .content {
     width: 100%;
+    max-width: 100vw;
+    margin-left: 0 !important;
     padding: 16px 10px;
+    overflow-x: hidden;
+  }
+
+  .admin-shell,
+  .page-head,
+  #pageContent,
+  .executive-dashboard,
+  .data-card,
+  .panel-card {
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
   }
 
   .page-head {
