@@ -1410,12 +1410,6 @@ body {
   color: #526170;
 }
 
-.role-matrix {
-  padding: 14px;
-  border-radius: 8px;
-  background: #f4f8fb;
-}
-
 .compact-intro {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1930,12 +1924,297 @@ tbody tr.selected {
 
   .attendance-editor-head,
   .attendance-editor-row {
-    grid-template-columns: 44px minmax(120px, 1fr) 76px;
+    grid-template-columns: 42px minmax(96px, 1fr) 82px 70px;
     gap: 6px;
     padding: 7px;
   }
 
   .pagination {
     justify-content: center;
+  }
+}
+
+/* Final portal polish */
+.main-header {
+  grid-template-columns: 420px minmax(0, 1fr);
+  height: 158px;
+}
+
+.brand-logo,
+.hamburger {
+  height: 158px;
+}
+
+.brand-logo {
+  padding: 8px 20px;
+}
+
+.brand-logo img {
+  width: 410px;
+  max-height: 154px;
+}
+
+.sidebar {
+  top: 158px;
+  width: 420px;
+}
+
+.sidebar-collapsed .sidebar {
+  transform: translateX(-420px);
+}
+
+.content {
+  margin-left: 420px;
+  padding-top: 182px;
+}
+
+.language-switch {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+}
+
+.language-switch button {
+  min-height: 30px;
+  padding: 3px 9px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 900;
+}
+
+.language-switch button.active {
+  background: var(--soft-orange);
+  color: #071d36;
+}
+
+.dashboard-period-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.ops-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.monthly-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.monthly-breakdown div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid rgba(13, 49, 84, 0.1);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(7, 29, 54, 0.05);
+}
+
+.monthly-breakdown strong {
+  color: var(--navy);
+}
+
+.monthly-breakdown span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dash-card .card-icon {
+  color: color-mix(in srgb, var(--module-color) 58%, #cbd3dc);
+  opacity: 0.72;
+}
+
+.quality-badge {
+  display: inline-flex;
+  min-width: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #fff;
+  font-weight: 900;
+}
+
+.quality-ok,
+.quality-bar.quality-ok {
+  background: #16805a;
+}
+
+.quality-nok,
+.quality-bar.quality-nok {
+  background: #c8453b;
+}
+
+.quality-rok,
+.quality-bar.quality-rok {
+  background: #1776b8;
+}
+
+.quality-rnok,
+.quality-bar.quality-rnok {
+  background: #d88a2d;
+}
+
+.chart-action {
+  color: #1776b8;
+}
+
+.chart-modal .modal-card {
+  width: min(760px, calc(100vw - 24px));
+}
+
+.chart-content {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.project-chart-summary {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #dfe6ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.project-chart-summary strong {
+  color: var(--navy);
+  font-size: 22px;
+}
+
+.project-chart-summary span,
+.project-chart-summary small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.project-chart-summary p {
+  margin: 0;
+  color: #405061;
+}
+
+.project-quality-chart {
+  display: grid;
+  gap: 14px;
+}
+
+.quality-chart-row {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 70px;
+  gap: 12px;
+  align-items: center;
+}
+
+.quality-bar-track {
+  height: 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef3f8;
+}
+
+.quality-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.attendance-editor-head,
+.attendance-editor-row {
+  grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 0.7fr) minmax(100px, 0.55fr);
+}
+
+.attendance-editor-row select,
+.attendance-editor-row input {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .main-header {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  .brand-logo img {
+    width: 350px;
+  }
+
+  .sidebar {
+    width: 360px;
+  }
+
+  .sidebar-collapsed .sidebar {
+    transform: translateX(-360px);
+  }
+
+  .content {
+    margin-left: 360px;
+  }
+}
+
+@media (max-width: 760px) {
+  .main-header {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .brand-logo,
+  .hamburger {
+    height: auto;
+  }
+
+  .brand-logo {
+    min-height: 110px;
+  }
+
+  .brand-logo img {
+    width: min(320px, 86vw);
+    max-height: 104px;
+  }
+
+  .sidebar {
+    top: 166px;
+    width: 300px;
+  }
+
+  .sidebar-collapsed .sidebar {
+    transform: translateX(0);
+  }
+
+  .content,
+  .sidebar-collapsed .content {
+    margin-left: 0;
+    padding-top: 16px;
+  }
+
+  .dashboard-period-controls,
+  .ops-grid {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .dashboard-period-controls {
+    display: grid;
+  }
+
+  .dashboard-month-picker select {
+    width: 100%;
+  }
+
+  .attendance-editor-head,
+  .attendance-editor-row {
+    grid-template-columns: 42px minmax(92px, 1fr) 82px 68px;
+  }
+
+  .quality-chart-row {
+    grid-template-columns: 58px minmax(0, 1fr) 48px;
+    gap: 8px;
   }
 }

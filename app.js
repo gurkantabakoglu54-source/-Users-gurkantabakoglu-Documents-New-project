@@ -2,6 +2,8 @@ const icons = {
   building:
     '<path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h7v18"/><path d="M14 9h3a2 2 0 0 1 2 2v10"/><path d="M8 7h2"/><path d="M8 11h2"/><path d="M8 15h2"/>',
   chart: '<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
+  barChart:
+    '<path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/>',
   contact: '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/>',
   edit:
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
@@ -34,12 +36,25 @@ const icons = {
 
 const dayColumns = Array.from({ length: 31 }, (_, index) => {
   const day = index + 1;
-  return [`day${day}`, String(day), "attendanceDay", ["-", "Geldi", "Gelmedi", "İzin", "Rapor"]];
+  return [`day${day}`, String(day), "attendanceDay", ["-", "Geldi", "Gelmedi", "Raporlu", "Geçici Görev"]];
+});
+const manualHourColumns = Array.from({ length: 31 }, (_, index) => {
+  const day = index + 1;
+  return [`manualDay${day}`, `${day}. Gün Manuel Saat`, "attendanceManualHour"];
 });
 const overtimeDayColumns = Array.from({ length: 31 }, (_, index) => {
   const day = index + 1;
   return [`overtimeDay${day}`, `${day}. Gün Mesai`, "attendanceOvertime"];
 });
+
+const dashboardYear = "2026";
+const fixedDashboardMonths = Array.from({ length: 12 }, (_, index) => `${String(index + 1).padStart(2, "0")}.${dashboardYear}`);
+const dashboardRangeOptions = [
+  ["month", "Seçili Ay"],
+  ["quarter", "Son 3 Ay"],
+  ["five", "Son 5 Ay"],
+  ["year", "12 Ay"],
+];
 
 const cityPlateCodes = {
   adana: "01",
@@ -82,6 +97,8 @@ const modules = [
       ["taxNo", "Vergi No"],
       ["address", "Adres"],
       ["contractStatus", "Sözleşme", "select", ["Aktif", "Beklemede", "Yok"]],
+      ["contractFile", "İmzalı Sözleşme", "file"],
+      ["offerFile", "Fiyat Teklifi", "file"],
       ["note", "Not"],
     ],
     records: [
@@ -108,6 +125,10 @@ const modules = [
       ["company", "Firma Adı"],
       ["part", "Parça Kodu"],
       ["problem", "Problem"],
+      ["okCount", "OK", "qualityNumber"],
+      ["nokCount", "NOK", "qualityNumber"],
+      ["rokCount", "ROK", "qualityNumber"],
+      ["rnokCount", "RNOK", "qualityNumber"],
       ["responsible", "Sorumlu"],
       ["location", "Lokasyon"],
       ["startDate", "Başlangıç", "date"],
@@ -202,6 +223,7 @@ const modules = [
       ["period", "Dönem"],
       ["dailyHours", "Günlük Saat", "select", ["7,5", "9"]],
       ...dayColumns,
+      ...manualHourColumns,
       ...overtimeDayColumns,
       ["overtimeHours", "Mesai Saati"],
       ["totalHours", "Toplam Saat", "readonly"],
@@ -313,13 +335,14 @@ const modules = [
       ["project", "Proje"],
       ["amount", "Tutar"],
       ["tax", "KDV"],
+      ["withholding", "Tevkifat", "select", ["Yok", "2/10", "3/10", "4/10", "5/10", "7/10", "9/10", "Diğer"]],
       ["dueDate", "Vade", "date"],
       ["status", "Durumu", "select", ["Fatura Kesildi", "Fatura Beklemede", "Onay Verilmedi"]],
       ["file", "Fatura Dosyası", "file"],
     ],
     records: [
-      { id: "i1", invoiceNo: "GKK2026000000219", company: "Kale Oto", project: "AD54000000005", amount: "36.500 TL", tax: "%20", dueDate: "2026-05-30", status: "Fatura Kesildi", file: "" },
-      { id: "i2", invoiceNo: "GKK2026000000220", company: "Cofle TK Otomotiv", project: "AD54000000004", amount: "24.800 TL", tax: "%20", dueDate: "2026-06-15", status: "Fatura Beklemede", file: "" },
+      { id: "i1", invoiceNo: "GKK2026000000219", company: "Kale Oto", project: "AD54000000005", amount: "36.500 TL", tax: "%20", withholding: "Yok", dueDate: "2026-05-30", status: "Fatura Kesildi", file: "" },
+      { id: "i2", invoiceNo: "GKK2026000000220", company: "Cofle TK Otomotiv", project: "AD54000000004", amount: "24.800 TL", tax: "%20", withholding: "Yok", dueDate: "2026-06-15", status: "Fatura Beklemede", file: "" },
     ],
   },
   {
@@ -421,6 +444,8 @@ let filterValue = "";
 let selectedMonth = "05.2026";
 let selectedDay = 4;
 let dashboardMonth = "05.2026";
+let dashboardRange = "month";
+let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
 let remoteSaveQueue = Promise.resolve();
@@ -454,6 +479,217 @@ const moduleAccentColors = {
   audit: "#1d4ed8",
   payroll: "#b45309",
 };
+
+const translations = {
+  "Panel": "Dashboard",
+  "Firmalar": "Companies",
+  "Firma Listesi": "Company List",
+  "Projeler": "Projects",
+  "Proje Listesi": "Project List",
+  "Kullanıcılar": "Users",
+  "Kullanıcı Listesi": "User List",
+  "Personeller": "Personnel",
+  "Personel Listesi": "Personnel List",
+  "Özlük Belgeleri": "Personnel Documents",
+  "Belge Listesi": "Document List",
+  "Puantaj": "Timesheet",
+  "Aylık Puantaj": "Monthly Timesheet",
+  "İzinler": "Leaves",
+  "İzin Listesi": "Leave List",
+  "Eğitimler": "Trainings",
+  "Eğitim Listesi": "Training List",
+  "Zimmetler": "Assets",
+  "Zimmet Listesi": "Asset List",
+  "Görevler": "Tasks",
+  "Görev Listesi": "Task List",
+  "Faturalar": "Invoices",
+  "Fatura Listesi": "Invoice List",
+  "Raporlar": "Reports",
+  "Rapor Listesi": "Report List",
+  "Arşiv": "Archive",
+  "Silinen Kayıtlar": "Deleted Records",
+  "İşlem Kayıtları": "Activity Logs",
+  "Denetim": "Audit",
+  "Bordro": "Payroll",
+  "Bordro Listesi": "Payroll List",
+  "Firma Adı": "Company Name",
+  "Yetkili": "Authorized Person",
+  "Email": "Email",
+  "Telefon": "Phone",
+  "Fax": "Fax",
+  "Şehir": "City",
+  "Sektör": "Sector",
+  "Vergi No": "Tax No",
+  "Adres": "Address",
+  "Sözleşme": "Contract",
+  "İmzalı Sözleşme": "Signed Contract",
+  "Fiyat Teklifi": "Price Offer",
+  "Not": "Note",
+  "Proje Kodu": "Project Code",
+  "Parça Kodu": "Part Code",
+  "Problem": "Problem",
+  "Sorumlu": "Responsible",
+  "Lokasyon": "Location",
+  "Başlangıç": "Start",
+  "Bitiş": "End",
+  "Proje Tarihi": "Project Date",
+  "Durumu": "Status",
+  "Fatura Durumu": "Invoice Status",
+  "Proje Dosyaları": "Project Files",
+  "Adı": "Name",
+  "Soyadı": "Surname",
+  "Kullanıcı Adı": "Username",
+  "Bağlı Firma": "Linked Company",
+  "Türü": "Type",
+  "Adı Soyadı": "Full Name",
+  "Departman": "Department",
+  "Görevi": "Role",
+  "E-posta": "Email",
+  "İşe Giriş": "Start Date",
+  "Çıkış Tarihi": "Exit Date",
+  "Acil Durum": "Emergency",
+  "Özlük Durumu": "Document Status",
+  "Personel": "Personnel",
+  "Belge Türü": "Document Type",
+  "Dosya / Resim": "File / Image",
+  "Tarih": "Date",
+  "Ekleyen": "Added By",
+  "Günlük Saat": "Daily Hours",
+  "Mesai Saati": "Overtime Hours",
+  "Toplam Saat": "Total Hours",
+  "İzin Türü": "Leave Type",
+  "Gün": "Day",
+  "Onay Durumu": "Approval Status",
+  "Eğitim": "Training",
+  "Geçerlilik": "Validity",
+  "Sertifika": "Certificate",
+  "Zimmet": "Asset",
+  "Seri No": "Serial No",
+  "Teslim Tarihi": "Delivery Date",
+  "İade Tarihi": "Return Date",
+  "Tutanak": "Record File",
+  "Görev": "Task",
+  "Proje": "Project",
+  "Atanan": "Assignee",
+  "Öncelik": "Priority",
+  "Son Tarih": "Due Date",
+  "Fatura No": "Invoice No",
+  "Firma": "Company",
+  "Tutar": "Amount",
+  "KDV": "VAT",
+  "Tevkifat": "Withholding",
+  "Vade": "Due Date",
+  "Fatura Dosyası": "Invoice File",
+  "Rapor Adı": "Report Name",
+  "Tür": "Type",
+  "Hazırlayan": "Owner",
+  "Rapor Dosyası": "Report File",
+  "Brüt Maaş": "Gross Salary",
+  "Net Maaş": "Net Salary",
+  "Ek Ödeme": "Bonus",
+  "Avans": "Advance",
+  "Fazla Mesai": "Overtime",
+  "Kesinti": "Deduction",
+  "Ödeme Tarihi": "Payment Date",
+  "Banka / IBAN": "Bank / IBAN",
+  "Bordro Durumu": "Payroll Status",
+  "İK Onayı": "HR Approval",
+  "Muhasebe Onayı": "Accounting Approval",
+  "Yönetici Onayı": "Manager Approval",
+  "Portal Durumu": "Portal Status",
+  "Görüntülenme": "View Status",
+  "Bordro Dosyası / Resim": "Payroll File / Image",
+  "Online İşlemler": "Online Operations",
+  "Yönetici Özeti": "Executive Summary",
+  "Artı Destek operasyon görünümü": "Artı Destek operations view",
+  "Dönem": "Period",
+  "Ay": "Month",
+  "Aralık": "Range",
+  "Seçili Ay": "Selected Month",
+  "Son 3 Ay": "Last 3 Months",
+  "Son 5 Ay": "Last 5 Months",
+  "12 Ay": "12 Months",
+  "Aktif Proje": "Active Projects",
+  "Pasif Proje": "Passive Projects",
+  "Bekleyen Proje": "Waiting Projects",
+  "Fatura Kesilen": "Issued Invoices",
+  "Kesilmeyen Fatura": "Unissued Invoices",
+  "Çalışma": "Work Hours",
+  "Mesai": "Overtime",
+  "Eksik Özlük": "Missing Documents",
+  "Açık Görev": "Open Tasks",
+  "Öncelikli Uyarılar": "Priority Alerts",
+  "Son İşlemler": "Recent Activity",
+  "Kritik uyarı görünmüyor.": "No critical alert is visible.",
+  "Henüz işlem kaydı yok.": "No activity has been recorded yet.",
+  "Yönet": "Manage",
+  "EKLE": "ADD",
+  "EXCEL": "EXCEL",
+  "PDF": "PDF",
+  "Ara:": "Search:",
+  "Filtrele :": "Filter:",
+  "İşlemler": "Actions",
+  "Kayıt bulunamadı.": "No records found.",
+  "Önceki": "Previous",
+  "Sonraki": "Next",
+  "Düzenle": "Edit",
+  "Sil": "Delete",
+  "Grafik": "Chart",
+  "Kaydet": "Save",
+  "Vazgeç": "Cancel",
+  "Kapat": "Close",
+  "Ekle": "Add",
+  "Dosya yok": "No file",
+  "Bilgisayardan dosya veya resim seçebilirsin.": "You can select a file or image from your computer.",
+  "Aynı kayıt için en fazla 10 dosya veya resim seçebilirsin.": "You can select up to 10 files or images for the same record.",
+  "Mevcut dosya": "Current file",
+  "Mevcut dosyalar": "Current files",
+  "Kullanıcı şifresi Supabase Authentication üzerinden verilir.": "User passwords are assigned through Supabase Authentication.",
+  "Güvenli kullanıcı yönetimi": "Secure user management",
+  "Rol Kuralları": "Role Rules",
+  "Toplam Proje": "Total Projects",
+  "Beklemede": "Pending",
+  "Pasif": "Passive",
+  "Toplam Çalışma": "Total Work",
+  "Toplam Mesai": "Total Overtime",
+  "Aktif Puantaj": "Active Timesheets",
+  "Aktif": "Active",
+  "AKTİF": "ACTIVE",
+  "PASİF": "PASSIVE",
+  "Yok": "None",
+  "Müşteri": "Customer",
+  "Kullanıcı": "User",
+  "Tam": "Complete",
+  "Eksik": "Missing",
+  "Kontrol Edilecek": "To Be Checked",
+  "Geldi": "Present",
+  "Gelmedi": "Absent",
+  "Raporlu": "Medical Leave",
+  "Geçici Görev": "Temporary Duty",
+  "Bekliyor": "Waiting",
+  "Onaylandı": "Approved",
+  "Reddedildi": "Rejected",
+  "Düşük": "Low",
+  "Normal": "Normal",
+  "Yüksek": "High",
+  "Acil": "Urgent",
+  "Devam Ediyor": "In Progress",
+  "Tamamlandı": "Completed",
+  "Fatura Kesildi": "Invoice Issued",
+  "Fatura Beklemede": "Invoice Pending",
+  "Onay Verilmedi": "Not Approved",
+  "Hazırlandı": "Prepared",
+  "Onay Bekliyor": "Awaiting Approval",
+  "Personele Açıldı": "Published to Personnel",
+  "Kapalı": "Closed",
+  "Görülmedi": "Not Viewed",
+  "Görüldü": "Viewed",
+};
+
+function trText(value) {
+  if (currentLanguage !== "en") return value;
+  return translations[value] || value;
+}
 
 function loadLocalRecords() {
   try {
@@ -537,6 +773,10 @@ function hydrateRecord(module, record) {
       startDate: "",
       endDate: "",
       file: "",
+      okCount: "0",
+      nokCount: "0",
+      rokCount: "0",
+      rnokCount: "0",
       ...record,
       note: record.note || record.invoice || "",
       status: normalizeProjectStatus(record.status),
@@ -551,6 +791,8 @@ function hydrateRecord(module, record) {
       taxNo: "",
       address: "",
       contractStatus: "Beklemede",
+      contractFile: "",
+      offerFile: "",
       note: "",
       ...record,
     };
@@ -576,12 +818,21 @@ function hydrateRecord(module, record) {
     };
   }
 
+  if (module.id === "invoices") {
+    return {
+      withholding: "Yok",
+      ...record,
+      status: normalizeInvoiceStatus(record.status),
+    };
+  }
+
   if (module.id === "attendance") {
     return {
       dailyHours: "7,5",
       overtimeHours: "0",
       status: "AKTİF",
       ...Object.fromEntries(dayColumns.map(([key]) => [key, record[key] || "-"])),
+      ...Object.fromEntries(manualHourColumns.map(([key]) => [key, record[key] || ""])),
       ...record,
       ...Object.fromEntries(overtimeDayColumns.map(([key]) => [key, record[key] || ""])),
       totalHours: calculateAttendanceTotal(record),
@@ -781,6 +1032,33 @@ function renderIcons() {
   });
 }
 
+function renderLanguageSwitch() {
+  document.querySelectorAll("[data-lang]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.lang === currentLanguage);
+  });
+  document.documentElement.lang = currentLanguage === "en" ? "en" : "tr";
+  const logoutButton = document.querySelector("#logoutButton");
+  const cancelButton = document.querySelector("#dialogCancelButton");
+  const saveButton = document.querySelector('#recordForm button[type="submit"]');
+  const loginTitle = document.querySelector("#loginForm h1");
+  const loginButton = document.querySelector('#loginForm button[type="submit"]');
+  if (logoutButton) logoutButton.textContent = currentLanguage === "en" ? "Logout" : "Çıkış";
+  if (cancelButton) cancelButton.textContent = trText("Vazgeç");
+  if (saveButton) saveButton.textContent = trText("Kaydet");
+  if (loginTitle) loginTitle.textContent = currentLanguage === "en" ? "Portal Login" : "Portal Girişi";
+  if (loginButton) loginButton.textContent = currentLanguage === "en" ? "Sign In" : "Giriş Yap";
+}
+
+function switchLanguage(language) {
+  currentLanguage = language === "en" ? "en" : "tr";
+  localStorage.setItem("arti-destek-language", currentLanguage);
+  renderLanguageSwitch();
+  if (!document.querySelector("#appShell").hidden) {
+    renderSideNav();
+    renderModule(getModule(activeModuleId));
+  }
+}
+
 function renderSideNav() {
   document.querySelector("#sideNav").innerHTML = modules
     .filter(canAccessModule)
@@ -788,14 +1066,14 @@ function renderSideNav() {
       (module) => `
         <button class="${module.id === activeModuleId ? "active" : ""}" type="button" data-nav="${module.id}">
           <span class="nav-icon" style="--module-color:${moduleAccentColors[module.id] || "#0d3154"}" data-icon="${module.icon}"></span>
-          <span>${escapeHtml(module.title)}</span>
+          <span>${escapeHtml(trText(module.title))}</span>
         </button>
         ${(module.children ?? [])
           .map(
             (child) => `
               <button class="child" type="button" data-nav="${module.id}">
                 <span data-icon="${module.icon}"></span>
-                <span>${escapeHtml(child)}</span>
+                <span>${escapeHtml(trText(child))}</span>
               </button>
             `,
           )
@@ -807,20 +1085,12 @@ function renderSideNav() {
 
 function renderBreadcrumb(module) {
   document.querySelector("#breadcrumb").innerHTML = module.breadcrumb
-    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .map((item) => `<li>${escapeHtml(trText(item))}</li>`)
     .join("");
 }
 
 function getDashboardMonths() {
-  const months = new Set([
-    dashboardMonth,
-    selectedMonth,
-    ...getModule("attendance").records.map((record) => record.period).filter(Boolean),
-    ...getModule("payroll").records.map((record) => record.period).filter(Boolean),
-  ]);
-
-  ["05.2026", "04.2026", "03.2026", "02.2026", "01.2026", "12.2025"].forEach((month) => months.add(month));
-  return Array.from(months).filter(Boolean).slice(0, 12);
+  return fixedDashboardMonths;
 }
 
 function isSameMonth(value, month) {
@@ -831,11 +1101,38 @@ function isSameMonth(value, month) {
   return text.includes(`${yearPart}-${monthPart}`) || text.includes(`${monthPart}/${yearPart}`) || text.includes(month);
 }
 
+function getDashboardPeriodMonths() {
+  const index = Math.max(0, fixedDashboardMonths.indexOf(dashboardMonth));
+  if (dashboardRange === "year") return fixedDashboardMonths;
+  const length = dashboardRange === "quarter" ? 3 : dashboardRange === "five" ? 5 : 1;
+  return fixedDashboardMonths.slice(Math.max(0, index - length + 1), index + 1);
+}
+
+function getDashboardPeriodLabel(months = getDashboardPeriodMonths()) {
+  if (months.length === 1) return months[0];
+  return `${months[0]} - ${months[months.length - 1]}`;
+}
+
+function recordMatchesMonths(record, months, keys = ["date", "period", "startDate", "dueDate", "paymentDate"]) {
+  return keys.some((key) => months.some((month) => isSameMonth(record?.[key], month)));
+}
+
+function hasUploadedFile(value) {
+  if (!value) return false;
+  if (Array.isArray(value)) return value.some(hasUploadedFile);
+  if (typeof value === "object") {
+    return Boolean(value.dataUrl || value.url || value.path || value.name || value.size);
+  }
+  return String(value).trim().length > 0;
+}
+
 function hasDocumentForPerson(person, documents) {
+  if (normalizeText(person.documentStatus) === "tam") return true;
+  const personName = normalizeText(person.name);
   return documents.some((documentRecord) => {
-    const samePerson = normalizeText(documentRecord.person) === normalizeText(person.name);
-    const files = Array.isArray(documentRecord.file) ? documentRecord.file : documentRecord.file ? [documentRecord.file] : [];
-    return samePerson && files.length > 0;
+    const documentPerson = normalizeText(documentRecord.person);
+    const samePerson = documentPerson && (documentPerson === personName || documentPerson.includes(personName) || personName.includes(documentPerson));
+    return samePerson && hasUploadedFile(documentRecord.file);
   });
 }
 
@@ -846,16 +1143,19 @@ function getKpiState(value, positiveWhenZero = true) {
 }
 
 function renderDashboard() {
-  const projects = getModule("projects").records;
-  const invoices = getModule("invoices").records;
+  const periodMonths = getDashboardPeriodMonths();
+  const periodLabel = getDashboardPeriodLabel(periodMonths);
+  const projects = getModule("projects").records.filter((record) => recordMatchesMonths(record, periodMonths, ["date", "startDate", "endDate"]));
+  const invoices = getModule("invoices").records.filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
   const personnel = getModule("personnel").records;
-  const attendance = getModule("attendance").records.filter((record) => record.period === dashboardMonth);
-  const payroll = getModule("payroll").records;
+  const attendance = getModule("attendance").records.filter((record) => periodMonths.includes(record.period));
+  const payroll = getModule("payroll").records.filter((record) => periodMonths.includes(record.period));
   const documents = getModule("presentations").records;
-  const leaves = getModule("leaves").records;
-  const tasks = getModule("tasks").records;
+  const leaves = getModule("leaves").records.filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
+  const tasks = getModule("tasks").records.filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
   const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
   const passiveProjects = projects.filter((record) => normalizeText(record.status) === "pasif").length;
+  const waitingProjects = projects.filter((record) => normalizeText(record.status) === "beklemede").length;
   const issuedInvoices = invoices.filter((record) => record.status === "Fatura Kesildi").length;
   const pendingInvoices = invoices.filter((record) => record.status !== "Fatura Kesildi").length;
   const totalHours = attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
@@ -874,11 +1174,12 @@ function renderDashboard() {
   ].filter(Boolean);
   const kpis = [
     ["Aktif Proje", activeProjects, "projects", "good"],
-    ["Pasif Proje", passiveProjects, "projects", passiveProjects > 0 ? "neutral" : "good"],
+    ["Pasif Proje", passiveProjects, "projects", passiveProjects > 0 ? "bad" : "good"],
+    ["Bekleyen Proje", waitingProjects, "projects", getKpiState(waitingProjects)],
     ["Fatura Kesilen", issuedInvoices, "invoices", "good"],
     ["Kesilmeyen Fatura", pendingInvoices, "invoices", getKpiState(pendingInvoices)],
-    [`${dashboardMonth} Çalışma`, `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
-    [`${dashboardMonth} Mesai`, `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
+    [`${periodLabel} ${trText("Çalışma")}`, `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
+    [`${periodLabel} ${trText("Mesai")}`, `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
     ["Eksik Özlük", missingDocuments, "presentations", getKpiState(missingDocuments)],
     ["Açık Görev", openTasks, "tasks", getKpiState(openTasks)],
   ];
@@ -898,23 +1199,44 @@ function renderDashboard() {
     { id: "payroll", value: getRecordCount("payroll"), label: "Bordro", icon: "invoice", color: "dark-green" },
   ];
   const visibleCards = cards.filter((card) => canAccessModule(getModule(card.id)));
+  const monthlyBreakdown = periodMonths.map((month) => {
+    const monthProjects = getModule("projects").records.filter((record) => recordMatchesMonths(record, [month], ["date", "startDate", "endDate"]));
+    const monthInvoices = getModule("invoices").records.filter((record) => recordMatchesMonths(record, [month], ["dueDate", "date"]));
+    const monthAttendance = getModule("attendance").records.filter((record) => record.period === month);
+    return {
+      month,
+      projects: monthProjects.length,
+      invoices: monthInvoices.length,
+      hours: monthAttendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0),
+    };
+  });
 
   document.querySelector("#pageContent").innerHTML = `
     <section class="executive-dashboard">
       <div class="executive-hero">
         <div class="executive-headline">
-          <span>Yönetici Özeti</span>
+          <span>${escapeHtml(trText("Yönetici Özeti"))}</span>
+          <div class="dashboard-period-controls">
           <label class="dashboard-month-picker">
-            Ay
+            ${escapeHtml(trText("Ay"))}
             <select id="dashboardMonthSelect">
               ${getDashboardMonths()
                 .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
                 .join("")}
             </select>
           </label>
+          <label class="dashboard-month-picker">
+            ${escapeHtml(trText("Aralık"))}
+            <select id="dashboardRangeSelect">
+              ${dashboardRangeOptions
+                .map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === dashboardRange ? "selected" : ""}>${escapeHtml(trText(label))}</option>`)
+                .join("")}
+            </select>
+          </label>
+          </div>
         </div>
-        <h2>Artı Destek operasyon görünümü</h2>
-        <p>${dashboardMonth} döneminde projeler, insan kaynakları, bordro ve finans süreçlerini tek ekranda izleyin.</p>
+        <h2>${escapeHtml(trText("Artı Destek operasyon görünümü"))}</h2>
+        <p>${escapeHtml(periodLabel)} ${currentLanguage === "en" ? "period totals for projects, HR, payroll and finance are shown together." : "döneminde projeler, insan kaynakları, bordro ve finans süreçlerini tek ekranda izleyin."}</p>
       </div>
       <div class="kpi-grid">
         ${kpis
@@ -923,36 +1245,44 @@ function renderDashboard() {
             ([label, value, moduleId, state]) => `
               <button class="kpi-card ${state}" type="button" data-nav="${moduleId}">
                 <strong>${escapeHtml(value)}</strong>
-                <span>${escapeHtml(label)}</span>
+                <span>${escapeHtml(trText(label))}</span>
               </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="monthly-breakdown">
+        ${monthlyBreakdown
+          .map(
+            (item) => `
+              <div>
+                <strong>${escapeHtml(item.month)}</strong>
+                <span>${escapeHtml(trText("Projeler"))}: ${escapeHtml(item.projects)}</span>
+                <span>${escapeHtml(trText("Faturalar"))}: ${escapeHtml(item.invoices)}</span>
+                <span>${escapeHtml(trText("Çalışma"))}: ${escapeHtml(item.hours.toLocaleString("tr-TR", { maximumFractionDigits: 1 }))} sa</span>
+              </div>
             `,
           )
           .join("")}
       </div>
       <div class="ops-grid">
         <section class="ops-panel">
-          <h3>Öncelikli Uyarılar</h3>
+          <h3>${escapeHtml(trText("Öncelikli Uyarılar"))}</h3>
           ${
             alerts.length
               ? alerts.map((alert) => `<p class="alert-row">${escapeHtml(alert)}</p>`).join("")
-              : '<p class="empty-state">Kritik uyarı görünmüyor.</p>'
+              : `<p class="empty-state">${escapeHtml(trText("Kritik uyarı görünmüyor."))}</p>`
           }
         </section>
         <section class="ops-panel">
-          <h3>Yetki Matrisi</h3>
-          <p><b>Admin</b> tüm kayıtları yönetir.</p>
-          <p><b>Kullanıcı</b> operasyonu izler, silme ve düzenleme yapamaz.</p>
-          <p><b>Müşteri</b> kendi firmasına ait proje, fatura ve raporları görür.</p>
-        </section>
-        <section class="ops-panel">
-          <h3>Son İşlemler</h3>
+          <h3>${escapeHtml(trText("Son İşlemler"))}</h3>
           ${
             getModule("audit").records.length
               ? getModule("audit").records
                   .slice(0, 4)
                   .map((record) => `<p><b>${escapeHtml(record.action)}</b> ${escapeHtml(record.recordTitle)} <span>${escapeHtml(record.date)}</span></p>`)
                   .join("")
-              : '<p class="empty-state">Henüz işlem kaydı yok.</p>'
+              : `<p class="empty-state">${escapeHtml(trText("Henüz işlem kaydı yok."))}</p>`
           }
         </section>
       </div>
@@ -961,13 +1291,13 @@ function renderDashboard() {
       ${visibleCards
         .map(
           (card) => `
-            <article class="dash-card ${card.color}">
+            <article class="dash-card ${card.color}" style="--module-color:${moduleAccentColors[card.id] || "#0d3154"}">
               <div class="inner">
                 <h2>${escapeHtml(card.value)}</h2>
-                <p>${escapeHtml(card.label)}</p>
+                <p>${escapeHtml(trText(card.label))}</p>
                 <span class="card-icon" data-icon="${card.icon}"></span>
               </div>
-              <button type="button" data-nav="${card.id}">Yönet <span>➜</span></button>
+              <button type="button" data-nav="${card.id}">${escapeHtml(trText("Yönet"))} <span>➜</span></button>
             </article>
           `,
         )
@@ -1169,7 +1499,10 @@ function isOptionalField(module, key) {
     "advance",
     "overtime",
     "deduction",
-  ].includes(key) || (module.id === "projects" && key === "endDate");
+    "contractFile",
+    "offerFile",
+    "withholding",
+  ].includes(key) || (module.id === "projects" && (key === "endDate" || key.endsWith("Count")));
 }
 
 function parseHour(value) {
@@ -1177,12 +1510,15 @@ function parseHour(value) {
   return Number.isFinite(hour) ? hour : 0;
 }
 
-function getAttendanceDayHours(value, dailyHours) {
+function getAttendanceDayHours(value, dailyHours, manualValue = "") {
+  const manualHours = parseHour(manualValue);
+  if (manualHours > 0) return manualHours;
   const text = String(value ?? "").trim();
   if (!text || text === "-") return 0;
   const normalized = normalizeText(text);
   if (normalized === "geldi") return dailyHours;
-  if (["gelmedi", "izin", "rapor"].includes(normalized)) return 0;
+  if (normalized === "gecici gorev") return dailyHours;
+  if (["gelmedi", "izin", "rapor", "raporlu"].includes(normalized)) return 0;
   return parseHour(text);
 }
 
@@ -1192,7 +1528,7 @@ function getAttendanceDayOvertime(record) {
 
 function calculateAttendanceTotal(record) {
   const dailyHours = parseHour(record?.dailyHours || "7,5");
-  const dayHours = dayColumns.reduce((sum, [key]) => sum + getAttendanceDayHours(record?.[key], dailyHours), 0);
+  const dayHours = dayColumns.reduce((sum, [key], index) => sum + getAttendanceDayHours(record?.[key], dailyHours, record?.[manualHourColumns[index][0]]), 0);
   const overtimeHours = parseHour(record?.overtimeHours);
   return (dayHours + overtimeHours).toLocaleString("tr-TR", {
     minimumFractionDigits: 0,
@@ -1274,12 +1610,6 @@ function renderModuleIntro(module, records) {
           <h2>Kullanıcı şifresi Supabase Authentication üzerinden verilir.</h2>
           <p>Portal ekranındaki kayıt, rol ve firma eşleşmesini yönetir. Şifreyi panelde saklamıyoruz; bu daha güvenli bir kullanım sağlar.</p>
         </div>
-        <div class="role-matrix">
-          <strong>Rol Kuralları</strong>
-          <p>Admin: ekle, düzenle, sil, onayla.</p>
-          <p>Kullanıcı: sadece izleme.</p>
-          <p>Müşteri: kendi firma kayıtlarını izleme.</p>
-        </div>
       </div>
     `;
   }
@@ -1333,11 +1663,16 @@ function renderRowActions(module, record) {
         <button class="icon-action" type="button" title="Görüldü işaretle" data-action="payroll-seen" data-id="${record.id}"><span data-icon="eye"></span></button>
       `
       : "";
+  const projectActions =
+    module.id === "projects"
+      ? `<button class="icon-action chart-action" type="button" title="${escapeHtml(trText("Grafik"))}" data-action="project-chart" data-id="${record.id}"><span data-icon="barChart"></span></button>`
+      : "";
 
   return `
     <span class="actions">
-      <button class="icon-action" type="button" title="Düzenle" data-action="edit" data-id="${record.id}"><span data-icon="edit"></span></button>
-      <button class="icon-action" type="button" title="Sil" data-action="delete" data-id="${record.id}"><span data-icon="trash"></span></button>
+      <button class="icon-action" type="button" title="${escapeHtml(trText("Düzenle"))}" data-action="edit" data-id="${record.id}"><span data-icon="edit"></span></button>
+      <button class="icon-action" type="button" title="${escapeHtml(trText("Sil"))}" data-action="delete" data-id="${record.id}"><span data-icon="trash"></span></button>
+      ${projectActions}
       ${payrollActions}
     </span>
   `;
@@ -1345,7 +1680,7 @@ function renderRowActions(module, record) {
 
 function getVisibleColumns(module) {
   if (module.id !== "attendance") return module.columns;
-  const hiddenTypes = new Set(["attendanceDay", "attendanceOvertime"]);
+  const hiddenTypes = new Set(["attendanceDay", "attendanceManualHour", "attendanceOvertime"]);
   return module.columns.filter(([, , type]) => !hiddenTypes.has(type));
 }
 
@@ -1360,7 +1695,7 @@ function renderQuickFilters(module) {
         .map(
           (option) => `
             <button class="${active === option ? "active" : ""}" type="button" data-quick-filter="${escapeHtml(option)}">
-              ${escapeHtml(option)}
+              ${escapeHtml(trText(option))}
             </button>
           `,
         )
@@ -1399,19 +1734,21 @@ function renderAttendanceForm(record) {
     <div class="attendance-editor full-field">
       <div class="attendance-editor-head">
         <strong>Gün</strong>
-        <strong>Geldi / Saat / İzin</strong>
+        <strong>Durum</strong>
+        <strong>Manuel Saat</strong>
         <strong>Mesai</strong>
       </div>
       ${dayColumns
         .map(([key, label, , options], index) => {
           const overtimeKey = overtimeDayColumns[index][0];
+          const manualKey = manualHourColumns[index][0];
           return `
             <div class="attendance-editor-row">
               <span>${escapeHtml(label)}</span>
-              <input name="${key}" value="${escapeHtml(record?.[key] ?? "-")}" list="${key}-options" placeholder="Geldi / 4 / İzin" />
-              <datalist id="${key}-options">
-                ${options.map((option) => `<option value="${escapeHtml(option)}"></option>`).join("")}
-              </datalist>
+              <select name="${key}">
+                ${options.map((option) => `<option value="${escapeHtml(option)}" ${(record?.[key] ?? "-") === option ? "selected" : ""}>${escapeHtml(trText(option))}</option>`).join("")}
+              </select>
+              <input name="${manualKey}" value="${escapeHtml(record?.[manualKey] ?? "")}" inputmode="decimal" placeholder="0" />
               <input name="${overtimeKey}" value="${escapeHtml(record?.[overtimeKey] ?? "")}" inputmode="decimal" placeholder="0" />
             </div>
           `;
@@ -1442,12 +1779,12 @@ function renderDataPage(module) {
       ${renderQuickFilters(module)}
       <div class="toolbar">
         <div class="toolbar-actions">
-          ${canEdit ? '<button class="btn btn-green" type="button" data-action="add">EKLE</button>' : ""}
-          <button class="btn btn-green" type="button" data-action="export">EXCEL</button>
-          <button class="btn btn-orange" type="button" data-action="export-pdf">PDF</button>
+          ${canEdit ? `<button class="btn btn-green" type="button" data-action="add">${escapeHtml(trText("EKLE"))}</button>` : ""}
+          <button class="btn btn-green" type="button" data-action="export">${escapeHtml(trText("EXCEL"))}</button>
+          <button class="btn btn-orange" type="button" data-action="export-pdf">${escapeHtml(trText("PDF"))}</button>
         </div>
         <label class="filter-line">
-          <span>${module.id === "projects" ? "Ara:" : "Filtrele :"}</span>
+          <span>${escapeHtml(trText(module.id === "projects" ? "Ara:" : "Filtrele :"))}</span>
           <input id="filterInput" type="search" value="${escapeHtml(filterValue)}" />
         </label>
       </div>
@@ -1455,8 +1792,8 @@ function renderDataPage(module) {
         <table class="data-table">
           <thead>
             <tr>
-              ${canEdit ? '<th class="sortable">İşlemler</th>' : ""}
-              ${visibleColumns.map(([, label]) => `<th class="sortable">${escapeHtml(label)}</th>`).join("")}
+              ${canEdit ? `<th class="sortable">${escapeHtml(trText("İşlemler"))}</th>` : ""}
+              ${visibleColumns.map(([, label]) => `<th class="sortable">${escapeHtml(trText(label))}</th>`).join("")}
             </tr>
           </thead>
           <tbody>
@@ -1468,7 +1805,7 @@ function renderDataPage(module) {
                         <tr class="${record.id === selectedRecordId ? "selected" : ""}" data-record="${record.id}">
                           ${
                             canEdit
-                              ? `<td data-label="İşlemler">${renderRowActions(module, record)}</td>`
+                              ? `<td data-label="${escapeHtml(trText("İşlemler"))}">${renderRowActions(module, record)}</td>`
                               : ""
                           }
                           ${visibleColumns.map(([key, label], index) => renderCell(module, record, key, index, label)).join("")}
@@ -1476,15 +1813,15 @@ function renderDataPage(module) {
                       `,
                     )
                     .join("")
-                : `<tr><td colspan="${visibleColumns.length + (canEdit ? 1 : 0)}">Kayıt bulunamadı.</td></tr>`
+                : `<tr><td colspan="${visibleColumns.length + (canEdit ? 1 : 0)}">${escapeHtml(trText("Kayıt bulunamadı."))}</td></tr>`
             }
           </tbody>
         </table>
       </div>
       <div class="pagination">
-        <span>Önceki</span>
+        <span>${escapeHtml(trText("Önceki"))}</span>
         <span class="active">1</span>
-        <span>Sonraki</span>
+        <span>${escapeHtml(trText("Sonraki"))}</span>
       </div>
     </section>
   `;
@@ -1494,16 +1831,19 @@ function renderCell(module, record, key, index, label = "") {
   const value = record[key] ?? "";
   const column = module.columns.find(([columnKey]) => columnKey === key);
   const type = column?.[2];
-  const labelAttr = `data-label="${escapeHtml(label)}"`;
+  const labelAttr = `data-label="${escapeHtml(trText(label))}"`;
   if (type === "file") return `<td ${labelAttr}>${renderFileCell(value)}</td>`;
   if (type === "files") return `<td ${labelAttr}>${renderFilesCell(value)}</td>`;
   if (type === "date") return `<td ${labelAttr}>${escapeHtml(formatDate(value))}</td>`;
+  if (type === "qualityNumber") {
+    return `<td ${labelAttr}><span class="quality-badge quality-${escapeHtml(key.replace("Count", ""))}">${escapeHtml(value || "0")}</span></td>`;
+  }
   if (module.id === "attendance" && key === "totalHours") return `<td ${labelAttr}><strong>${escapeHtml(calculateAttendanceTotal(record))}</strong></td>`;
   if (key === "bankIban") return `<td ${labelAttr} class="iban-cell">${escapeHtml(value)}</td>`;
   if (key === "status" && ["AKTİF", "PASİF"].includes(String(value).toLocaleUpperCase("tr"))) {
     return canManageRecords()
       ? `<td ${labelAttr}>${renderStatusButton(module, record)}</td>`
-      : `<td ${labelAttr}><span class="${value === "AKTİF" ? "badge-green" : "status-red"}">${escapeHtml(value)}</span></td>`;
+      : `<td ${labelAttr}><span class="${value === "AKTİF" ? "badge-green" : "status-red"}">${escapeHtml(trText(value))}</span></td>`;
   }
 
   const titleLike = index === 0 || key === "code" || key === "part" || key === "email";
@@ -1512,9 +1852,9 @@ function renderCell(module, record, key, index, label = "") {
   const greenStatus = ["Onaylı", "Onaylandı", "AKTİF", "Aktif", "Ödendi", "Kesildi", "Fatura Kesildi", "Hazır", "Personele Açıldı", "Görüldü", "Tamamlandı"].includes(valueText);
   const orangeStatus = ["Onay Bekliyor", "Hazırlandı", "Taslak", "Devam Ediyor", "Beklemede", "Fatura Beklemede"].includes(valueText);
 
-  if (redStatus) return `<td ${labelAttr}><span class="status-red">${escapeHtml(value)}</span></td>`;
-  if (orangeStatus) return `<td ${labelAttr}><span class="status-orange">${escapeHtml(value)}</span></td>`;
-  if (greenStatus) return `<td ${labelAttr}><span class="${valueText === "AKTİF" ? "badge-green" : "status-green"}">${escapeHtml(value)}</span></td>`;
+  if (redStatus) return `<td ${labelAttr}><span class="status-red">${escapeHtml(trText(value))}</span></td>`;
+  if (orangeStatus) return `<td ${labelAttr}><span class="status-orange">${escapeHtml(trText(value))}</span></td>`;
+  if (greenStatus) return `<td ${labelAttr}><span class="${valueText === "AKTİF" ? "badge-green" : "status-green"}">${escapeHtml(trText(value))}</span></td>`;
   if (titleLike) return `<td ${labelAttr}><a href="#${module.id}-${record.id}">${escapeHtml(value)}</a></td>`;
   return `<td ${labelAttr}>${escapeHtml(value)}</td>`;
 }
@@ -1523,13 +1863,13 @@ function renderStatusButton(module, record) {
   const isActive = String(record.status).toLocaleUpperCase("tr") !== "PASİF";
   return `
     <button class="status-toggle ${isActive ? "active" : "passive"}" type="button" data-action="toggle-status" data-module="${module.id}" data-id="${record.id}">
-      ${isActive ? "AKTİF" : "PASİF"}
+      ${escapeHtml(trText(isActive ? "AKTİF" : "PASİF"))}
     </button>
   `;
 }
 
 function renderFileCell(value) {
-  if (!value) return '<span class="muted">Dosya yok</span>';
+  if (!value) return `<span class="muted">${escapeHtml(trText("Dosya yok"))}</span>`;
 
   if (typeof value === "object" && value.dataUrl) {
     const isImage = String(value.type || "").startsWith("image/");
@@ -1545,9 +1885,9 @@ function renderFileCell(value) {
 }
 
 function renderFilesCell(value) {
-  if (!value) return '<span class="muted">Dosya yok</span>';
+  if (!value) return `<span class="muted">${escapeHtml(trText("Dosya yok"))}</span>`;
   const files = Array.isArray(value) ? value : [value];
-  if (!files.length) return '<span class="muted">Dosya yok</span>';
+  if (!files.length) return `<span class="muted">${escapeHtml(trText("Dosya yok"))}</span>`;
 
   return `
     <div class="file-list">
@@ -1744,8 +2084,54 @@ function toggleRecordStatus(moduleId, recordId) {
   renderIcons();
 }
 
+function openProjectChart(recordId) {
+  const module = getModule("projects");
+  const record = module.records.find((item) => item.id === recordId);
+  if (!record) return;
+
+  const values = [
+    ["OK", "ok", parseHour(record.okCount)],
+    ["NOK", "nok", parseHour(record.nokCount)],
+    ["ROK", "rok", parseHour(record.rokCount)],
+    ["RNOK", "rnok", parseHour(record.rnokCount)],
+  ];
+  const maxValue = Math.max(...values.map(([, , value]) => value), 1);
+  const total = values.reduce((sum, [, , value]) => sum + value, 0);
+
+  document.querySelector("#chartTitle").textContent = `${record.code || ""} ${trText("Grafik")}`.trim();
+  document.querySelector("#chartContent").innerHTML = `
+    <div class="project-chart-summary">
+      <strong>${escapeHtml(record.company || "-")}</strong>
+      <span>${escapeHtml(record.part || "-")}</span>
+      <p>${escapeHtml(record.problem || "-")}</p>
+      <small>${currentLanguage === "en" ? "Total checked quantity" : "Toplam kontrol adedi"}: ${escapeHtml(total)}</small>
+    </div>
+    <div class="project-quality-chart">
+      ${values
+        .map(
+          ([label, key, value]) => `
+            <div class="quality-chart-row">
+              <span class="quality-badge quality-${key}">${label}</span>
+              <div class="quality-bar-track">
+                <i class="quality-bar quality-${key}" style="width:${Math.max(4, Math.round((value / maxValue) * 100))}%"></i>
+              </div>
+              <strong>${escapeHtml(value)}</strong>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+  document.querySelector("#chartDialog").showModal();
+  renderIcons();
+}
+
+function closeChartDialog() {
+  document.querySelector("#chartDialog").close();
+}
+
 function renderModule(module) {
-  document.querySelector("#pageTitle").textContent = module.dashboard ? "Online İşlemler" : module.title;
+  document.querySelector("#pageTitle").textContent = trText(module.dashboard ? "Online İşlemler" : module.title);
   renderBreadcrumb(module);
   selectedRecordId = module.records?.[0]?.id ?? "";
   filterValue = "";
@@ -1832,6 +2218,7 @@ async function authenticate(username, password) {
 }
 
 function showLogin() {
+  renderLanguageSwitch();
   document.querySelector("#loginPage").hidden = false;
   document.querySelector("#appShell").hidden = true;
   document.querySelector("#loginError").textContent = "";
@@ -1839,6 +2226,7 @@ function showLogin() {
 }
 
 function showApp(user) {
+  renderLanguageSwitch();
   currentUser = user;
   if (!canAccessModule(getModule(activeModuleId))) activeModuleId = "panel";
   document.querySelector("#currentUserName").textContent = user.displayName;
@@ -1901,7 +2289,7 @@ function openDialog(recordId = "") {
   const record = module.records.find((item) => item.id === recordId);
   document.querySelector("#moduleIdInput").value = module.id;
   document.querySelector("#recordIdInput").value = record?.id ?? "";
-  document.querySelector("#dialogTitle").textContent = record ? `${module.title} Düzenle` : `${module.title} Ekle`;
+  document.querySelector("#dialogTitle").textContent = record ? `${trText(module.title)} ${trText("Düzenle")}` : `${trText(module.title)} ${trText("Ekle")}`;
 
   if (module.id === "attendance") {
     document.querySelector("#formGrid").innerHTML = renderAttendanceForm(record);
@@ -1918,18 +2306,20 @@ function openDialog(recordId = "") {
         const fileName = value && typeof value === "object" ? value.name : "";
         return `
           <label class="full-field">
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <input name="${key}" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />
-            <small>${fileName ? `Mevcut dosya: ${escapeHtml(fileName)}` : "Bilgisayardan dosya veya resim seçebilirsin."}</small>
+            <small>${fileName ? `${escapeHtml(trText("Mevcut dosya"))}: ${escapeHtml(fileName)}` : escapeHtml(trText("Bilgisayardan dosya veya resim seçebilirsin."))}</small>
           </label>
         `;
       }
       if (type === "files") {
         const files = Array.isArray(value) ? value : value ? [value] : [];
-        const fileText = files.length ? `Mevcut dosyalar: ${files.map((file) => escapeHtml(file.name || "Dosya")).join(", ")}` : "Aynı kayıt için en fazla 10 dosya veya resim seçebilirsin.";
+        const fileText = files.length
+          ? `${escapeHtml(trText("Mevcut dosyalar"))}: ${files.map((file) => escapeHtml(file.name || "Dosya")).join(", ")}`
+          : escapeHtml(trText("Aynı kayıt için en fazla 10 dosya veya resim seçebilirsin."));
         return `
           <label class="full-field">
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <span class="file-upload-grid">
               ${Array.from({ length: 10 }, (_, fileIndex) => `<input name="${key}" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" />`).join("")}
             </span>
@@ -1940,7 +2330,7 @@ function openDialog(recordId = "") {
       if (type === "date") {
         return `
           <label>
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <input name="${key}" type="date" value="${escapeHtml(toInputDate(value))}" ${required ? "required" : ""} />
           </label>
         `;
@@ -1948,12 +2338,12 @@ function openDialog(recordId = "") {
       if (type === "select") {
         return `
           <label>
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <select name="${key}" required>
               ${options
                 .map(
                   (option) => `
-                    <option value="${escapeHtml(option)}" ${option === value ? "selected" : ""}>${escapeHtml(option)}</option>
+                    <option value="${escapeHtml(option)}" ${option === value ? "selected" : ""}>${escapeHtml(trText(option))}</option>
                   `,
                 )
                 .join("")}
@@ -1964,15 +2354,23 @@ function openDialog(recordId = "") {
       if (type === "readonly") {
         return `
           <label>
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <input name="${key}" value="${escapeHtml(module.id === "attendance" ? calculateAttendanceTotal(record) : value || (module.id === "projects" ? "Otomatik atanacak" : ""))}" readonly />
+          </label>
+        `;
+      }
+      if (type === "qualityNumber") {
+        return `
+          <label>
+            ${escapeHtml(trText(label))}
+            <input name="${key}" type="number" min="0" step="1" value="${escapeHtml(value || "0")}" ${required ? "required" : ""} />
           </label>
         `;
       }
       if (type === "attendanceDay") {
         return `
           <label>
-            ${escapeHtml(label)}
+            ${escapeHtml(trText(label))}
             <input name="${key}" value="${escapeHtml(value)}" list="${key}-options" placeholder="Geldi / 4 / İzin" />
             <datalist id="${key}-options">
               ${options.map((option) => `<option value="${escapeHtml(option)}"></option>`).join("")}
@@ -1982,7 +2380,7 @@ function openDialog(recordId = "") {
       }
       return `
         <label class="${isLong ? "full-field" : ""}">
-          ${escapeHtml(label)}
+          ${escapeHtml(trText(label))}
           ${isLong ? `<textarea name="${key}" rows="3" ${required ? "required" : ""}>${escapeHtml(value)}</textarea>` : `<input name="${key}" value="${escapeHtml(value)}" ${required ? "required" : ""} />`}
         </label>
       `;
@@ -2063,6 +2461,12 @@ async function upsertRecord(event) {
 }
 
 document.addEventListener("click", (event) => {
+  const langButton = event.target.closest("[data-lang]");
+  if (langButton) {
+    switchLanguage(langButton.dataset.lang);
+    return;
+  }
+
   const navButton = event.target.closest("[data-nav]");
   if (navButton) {
     switchModule(navButton.dataset.nav);
@@ -2086,7 +2490,7 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (event.target.id === "dashboardMonthSelect") {
+  if (event.target.id === "dashboardMonthSelect" || event.target.id === "dashboardRangeSelect") {
     return;
   }
 
@@ -2145,6 +2549,10 @@ document.addEventListener("click", (event) => {
     downloadPdfExport();
   }
 
+  if (action === "project-chart") {
+    openProjectChart(recordId);
+  }
+
   if (action === "toggle-status") {
     toggleRecordStatus(manageButton.dataset.module || module.id, recordId);
   }
@@ -2158,6 +2566,13 @@ document.addEventListener("click", (event) => {
 document.addEventListener("input", (event) => {
   if (event.target.id === "dashboardMonthSelect") {
     dashboardMonth = event.target.value;
+    renderDashboard();
+    renderIcons();
+    return;
+  }
+
+  if (event.target.id === "dashboardRangeSelect") {
+    dashboardRange = event.target.value;
     renderDashboard();
     renderIcons();
     return;
@@ -2181,7 +2596,7 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
   const submitButton = event.currentTarget.querySelector('button[type="submit"]');
 
   submitButton.disabled = true;
-  submitButton.textContent = "Giriş yapılıyor...";
+  submitButton.textContent = currentLanguage === "en" ? "Signing in..." : "Giriş yapılıyor...";
 
   try {
     const user = await authenticate(username, password);
@@ -2200,7 +2615,7 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
     document.querySelector("#loginError").textContent = error.message || "Giriş yapılamadı.";
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Giriş Yap";
+    submitButton.textContent = currentLanguage === "en" ? "Sign In" : "Giriş Yap";
   }
 });
 
@@ -2213,6 +2628,7 @@ document.querySelector("#logoutButton").addEventListener("click", async () => {
 
 document.querySelector("#dialogCloseButton").addEventListener("click", closeDialog);
 document.querySelector("#dialogCancelButton").addEventListener("click", closeDialog);
+document.querySelector("#chartCloseButton").addEventListener("click", closeChartDialog);
 document.querySelector("#recordForm").addEventListener("submit", upsertRecord);
 
 initSession();
