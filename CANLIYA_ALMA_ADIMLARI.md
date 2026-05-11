@@ -52,6 +52,9 @@ Canlı kullanımda:
 - Kullanıcı ve müşteri sadece izler.
 - Müşteri sadece kendi firmasına ait kayıtları görür.
 - Dosya yükleme alanları panelde hazırdır; büyük dosyaları ileride `portal-files` depolama alanına ayrı kaydedecek şekilde geliştirebiliriz.
+- Admin için `Arşiv` ve `İşlem Kayıtları` bölümleri vardır.
+- Silinen kayıtlar arşive alınır; ekleme, düzenleme, silme ve bordro akışı işlem kayıtlarına düşer.
+- Ana panelde aktif proje, bekleyen fatura, çalışma saati, mesai, eksik özlük ve açık görev özetleri görünür.
 
 ## 6. Yeni Kullanıcı Açma
 

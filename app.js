@@ -15,6 +15,7 @@ const icons = {
   eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
   menu: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
   note: '<path d="M4 4h16v14H8l-4 4Z"/>',
+  archive: '<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1Z"/><path d="M10 12h4"/>',
   panel:
     '<path d="M12 3a9 9 0 0 0-9 9h4a5 5 0 0 1 10 0h4a9 9 0 0 0-9-9Z"/><path d="m12 12 4-4"/>',
   plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
@@ -27,6 +28,7 @@ const icons = {
     '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/>',
   users:
     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/>',
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 
@@ -76,6 +78,11 @@ const modules = [
       ["phone", "Telefon"],
       ["fax", "Fax"],
       ["city", "Şehir"],
+      ["sector", "Sektör"],
+      ["taxNo", "Vergi No"],
+      ["address", "Adres"],
+      ["contractStatus", "Sözleşme", "select", ["Aktif", "Beklemede", "Yok"]],
+      ["note", "Not"],
     ],
     records: [
       { id: "c1", name: "CELAL ASLAN HALEFLERİ", authorized: "Mehmet Emre Yıldırım", email: "kalite@mgmdokum.com", phone: "(538)208 43 99", fax: "", city: "Ankara" },
@@ -109,6 +116,7 @@ const modules = [
       ["status", "Durumu", "select", ["Aktif", "Pasif", "Beklemede"]],
       ["invoiceStatus", "Fatura Durumu", "select", ["Fatura Kesildi", "Fatura Beklemede", "Onay Verilmedi"]],
       ["note", "Not"],
+      ["file", "Proje Dosyaları", "files"],
     ],
     records: [
       { id: "p1", code: "AD54000000001", company: "MSS MÜKEMMEL SAVUNMA SANAYİ", part: "MSS PARÇA KONTROL 2026 05", problem: "MSS PARÇA KONTROL 2026 05", responsible: "Faruk Türker", location: "Sakarya", startDate: "2026-05-01", endDate: "2026-05-31", date: "2026-05-01", status: "Pasif", invoiceStatus: "Onay Verilmedi", note: "" },
@@ -131,16 +139,17 @@ const modules = [
       ["surname", "Soyadı"],
       ["phone", "Telefon"],
       ["username", "Kullanıcı Adı"],
+      ["companyName", "Bağlı Firma"],
       ["type", "Türü", "select", ["Admin", "Müşteri", "Kullanıcı"]],
       ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
     ],
     records: [
-      { id: "u1", email: "makena.muh@gmail.com", name: "ÇAĞDAŞ", surname: "BEY", phone: "(021)241 89 63", username: "cagdas", type: "MÜŞTERİ", status: "AKTİF" },
-      { id: "u2", email: "abgultekin@borusan.com", name: "AHMET BURAK", surname: "GÜLTEKİN", phone: "(549)133 73 03", username: "ahmet", type: "MÜŞTERİ", status: "AKTİF" },
-      { id: "u3", email: "zuhal.bulut@arcelik-lg.com", name: "ZUHAL", surname: "BULUT", phone: "(554)553 82 96", username: "zuhal", type: "MÜŞTERİ", status: "AKTİF" },
-      { id: "u4", email: "gkhanb@safak.com", name: "GÖKHAN", surname: "BİLGİN", phone: "(554)381 20 00", username: "gokhan", type: "MÜŞTERİ", status: "AKTİF" },
-      { id: "u5", email: "gkkotakar@global-kalite.com", name: "DİLEK", surname: "KARA", phone: "(531)240 08 54", username: "dilek", type: "Kullanıcı", status: "AKTİF" },
-      { id: "u6", email: "ttferenler@global-kalite.com", name: "SERVET", surname: "KÜN", phone: "(542)377 02 54", username: "servet", type: "Admin", status: "AKTİF" },
+      { id: "u1", email: "makena.muh@gmail.com", name: "ÇAĞDAŞ", surname: "BEY", phone: "(021)241 89 63", username: "cagdas", companyName: "MAKENA MÜHENDİSLİK", type: "MÜŞTERİ", status: "AKTİF" },
+      { id: "u2", email: "abgultekin@borusan.com", name: "AHMET BURAK", surname: "GÜLTEKİN", phone: "(549)133 73 03", username: "ahmet", companyName: "", type: "MÜŞTERİ", status: "AKTİF" },
+      { id: "u3", email: "zuhal.bulut@arcelik-lg.com", name: "ZUHAL", surname: "BULUT", phone: "(554)553 82 96", username: "zuhal", companyName: "", type: "MÜŞTERİ", status: "AKTİF" },
+      { id: "u4", email: "gkhanb@safak.com", name: "GÖKHAN", surname: "BİLGİN", phone: "(554)381 20 00", username: "gokhan", companyName: "", type: "MÜŞTERİ", status: "AKTİF" },
+      { id: "u5", email: "gkkotakar@global-kalite.com", name: "DİLEK", surname: "KARA", phone: "(531)240 08 54", username: "dilek", companyName: "", type: "Kullanıcı", status: "AKTİF" },
+      { id: "u6", email: "ttferenler@global-kalite.com", name: "SERVET", surname: "KÜN", phone: "(542)377 02 54", username: "servet", companyName: "", type: "Admin", status: "AKTİF" },
     ],
   },
   {
@@ -153,9 +162,12 @@ const modules = [
       ["department", "Departman"],
       ["role", "Görevi"],
       ["city", "Şehir"],
+      ["email", "E-posta"],
       ["phone", "Telefon"],
       ["startDate", "İşe Giriş"],
+      ["exitDate", "Çıkış Tarihi"],
       ["emergency", "Acil Durum"],
+      ["documentStatus", "Özlük Durumu", "select", ["Tam", "Eksik", "Kontrol Edilecek"]],
       ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
     ],
     records: [
@@ -280,9 +292,9 @@ const modules = [
       ["title", "Görev"],
       ["project", "Proje"],
       ["assignee", "Atanan"],
-      ["priority", "Öncelik"],
+      ["priority", "Öncelik", "select", ["Düşük", "Normal", "Yüksek", "Acil"]],
       ["dueDate", "Son Tarih"],
-      ["status", "Durumu"],
+      ["status", "Durumu", "select", ["Bekliyor", "Devam Ediyor", "Tamamlandı"]],
     ],
     records: [
       { id: "t1", title: "MSS günlük kontrol raporu", project: "GL54-2026413", assignee: "Faruk Türker", priority: "Yüksek", dueDate: "08/05/2026", status: "Devam Ediyor" },
@@ -327,6 +339,39 @@ const modules = [
       { id: "r1", title: "Mayıs Proje Performansı", period: "05.2026", type: "Proje", owner: "Faruk Türker", file: "", status: "Taslak" },
       { id: "r2", title: "Personel Evrak Kontrolü", period: "05.2026", type: "İK", owner: "Zehra Battal", file: "", status: "Hazır" },
     ],
+  },
+  {
+    id: "archive",
+    title: "Arşiv",
+    icon: "archive",
+    breadcrumb: ["Panel", "Arşiv", "Silinen Kayıtlar"],
+    noActions: true,
+    adminOnly: true,
+    columns: [
+      ["date", "Tarih"],
+      ["moduleTitle", "Modül"],
+      ["recordTitle", "Kayıt"],
+      ["user", "İşlem Yapan"],
+      ["reason", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "audit",
+    title: "İşlem Kayıtları",
+    icon: "shield",
+    breadcrumb: ["Panel", "İşlem Kayıtları", "Denetim"],
+    noActions: true,
+    adminOnly: true,
+    columns: [
+      ["date", "Tarih"],
+      ["user", "Kullanıcı"],
+      ["action", "İşlem"],
+      ["moduleTitle", "Modül"],
+      ["recordTitle", "Kayıt"],
+      ["detail", "Detay"],
+    ],
+    records: [],
   },
   {
     id: "payroll",
@@ -384,6 +429,10 @@ const moduleQuickFilters = {
   users: { key: "type", options: ["Tümü", "Admin", "Müşteri", "Kullanıcı"] },
   invoices: { key: "status", options: ["Tümü", "Fatura Kesildi", "Fatura Beklemede", "Onay Verilmedi"] },
   projects: { key: "status", options: ["Tümü", "Aktif", "Pasif", "Beklemede"] },
+  personnel: { key: "status", options: ["Tümü", "AKTİF", "PASİF"] },
+  payroll: { key: "payrollStatus", options: ["Tümü", "Hazırlandı", "Onay Bekliyor", "Onaylandı", "Personele Açıldı"] },
+  tasks: { key: "status", options: ["Tümü", "Bekliyor", "Devam Ediyor", "Tamamlandı"] },
+  leaves: { key: "approval", options: ["Tümü", "Bekliyor", "Onaylandı", "Reddedildi"] },
 };
 
 function loadLocalRecords() {
@@ -455,7 +504,9 @@ function hydrateRecord(module, record) {
     return {
       department: "",
       startDate: "",
+      exitDate: "",
       emergency: "",
+      documentStatus: "Kontrol Edilecek",
       ...record,
     };
   }
@@ -465,11 +516,23 @@ function hydrateRecord(module, record) {
       responsible: "",
       startDate: "",
       endDate: "",
+      file: "",
       ...record,
       note: record.note || record.invoice || "",
       status: normalizeProjectStatus(record.status),
       invoiceStatus: normalizeInvoiceStatus(record.invoiceStatus),
       code: record.code?.startsWith("AD") ? record.code : generateProjectCode(record.location, record.id),
+    };
+  }
+
+  if (module.id === "companies") {
+    return {
+      sector: "",
+      taxNo: "",
+      address: "",
+      contractStatus: "Beklemede",
+      note: "",
+      ...record,
     };
   }
 
@@ -619,6 +682,7 @@ function canAccessModule(module) {
   if (!currentUser) return true;
 
   const type = normalizeUserType(currentUser.type);
+  if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
   if (type === "PERSONEL") return ["panel", "tasks", "payroll", "presentations", "reports", "attendance", "leaves", "trainings", "assets"].includes(module.id);
   if (type === "MUSTERI") return ["panel", "projects", "invoices", "reports"].includes(module.id);
@@ -637,6 +701,56 @@ function getRecordCount(moduleId) {
 
 function getPersonnelTotal() {
   return getRecordCount("personnel");
+}
+
+function getCurrentUserName() {
+  return currentUser?.displayName || currentUser?.email || "Sistem";
+}
+
+function getModuleTitle(moduleId) {
+  return getModule(moduleId)?.title || moduleId;
+}
+
+function formatDateTime(value = new Date()) {
+  return value.toLocaleString("tr-TR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
+function addAudit(action, module, record, detail = "") {
+  const auditModule = getModule("audit");
+  if (!auditModule) return;
+  auditModule.records = [
+    {
+      id: createId("audit"),
+      date: formatDateTime(),
+      user: getCurrentUserName(),
+      action,
+      moduleTitle: module.title,
+      recordTitle: getRecordTitle(module, record) || "-",
+      detail,
+    },
+    ...auditModule.records,
+  ].slice(0, 250);
+}
+
+function archiveRecord(module, record, reason = "Kayıt silindi") {
+  const archiveModule = getModule("archive");
+  if (!archiveModule) return;
+  archiveModule.records = [
+    {
+      id: createId("archive"),
+      date: formatDateTime(),
+      moduleTitle: module.title,
+      moduleId: module.id,
+      recordTitle: getRecordTitle(module, record) || "-",
+      user: getCurrentUserName(),
+      reason,
+      snapshot: record,
+    },
+    ...archiveModule.records,
+  ].slice(0, 250);
 }
 
 function renderIcons() {
@@ -678,6 +792,38 @@ function renderBreadcrumb(module) {
 }
 
 function renderDashboard() {
+  const projects = getModule("projects").records;
+  const invoices = getModule("invoices").records;
+  const personnel = getModule("personnel").records;
+  const attendance = getModule("attendance").records;
+  const payroll = getModule("payroll").records;
+  const documents = getModule("presentations").records;
+  const leaves = getModule("leaves").records;
+  const tasks = getModule("tasks").records;
+  const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
+  const pendingInvoices = invoices.filter((record) => record.status !== "Fatura Kesildi").length;
+  const totalHours = attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
+  const totalOvertime = attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours), 0);
+  const pendingPayroll = payroll.filter((record) => record.payrollStatus !== "Personele Açıldı").length;
+  const missingDocuments = personnel.filter(
+    (person) => !documents.some((documentRecord) => normalizeText(documentRecord.person) === normalizeText(person.name)),
+  ).length;
+  const pendingLeaves = leaves.filter((record) => record.approval === "Bekliyor").length;
+  const openTasks = tasks.filter((record) => record.status !== "Tamamlandı").length;
+  const alerts = [
+    pendingInvoices ? `${pendingInvoices} fatura sonuçlandırılmayı bekliyor.` : "",
+    pendingPayroll ? `${pendingPayroll} bordro personele açılmadan bekliyor.` : "",
+    missingDocuments ? `${missingDocuments} personelde özlük belgesi kontrolü eksik görünüyor.` : "",
+    pendingLeaves ? `${pendingLeaves} izin talebi onay bekliyor.` : "",
+  ].filter(Boolean);
+  const kpis = [
+    ["Aktif Proje", activeProjects, "projects"],
+    ["Bekleyen Fatura", pendingInvoices, "invoices"],
+    ["Toplam Çalışma", `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance"],
+    ["Toplam Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance"],
+    ["Eksik Özlük", missingDocuments, "presentations"],
+    ["Açık Görev", openTasks, "tasks"],
+  ];
   const cards = [
     { id: "companies", value: getRecordCount("companies"), label: "Firmalar", icon: "building", color: "cyan" },
     { id: "projects", value: `${getRecordCount("projects")} / ${getRecordCount("projects")}`, label: "Projeler / Parçalar", icon: "folder", color: "green" },
@@ -696,6 +842,53 @@ function renderDashboard() {
   const visibleCards = cards.filter((card) => canAccessModule(getModule(card.id)));
 
   document.querySelector("#pageContent").innerHTML = `
+    <section class="executive-dashboard">
+      <div class="executive-hero">
+        <span>Yönetici Özeti</span>
+        <h2>Artı Destek operasyon görünümü</h2>
+        <p>Projeler, insan kaynakları, bordro ve finans süreçlerini tek ekranda izleyin.</p>
+      </div>
+      <div class="kpi-grid">
+        ${kpis
+          .filter(([, , moduleId]) => canAccessModule(getModule(moduleId)))
+          .map(
+            ([label, value, moduleId]) => `
+              <button class="kpi-card" type="button" data-nav="${moduleId}">
+                <strong>${escapeHtml(value)}</strong>
+                <span>${escapeHtml(label)}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="ops-grid">
+        <section class="ops-panel">
+          <h3>Öncelikli Uyarılar</h3>
+          ${
+            alerts.length
+              ? alerts.map((alert) => `<p class="alert-row">${escapeHtml(alert)}</p>`).join("")
+              : '<p class="empty-state">Kritik uyarı görünmüyor.</p>'
+          }
+        </section>
+        <section class="ops-panel">
+          <h3>Yetki Matrisi</h3>
+          <p><b>Admin</b> tüm kayıtları yönetir.</p>
+          <p><b>Kullanıcı</b> operasyonu izler, silme ve düzenleme yapamaz.</p>
+          <p><b>Müşteri</b> kendi firmasına ait proje, fatura ve raporları görür.</p>
+        </section>
+        <section class="ops-panel">
+          <h3>Son İşlemler</h3>
+          ${
+            getModule("audit").records.length
+              ? getModule("audit").records
+                  .slice(0, 4)
+                  .map((record) => `<p><b>${escapeHtml(record.action)}</b> ${escapeHtml(record.recordTitle)} <span>${escapeHtml(record.date)}</span></p>`)
+                  .join("")
+              : '<p class="empty-state">Henüz işlem kaydı yok.</p>'
+          }
+        </section>
+      </div>
+    </section>
     <section class="dashboard-grid">
       ${visibleCards
         .map(
@@ -888,6 +1081,29 @@ function formatDate(value) {
   return `${match[3]}/${match[2]}/${match[1]}`;
 }
 
+function isOptionalField(module, key) {
+  return [
+    "fax",
+    "sector",
+    "taxNo",
+    "address",
+    "note",
+    "file",
+    "certificate",
+    "returnDate",
+    "exitDate",
+    "emergency",
+    "companyName",
+    "email",
+    "phone",
+    "bankIban",
+    "bonus",
+    "advance",
+    "overtime",
+    "deduction",
+  ].includes(key) || (module.id === "projects" && key === "endDate");
+}
+
 function parseHour(value) {
   const hour = Number(String(value ?? "0").replace(",", "."));
   return Number.isFinite(hour) ? hour : 0;
@@ -979,6 +1195,64 @@ function renderAttendanceOverview(records) {
         .join("")}
     </div>
   `;
+}
+
+function renderModuleIntro(module, records) {
+  if (module.id === "users") {
+    return `
+      <div class="module-intro user-admin-guide">
+        <div>
+          <span>Güvenli kullanıcı yönetimi</span>
+          <h2>Kullanıcı şifresi Supabase Authentication üzerinden verilir.</h2>
+          <p>Portal ekranındaki kayıt, rol ve firma eşleşmesini yönetir. Şifreyi panelde saklamıyoruz; bu daha güvenli bir kullanım sağlar.</p>
+        </div>
+        <div class="role-matrix">
+          <strong>Rol Kuralları</strong>
+          <p>Admin: ekle, düzenle, sil, onayla.</p>
+          <p>Kullanıcı: sadece izleme.</p>
+          <p>Müşteri: kendi firma kayıtlarını izleme.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (module.id === "archive") {
+    return `
+      <div class="module-intro">
+        <div>
+          <span>Geri izlenebilirlik</span>
+          <h2>Silinen kayıtlar kalıcı olarak kaybolmadan burada tutulur.</h2>
+          <p>Bu bölüm admin içindir. Hangi kaydı kimin sildiğini ve hangi modülden geldiğini takip edebilirsiniz.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (module.id === "audit") {
+    return `
+      <div class="module-intro">
+        <div>
+          <span>Denetim izi</span>
+          <h2>Eklenen, düzenlenen, silinen ve onaylanan işlemler burada listelenir.</h2>
+          <p>Canlı kullanımda operasyon sorumluluğunu takip etmek için bu kayıtları düzenli kontrol edin.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (module.id === "projects") {
+    const waiting = records.filter((record) => record.status === "Beklemede").length;
+    const passive = records.filter((record) => record.status === "Pasif").length;
+    return `
+      <div class="module-intro compact-intro">
+        <div><strong>${records.length}</strong><span>Toplam Proje</span></div>
+        <div><strong>${waiting}</strong><span>Beklemede</span></div>
+        <div><strong>${passive}</strong><span>Pasif</span></div>
+      </div>
+    `;
+  }
+
+  return "";
 }
 
 function renderRowActions(module, record) {
@@ -1094,6 +1368,7 @@ function renderDataPage(module) {
 
   document.querySelector("#pageContent").innerHTML = `
     <section class="data-card">
+      ${renderModuleIntro(module, filteredRecords)}
       ${module.id === "payroll" ? renderPayrollOverview(filteredRecords) : ""}
       ${module.id === "attendance" ? renderAttendanceOverview(filteredRecords) : ""}
       ${renderQuickFilters(module)}
@@ -1378,6 +1653,7 @@ function updatePayrollWorkflow(recordId, action) {
     record.viewStatus = "Görüldü";
   }
 
+  addAudit("Bordro Akışı", module, record, action.replace("payroll-", "Bordro işlemi: "));
   selectedRecordId = record.id;
   saveRecords();
   renderDataPage(module);
@@ -1391,6 +1667,7 @@ function toggleRecordStatus(moduleId, recordId) {
   if (!record) return;
 
   record.status = String(record.status).toLocaleUpperCase("tr") === "PASİF" ? "AKTİF" : "PASİF";
+  addAudit("Durum Değişikliği", module, record, `Yeni durum: ${record.status}`);
   selectedRecordId = record.id;
   saveRecords();
   renderDataPage(module);
@@ -1566,7 +1843,8 @@ function openDialog(recordId = "") {
   document.querySelector("#formGrid").innerHTML = module.columns
     .map(([key, label, type, options = []], index) => {
       const value = record?.[key] ?? "";
-      const isLong = index === module.columns.length - 1 || ["problem", "description", "bankIban"].includes(key);
+      const required = !isOptionalField(module, key);
+      const isLong = index === module.columns.length - 1 || ["problem", "description", "bankIban", "address", "note"].includes(key);
       if (type === "file") {
         const fileName = value && typeof value === "object" ? value.name : "";
         return `
@@ -1591,7 +1869,6 @@ function openDialog(recordId = "") {
         `;
       }
       if (type === "date") {
-        const required = !(module.id === "projects" && key === "endDate");
         return `
           <label>
             ${escapeHtml(label)}
@@ -1637,7 +1914,7 @@ function openDialog(recordId = "") {
       return `
         <label class="${isLong ? "full-field" : ""}">
           ${escapeHtml(label)}
-          ${isLong ? `<textarea name="${key}" rows="3">${escapeHtml(value)}</textarea>` : `<input name="${key}" value="${escapeHtml(value)}" required />`}
+          ${isLong ? `<textarea name="${key}" rows="3" ${required ? "required" : ""}>${escapeHtml(value)}</textarea>` : `<input name="${key}" value="${escapeHtml(value)}" ${required ? "required" : ""} />`}
         </label>
       `;
     })
@@ -1707,6 +1984,7 @@ async function upsertRecord(event) {
     ? module.records.map((item) => (item.id === recordId ? record : item))
     : [record, ...module.records];
 
+  addAudit(recordId ? "Düzenleme" : "Ekleme", module, record, recordId ? "Kayıt güncellendi." : "Yeni kayıt oluşturuldu.");
   selectedRecordId = record.id;
   saveRecords();
   renderDataPage(module);
@@ -1775,6 +2053,8 @@ document.addEventListener("click", (event) => {
   if (action === "delete") {
     const record = module.records.find((item) => item.id === recordId);
     if (record && window.confirm(`${getRecordTitle(module, record)} kaydını silmek istiyor musun?`)) {
+      archiveRecord(module, record);
+      addAudit("Silme", module, record, "Kayıt arşive alındı.");
       module.records = module.records.filter((item) => item.id !== recordId);
       selectedRecordId = module.records[0]?.id ?? "";
       saveRecords();
