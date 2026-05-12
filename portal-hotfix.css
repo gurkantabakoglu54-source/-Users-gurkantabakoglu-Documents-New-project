@@ -1,0 +1,20 @@
+.brand-logo {
+  overflow: hidden;
+  padding: 6px 18px;
+}
+
+.brand-logo img {
+  width: 460px;
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  transform: none;
+}
+
+@media (max-width: 760px) {
+  .brand-logo img {
+    width: min(330px, 88vw);
+    max-height: 104px;
+    transform: none;
+  }
+}
