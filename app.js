@@ -209,6 +209,14 @@ const modules = [
     ],
   },
   {
+    id: "personnel360",
+    title: "Personel 360",
+    icon: "users",
+    breadcrumb: ["Panel", "Personel 360", "Personel Kartı"],
+    noActions: true,
+    records: [],
+  },
+  {
     id: "presentations",
     title: "Özlük Belgeleri",
     icon: "presentation",
@@ -358,6 +366,14 @@ const modules = [
     ],
   },
   {
+    id: "approvals",
+    title: "Onay Merkezi",
+    icon: "checklist",
+    breadcrumb: ["Panel", "Onay Merkezi", "Bekleyen İşler"],
+    noActions: true,
+    records: [],
+  },
+  {
     id: "quality",
     title: "Kalite Yönetimi",
     icon: "barChart",
@@ -419,6 +435,8 @@ const modules = [
     icon: "lock",
     breadcrumb: ["Panel", "Güvenlik", "Yetki ve Erişim"],
     adminOnly: true,
+    navHidden: true,
+    dashboardHidden: true,
     columns: [
       ["role", "Rol"],
       ["scope", "Erişim Alanı"],
@@ -440,6 +458,8 @@ const modules = [
     icon: "settings",
     breadcrumb: ["Panel", "Kurumsal Ayarlar", "Marka ve Sistem"],
     adminOnly: true,
+    navHidden: true,
+    dashboardHidden: true,
     columns: [
       ["setting", "Ayar"],
       ["value", "Değer"],
@@ -477,6 +497,8 @@ const modules = [
     breadcrumb: ["Panel", "Arşiv", "Silinen Kayıtlar"],
     noActions: true,
     adminOnly: true,
+    navHidden: true,
+    dashboardHidden: true,
     columns: [
       ["date", "Tarih"],
       ["moduleTitle", "Modül"],
@@ -493,6 +515,8 @@ const modules = [
     breadcrumb: ["Panel", "İşlem Kayıtları", "Denetim"],
     noActions: true,
     adminOnly: true,
+    navHidden: true,
+    dashboardHidden: true,
     columns: [
       ["date", "Tarih"],
       ["user", "Kullanıcı"],
@@ -552,6 +576,7 @@ let selectedMonth = "05.2026";
 let selectedDay = 4;
 let dashboardMonth = "05.2026";
 let dashboardRange = "month";
+let selectedPersonnel360Id = "";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
@@ -563,6 +588,7 @@ const moduleQuickFilters = {
   invoices: { key: "status", options: ["Tümü", "Fatura Kesildi", "Fatura Beklemede", "Onay Verilmedi"] },
   projects: { key: "status", options: ["Tümü", "Aktif", "Pasif", "Beklemede"] },
   personnel: { key: "status", options: ["Tümü", "AKTİF", "PASİF"] },
+  personnel360: { key: "status", options: ["Tümü", "AKTİF", "PASİF"] },
   payroll: { key: "payrollStatus", options: ["Tümü", "Hazırlandı", "Onay Bekliyor", "Onaylandı", "Personele Açıldı"] },
   tasks: { key: "status", options: ["Tümü", "Bekliyor", "Devam Ediyor", "Tamamlandı"] },
   leaves: { key: "approval", options: ["Tümü", "Bekliyor", "Onaylandı", "Reddedildi"] },
@@ -576,6 +602,7 @@ const moduleAccentColors = {
   projects: "#f59e0b",
   users: "#7c3aed",
   personnel: "#16a34a",
+  personnel360: "#0f766e",
   presentations: "#2563eb",
   attendance: "#0891b2",
   leaves: "#db2777",
@@ -583,6 +610,7 @@ const moduleAccentColors = {
   assets: "#475569",
   tasks: "#ef4444",
   invoices: "#f97316",
+  approvals: "#16a34a",
   quality: "#0f766e",
   documentsChecklist: "#2563eb",
   notifications: "#e11d48",
@@ -604,6 +632,8 @@ const translations = {
   "Kullanıcı Listesi": "User List",
   "Personeller": "Personnel",
   "Personel Listesi": "Personnel List",
+  "Personel 360": "Personnel 360",
+  "Personel Kartı": "Personnel Card",
   "Özlük Belgeleri": "Personnel Documents",
   "Belge Listesi": "Document List",
   "Puantaj": "Timesheet",
@@ -618,6 +648,8 @@ const translations = {
   "Görev Listesi": "Task List",
   "Faturalar": "Invoices",
   "Fatura Listesi": "Invoice List",
+  "Onay Merkezi": "Approval Center",
+  "Bekleyen İşler": "Pending Work",
   "Raporlar": "Reports",
   "Rapor Listesi": "Report List",
   "Arşiv": "Archive",
@@ -747,6 +779,8 @@ const translations = {
   "Değer": "Value",
   "Online İşlemler": "Online Operations",
   "Yönetici Özeti": "Executive Summary",
+  "Müşteri Özeti": "Customer Summary",
+  "Personel Özeti": "Personnel Summary",
   "Artı Destek operasyon görünümü": "Artı Destek operations view",
   "Dönem": "Period",
   "Ay": "Month",
@@ -768,6 +802,7 @@ const translations = {
   "Mesai": "Overtime",
   "Eksik Özlük": "Missing Documents",
   "Açık Görev": "Open Tasks",
+  "Bekleyen Onay": "Pending Approval",
   "Öncelikli Uyarılar": "Priority Alerts",
   "Son İşlemler": "Recent Activity",
   "Kritik uyarı görünmüyor.": "No critical alert is visible.",
@@ -785,6 +820,16 @@ const translations = {
   "Düzenle": "Edit",
   "Sil": "Delete",
   "Grafik": "Chart",
+  "Detay": "Detail",
+  "Onayla": "Approve",
+  "Tamamla": "Complete",
+  "Kendi firma kayıtları görüntülenir.": "Only own company records are visible.",
+  "Personelin tüm İK dosyası tek ekranda izlenir.": "The full HR file of the personnel is tracked on one screen.",
+  "Bekleyen onaylar tek merkezden tamamlanır.": "Pending approvals are completed from one center.",
+  "Özlük": "Documents",
+  "Eğitim": "Training",
+  "Zimmet": "Asset",
+  "İzin": "Leave",
   "Kaydet": "Save",
   "Vazgeç": "Cancel",
   "Kapat": "Close",
@@ -1133,7 +1178,7 @@ function canAccessModule(module) {
   const type = normalizeUserType(currentUser.type);
   if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
-  if (type === "PERSONEL") return ["panel", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications"].includes(module.id);
+  if (type === "PERSONEL") return ["panel", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications"].includes(module.id);
   if (type === "MUSTERI") return ["panel", "projects", "quality", "invoices", "reports", "notifications"].includes(module.id);
   return true;
 }
@@ -1144,8 +1189,57 @@ function canManageRecords() {
   return type === "SUPER ADMIN" || type === "ADMIN";
 }
 
+function isCustomerUser() {
+  return normalizeUserType(currentUser?.type) === "MUSTERI";
+}
+
+function isPersonnelUser() {
+  return normalizeUserType(currentUser?.type) === "PERSONEL";
+}
+
+function getCurrentUserCompany() {
+  return normalizeText(currentUser?.companyName || currentUser?.company || "");
+}
+
+function getCurrentUserPersonName() {
+  return normalizeText(currentUser?.displayName || currentUser?.fullName || currentUser?.email || "");
+}
+
+function recordBelongsToCustomer(module, record) {
+  if (!isCustomerUser()) return true;
+  const company = getCurrentUserCompany();
+  if (!company) return false;
+
+  const candidates = [
+    record.company,
+    record.companyName,
+    record.name,
+    record.customer,
+    record.firma,
+  ].map(normalizeText);
+
+  if (module.id === "quality") {
+    candidates.push(normalizeText(record.company));
+  }
+
+  return candidates.some((value) => value && (value === company || value.includes(company) || company.includes(value)));
+}
+
+function recordBelongsToPersonnel(module, record) {
+  if (!isPersonnelUser()) return true;
+  const personName = getCurrentUserPersonName();
+  if (!personName) return false;
+  const candidates = [record.person, record.name, record.assignee, record.owner, record.email].map(normalizeText);
+  return candidates.some((value) => value && (value === personName || value.includes(personName) || personName.includes(value)));
+}
+
+function getScopedRecords(module, records = module.id === "quality" ? getQualityRecords() : module.records) {
+  return records.filter((record) => recordBelongsToCustomer(module, record) && recordBelongsToPersonnel(module, record));
+}
+
 function getRecordCount(moduleId) {
-  return getModule(moduleId).records?.length ?? 0;
+  const module = getModule(moduleId);
+  return getScopedRecords(module).length ?? 0;
 }
 
 function getPersonnelTotal() {
@@ -1239,7 +1333,7 @@ function switchLanguage(language) {
 
 function renderSideNav() {
   document.querySelector("#sideNav").innerHTML = modules
-    .filter(canAccessModule)
+    .filter((module) => canAccessModule(module) && !module.navHidden)
     .map(
       (module) => `
         <button class="${module.id === activeModuleId ? "active" : ""}" type="button" data-nav="${module.id}">
@@ -1360,19 +1454,128 @@ function getKpiState(value, positiveWhenZero = true) {
   return positiveWhenZero ? (number === 0 ? "good" : "bad") : (number > 0 ? "good" : "bad");
 }
 
+function personMatchesRecord(person, record) {
+  const personName = normalizeText(person?.name);
+  if (!personName) return false;
+  return [record?.person, record?.name, record?.assignee, record?.owner, record?.email]
+    .map(normalizeText)
+    .some((value) => value && (value === personName || value.includes(personName) || personName.includes(value)));
+}
+
+function getPersonRelatedRecords(person) {
+  return {
+    documents: getScopedRecords(getModule("presentations")).filter((record) => personMatchesRecord(person, record)),
+    checklist: getScopedRecords(getModule("documentsChecklist")).find((record) => personMatchesRecord(person, record)),
+    payroll: getScopedRecords(getModule("payroll")).filter((record) => personMatchesRecord(person, record)),
+    attendance: getScopedRecords(getModule("attendance")).filter((record) => personMatchesRecord(person, record)),
+    leaves: getScopedRecords(getModule("leaves")).filter((record) => personMatchesRecord(person, record)),
+    trainings: getScopedRecords(getModule("trainings")).filter((record) => personMatchesRecord(person, record)),
+    assets: getScopedRecords(getModule("assets")).filter((record) => personMatchesRecord(person, record)),
+    tasks: getScopedRecords(getModule("tasks")).filter((record) => personMatchesRecord(person, record)),
+  };
+}
+
+function getApprovalItems() {
+  const items = [];
+
+  getScopedRecords(getModule("payroll"))
+    .filter((record) => record.payrollStatus !== "Personele Açıldı")
+    .forEach((record) => {
+      const missing = [
+        record.hrApproval !== "Onaylandı" ? "İK" : "",
+        record.accountingApproval !== "Onaylandı" ? "Muhasebe" : "",
+        record.managementApproval !== "Onaylandı" ? "Yönetici" : "",
+        record.publishStatus !== "Personele Açıldı" ? "Portal" : "",
+      ].filter(Boolean);
+      items.push({
+        id: record.id,
+        moduleId: "payroll",
+        title: `${record.person || "-"} - ${record.period || ""}`,
+        detail: missing.length ? `${missing.join(", ")} onayı bekliyor.` : "Personele açılmayı bekliyor.",
+        state: "bad",
+      });
+    });
+
+  getScopedRecords(getModule("leaves"))
+    .filter((record) => record.approval === "Bekliyor")
+    .forEach((record) =>
+      items.push({
+        id: record.id,
+        moduleId: "leaves",
+        title: `${record.person || "-"} - ${record.type || "İzin"}`,
+        detail: `${record.startDate || ""} / ${record.endDate || ""}`.trim(),
+        state: "bad",
+      }),
+    );
+
+  getScopedRecords(getModule("invoices"))
+    .filter((record) => record.status !== "Fatura Kesildi")
+    .forEach((record) =>
+      items.push({
+        id: record.id,
+        moduleId: "invoices",
+        title: `${record.company || "-"} - ${record.invoiceNo || "Fatura"}`,
+        detail: `${record.status || ""} ${record.amount ? `· ${record.amount}` : ""}`.trim(),
+        state: record.status === "Fatura Beklemede" ? "neutral" : "bad",
+      }),
+    );
+
+  getScopedRecords(getModule("projects"))
+    .filter((record) => normalizeText(record.status) === "beklemede")
+    .forEach((record) =>
+      items.push({
+        id: record.id,
+        moduleId: "projects",
+        title: `${record.code || "-"} - ${record.company || ""}`,
+        detail: record.problem || record.part || "Proje onay bekliyor.",
+        state: "neutral",
+      }),
+    );
+
+  getScopedRecords(getModule("documentsChecklist"))
+    .filter((record) => record.status !== "Tam")
+    .forEach((record) =>
+      items.push({
+        id: record.id,
+        moduleId: "documentsChecklist",
+        title: `${record.person || "-"} - Evrak kontrol`,
+        detail: `${getChecklistCompletion(record).rate}% tamamlandı.`,
+        state: "bad",
+      }),
+    );
+
+  getScopedRecords(getModule("tasks"))
+    .filter((record) => record.status !== "Tamamlandı")
+    .forEach((record) =>
+      items.push({
+        id: record.id,
+        moduleId: "tasks",
+        title: record.title || "Görev",
+        detail: `${record.assignee || ""} ${record.dueDate ? `· ${record.dueDate}` : ""}`.trim(),
+        state: record.priority === "Acil" || record.priority === "Yüksek" ? "bad" : "neutral",
+      }),
+    );
+
+  return items;
+}
+
+function renderApprovalBadge(item) {
+  return item.state === "good" ? "Tamam" : item.state === "neutral" ? "Beklemede" : "Onay Bekliyor";
+}
+
 function renderDashboard() {
   const periodMonths = getDashboardPeriodMonths();
   const periodLabel = getDashboardPeriodLabel(periodMonths);
-  const projects = getModule("projects").records.filter((record) => recordMatchesMonths(record, periodMonths, ["date", "startDate", "endDate"]));
-  const invoices = getModule("invoices").records.filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
-  const personnel = getModule("personnel").records;
-  const attendance = getModule("attendance").records.filter((record) => periodMonths.includes(record.period));
-  const payroll = getModule("payroll").records.filter((record) => periodMonths.includes(record.period));
-  const documents = getModule("presentations").records;
-  const leaves = getModule("leaves").records.filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
-  const tasks = getModule("tasks").records.filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
-  const notifications = getModule("notifications").records.filter((record) => record.status === "Açık");
-  const checklist = getModule("documentsChecklist").records;
+  const projects = getScopedRecords(getModule("projects")).filter((record) => recordMatchesMonths(record, periodMonths, ["date", "startDate", "endDate"]));
+  const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
+  const personnel = getScopedRecords(getModule("personnel"));
+  const attendance = getScopedRecords(getModule("attendance")).filter((record) => periodMonths.includes(record.period));
+  const payroll = getScopedRecords(getModule("payroll")).filter((record) => periodMonths.includes(record.period));
+  const documents = getScopedRecords(getModule("presentations"));
+  const leaves = getScopedRecords(getModule("leaves")).filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
+  const tasks = getScopedRecords(getModule("tasks")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
+  const notifications = getScopedRecords(getModule("notifications")).filter((record) => record.status === "Açık");
+  const checklist = getScopedRecords(getModule("documentsChecklist"));
   const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
   const passiveProjects = projects.filter((record) => normalizeText(record.status) === "pasif").length;
   const waitingProjects = projects.filter((record) => normalizeText(record.status) === "beklemede").length;
@@ -1386,6 +1589,7 @@ function renderDashboard() {
   ).length;
   const pendingLeaves = leaves.filter((record) => record.approval === "Bekliyor").length;
   const openTasks = tasks.filter((record) => record.status !== "Tamamlandı").length;
+  const pendingApprovals = getApprovalItems().filter((item) => item.state !== "good").length;
   const qualityTotals = projects.reduce(
     (summary, project) => {
       const quality = getProjectQuality(project);
@@ -1422,12 +1626,14 @@ function renderDashboard() {
     ["Eksik Özlük", missingDocuments, "presentations", getKpiState(missingDocuments)],
     ["Eksik Checklist", incompleteChecklist, "documentsChecklist", getKpiState(incompleteChecklist)],
     ["Açık Görev", openTasks, "tasks", getKpiState(openTasks)],
+    ["Bekleyen Onay", pendingApprovals, "approvals", getKpiState(pendingApprovals)],
     ["Açık Bildirim", notifications.length, "notifications", getKpiState(notifications.length)],
   ];
   const cards = [
     { id: "companies", value: getRecordCount("companies"), label: "Firmalar", icon: "building", color: "cyan" },
     { id: "projects", value: `${getRecordCount("projects")} / ${getRecordCount("projects")}`, label: "Projeler / Parçalar", icon: "folder", color: "green" },
     { id: "personnel", value: getPersonnelTotal(), label: "Personeller", icon: "users", color: "orange" },
+    { id: "personnel360", value: getPersonnelTotal(), label: "Personel 360", icon: "users", color: "green" },
     { id: "users", value: getRecordCount("users"), label: "Kullanıcılar", icon: "contact", color: "red" },
     { id: "presentations", value: getRecordCount("presentations"), label: "Özlük Belgeleri", icon: "presentation", color: "purple" },
     { id: "attendance", value: getRecordCount("attendance"), label: "Puantaj", icon: "calendar", color: "blue" },
@@ -1436,6 +1642,7 @@ function renderDashboard() {
     { id: "assets", value: getRecordCount("assets"), label: "Zimmetler", icon: "folder", color: "purple" },
     { id: "tasks", value: getRecordCount("tasks"), label: "Görevler", icon: "note", color: "blue" },
     { id: "invoices", value: getRecordCount("invoices"), label: "Faturalar", icon: "invoice", color: "cyan" },
+    { id: "approvals", value: pendingApprovals, label: "Onay Merkezi", icon: "checklist", color: "orange" },
     { id: "quality", value: `%${qualityRate.toLocaleString("tr-TR", { maximumFractionDigits: 1 })}`, label: "Kalite Yönetimi", icon: "barChart", color: "green" },
     { id: "documentsChecklist", value: getRecordCount("documentsChecklist"), label: "Evrak Kontrol", icon: "checklist", color: "blue" },
     { id: "notifications", value: notifications.length, label: "Bildirim Merkezi", icon: "bell", color: "red" },
@@ -1444,11 +1651,14 @@ function renderDashboard() {
     { id: "settings", value: getRecordCount("settings"), label: "Kurumsal Ayarlar", icon: "settings", color: "dark-green" },
     { id: "payroll", value: getRecordCount("payroll"), label: "Bordro", icon: "invoice", color: "dark-green" },
   ];
-  const visibleCards = cards.filter((card) => canAccessModule(getModule(card.id)));
+  const visibleCards = cards.filter((card) => {
+    const module = getModule(card.id);
+    return canAccessModule(module) && !module.dashboardHidden;
+  });
   const monthlyBreakdown = periodMonths.map((month) => {
-    const monthProjects = getModule("projects").records.filter((record) => recordMatchesMonths(record, [month], ["date", "startDate", "endDate"]));
-    const monthInvoices = getModule("invoices").records.filter((record) => recordMatchesMonths(record, [month], ["dueDate", "date"]));
-    const monthAttendance = getModule("attendance").records.filter((record) => record.period === month);
+    const monthProjects = getScopedRecords(getModule("projects")).filter((record) => recordMatchesMonths(record, [month], ["date", "startDate", "endDate"]));
+    const monthInvoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, [month], ["dueDate", "date"]));
+    const monthAttendance = getScopedRecords(getModule("attendance")).filter((record) => record.period === month);
     return {
       month,
       projects: monthProjects.length,
@@ -1535,12 +1745,11 @@ function renderDashboard() {
       <div class="corporate-lanes">
         ${[
           ["Kalite", qualityRate >= 5 ? "Riskli" : "Kontrol altında", "quality", qualityRate >= 5 ? "bad" : "good"],
-          ["İK / HR", missingDocuments || incompleteChecklist ? "Evrak takibi var" : "Tamam", "documentsChecklist", missingDocuments || incompleteChecklist ? "bad" : "good"],
+          ["İK / HR", missingDocuments || incompleteChecklist ? "Evrak takibi var" : "Tamam", "personnel360", missingDocuments || incompleteChecklist ? "bad" : "good"],
+          ["Onay Merkezi", pendingApprovals ? "Onay bekliyor" : "Tamam", "approvals", pendingApprovals ? "bad" : "good"],
           ["Bordro", pendingPayroll ? "Onay bekliyor" : "Yayınlandı", "payroll", pendingPayroll ? "bad" : "good"],
           ["Finans", overdueInvoices ? "Tahsilat gecikti" : "Normal", "invoices", overdueInvoices ? "bad" : "good"],
-          ["Güvenlik", "Rol bazlı erişim aktif", "security", "good"],
           ["Raporlama", "PDF / Excel çıktıları aktif", "reports", "good"],
-          ["Kurumsal Ayarlar", "Marka ve eşikler hazır", "settings", "good"],
         ]
           .filter(([, , moduleId]) => canAccessModule(getModule(moduleId)))
           .map(
@@ -1570,6 +1779,179 @@ function renderDashboard() {
           `,
         )
         .join("")}
+    </section>
+  `;
+}
+
+function renderPersonnel360() {
+  const personnelRecords = getScopedRecords(getModule("personnel"));
+  if (!selectedPersonnel360Id || !personnelRecords.some((person) => person.id === selectedPersonnel360Id)) {
+    selectedPersonnel360Id = personnelRecords[0]?.id || "";
+  }
+  const person = personnelRecords.find((record) => record.id === selectedPersonnel360Id);
+
+  if (!person) {
+    document.querySelector("#pageContent").innerHTML = `
+      <section class="data-card">
+        <div class="module-intro">
+          <div>
+            <span>${escapeHtml(trText("Personel 360"))}</span>
+            <h2>${escapeHtml(trText("Kayıt bulunamadı."))}</h2>
+            <p>${escapeHtml(trText("Personelin tüm İK dosyası tek ekranda izlenir."))}</p>
+          </div>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
+  const related = getPersonRelatedRecords(person);
+  const checklist = related.checklist ? getChecklistCompletion(related.checklist) : { complete: 0, total: 7, rate: 0 };
+  const totalHours = related.attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
+  const totalOvertime = related.attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours), 0);
+  const openTasks = related.tasks.filter((record) => record.status !== "Tamamlandı").length;
+  const pendingLeaves = related.leaves.filter((record) => record.approval === "Bekliyor").length;
+  const latestPayroll = related.payroll[0];
+
+  document.querySelector("#pageContent").innerHTML = `
+    <section class="person-360">
+      <div class="person-selector">
+        ${personnelRecords
+          .map(
+            (item) => `
+              <button class="${item.id === selectedPersonnel360Id ? "active" : ""}" type="button" data-person360="${item.id}">
+                ${escapeHtml(item.name || "-")}
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="person-hero">
+        <div class="person-avatar">${escapeHtml((person.name || "P").slice(0, 1).toLocaleUpperCase("tr"))}</div>
+        <div>
+          <span>${escapeHtml(trText("Personel 360"))}</span>
+          <h2>${escapeHtml(person.name || "-")}</h2>
+          <p>${escapeHtml([person.department, person.role, person.city].filter(Boolean).join(" · "))}</p>
+        </div>
+        <strong class="${String(person.status).toLocaleUpperCase("tr") === "PASİF" ? "status-red" : "status-green"}">${escapeHtml(trText(person.status || "AKTİF"))}</strong>
+      </div>
+      <div class="person-kpis">
+        ${[
+          ["Özlük", `${checklist.rate}%`, checklist.rate === 100 ? "good" : "bad"],
+          ["Bordro", latestPayroll?.payrollStatus || "Yok", latestPayroll?.payrollStatus === "Personele Açıldı" ? "good" : "bad"],
+          ["Toplam Çalışma", `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "neutral"],
+          ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "neutral"],
+          ["Açık Görev", openTasks, openTasks ? "bad" : "good"],
+          ["İzin", pendingLeaves ? `${pendingLeaves} bekliyor` : `${related.leaves.length} kayıt`, pendingLeaves ? "bad" : "good"],
+        ]
+          .map(
+            ([label, value, state]) => `
+              <article class="person-kpi ${state}">
+                <strong>${escapeHtml(value)}</strong>
+                <span>${escapeHtml(trText(label))}</span>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="person-sections">
+        ${renderPersonSection("Özlük Belgeleri", "presentations", related.documents, ["type", "date", "owner", "status"])}
+        ${renderPersonSection("Checklist", "documentsChecklist", related.checklist ? [related.checklist] : [], ["identity", "sgk", "contract", "kvkk", "health", "iban", "status"])}
+        ${renderPersonSection("Bordro", "payroll", related.payroll, ["period", "netSalary", "advance", "payrollStatus", "viewStatus"])}
+        ${renderPersonSection("Puantaj", "attendance", related.attendance, ["period", "dailyHours", "totalHours", "overtimeHours", "status"])}
+        ${renderPersonSection("İzinler", "leaves", related.leaves, ["type", "startDate", "endDate", "approval"])}
+        ${renderPersonSection("Eğitimler", "trainings", related.trainings, ["title", "date", "validUntil", "status"])}
+        ${renderPersonSection("Zimmetler", "assets", related.assets, ["asset", "serial", "givenDate", "status"])}
+        ${renderPersonSection("Görevler", "tasks", related.tasks, ["title", "priority", "dueDate", "status"])}
+      </div>
+    </section>
+  `;
+}
+
+function renderPersonSection(title, moduleId, records, keys) {
+  const module = getModule(moduleId);
+  return `
+    <section class="person-section">
+      <header>
+        <h3>${escapeHtml(trText(title))}</h3>
+        <button type="button" data-nav="${moduleId}">${escapeHtml(trText("Detay"))}</button>
+      </header>
+      ${
+        records.length
+          ? records
+              .slice(0, 4)
+              .map(
+                (record) => `
+                  <div class="person-line">
+                    ${keys
+                      .map((key) => {
+                        const column = module.columns?.find(([columnKey]) => columnKey === key);
+                        const label = column?.[1] || key;
+                        const value = key === "totalHours" ? calculateAttendanceTotal(record) : getExportValue(record[key] ?? "");
+                        return `<span><small>${escapeHtml(trText(label))}</small><b>${escapeHtml(trText(String(value || "-")))}</b></span>`;
+                      })
+                      .join("")}
+                  </div>
+                `,
+              )
+              .join("")
+          : `<p class="empty-state">${escapeHtml(trText("Kayıt bulunamadı."))}</p>`
+      }
+    </section>
+  `;
+}
+
+function renderApprovalsCenter() {
+  const items = getApprovalItems();
+  const grouped = ["payroll", "leaves", "invoices", "projects", "documentsChecklist", "tasks"].map((moduleId) => ({
+    module: getModule(moduleId),
+    items: items.filter((item) => item.moduleId === moduleId),
+  }));
+
+  document.querySelector("#pageContent").innerHTML = `
+    <section class="approval-center">
+      <div class="approval-hero">
+        <span>${escapeHtml(trText("Onay Merkezi"))}</span>
+        <h2>${escapeHtml(trText("Bekleyen onaylar tek merkezden tamamlanır."))}</h2>
+        <p>${escapeHtml(`${items.length} ${currentLanguage === "en" ? "pending item" : "bekleyen işlem"} · ${canManageRecords() ? "Admin yetkisi aktif" : "Sadece izleme modu"}`)}</p>
+      </div>
+      <div class="approval-summary">
+        ${grouped
+          .map(
+            ({ module, items: moduleItems }) => `
+              <button type="button" data-nav="${module.id}">
+                <strong>${moduleItems.length}</strong>
+                <span>${escapeHtml(trText(module.title))}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="approval-list">
+        ${
+          items.length
+            ? items
+                .map(
+                  (item) => `
+                    <article class="approval-item ${item.state}">
+                      <div>
+                        <span>${escapeHtml(trText(getModule(item.moduleId).title))}</span>
+                        <h3>${escapeHtml(item.title)}</h3>
+                        <p>${escapeHtml(trText(item.detail))}</p>
+                      </div>
+                      <strong>${escapeHtml(trText(renderApprovalBadge(item)))}</strong>
+                      ${
+                        canManageRecords()
+                          ? `<button class="btn btn-green" type="button" data-action="approval-complete" data-module="${item.moduleId}" data-id="${item.id}">${escapeHtml(trText("Onayla"))}</button>`
+                          : `<button class="btn btn-light" type="button" data-nav="${item.moduleId}">${escapeHtml(trText("Detay"))}</button>`
+                      }
+                    </article>
+                  `,
+                )
+                .join("")
+            : `<div class="approval-empty"><h3>${escapeHtml(trText("Kritik uyarı görünmüyor."))}</h3><p>${escapeHtml(trText("Bekleyen onaylar tek merkezden tamamlanır."))}</p></div>`
+        }
+      </div>
     </section>
   `;
 }
@@ -1697,7 +2079,7 @@ function renderMonthRows(monthData) {
 }
 
 function getFilteredRecords(module) {
-  const sourceRecords = module.id === "quality" ? getQualityRecords() : module.records;
+  const sourceRecords = getScopedRecords(module, module.id === "quality" ? getQualityRecords() : module.records);
   const filter = filterValue.trim().toLocaleLowerCase("tr");
   const quickFilter = quickFilters[module.id];
   const quickConfig = moduleQuickFilters[module.id];
@@ -2021,12 +2403,17 @@ function renderRowActions(module, record) {
     module.id === "projects"
       ? `<button class="icon-action chart-action" type="button" title="${escapeHtml(trText("Grafik"))}" data-action="project-chart" data-id="${record.id}"><span data-icon="barChart"></span></button>`
       : "";
+  const personnelActions =
+    module.id === "personnel"
+      ? `<button class="icon-action chart-action" type="button" title="${escapeHtml(trText("Personel 360"))}" data-action="personnel-360" data-id="${record.id}"><span data-icon="eye"></span></button>`
+      : "";
 
   return `
     <span class="actions">
       <button class="icon-action" type="button" title="${escapeHtml(trText("Düzenle"))}" data-action="edit" data-id="${record.id}"><span data-icon="edit"></span></button>
       <button class="icon-action" type="button" title="${escapeHtml(trText("Sil"))}" data-action="delete" data-id="${record.id}"><span data-icon="trash"></span></button>
       ${projectActions}
+      ${personnelActions}
       ${payrollActions}
     </span>
   `;
@@ -2427,6 +2814,50 @@ function updatePayrollWorkflow(recordId, action) {
   renderIcons();
 }
 
+function completeApproval(moduleId, recordId) {
+  const module = getModule(moduleId);
+  const record = module.records.find((item) => item.id === recordId);
+  if (!record) return;
+
+  if (moduleId === "payroll") {
+    record.hrApproval = "Onaylandı";
+    record.accountingApproval = "Onaylandı";
+    record.managementApproval = "Onaylandı";
+    record.payrollStatus = "Personele Açıldı";
+    record.publishStatus = "Personele Açıldı";
+  }
+
+  if (moduleId === "leaves") {
+    record.approval = "Onaylandı";
+  }
+
+  if (moduleId === "invoices") {
+    record.status = "Fatura Kesildi";
+    if (!record.paymentStatus || record.paymentStatus === "Gecikti") record.paymentStatus = "Tahsil Bekliyor";
+  }
+
+  if (moduleId === "projects") {
+    record.status = "Aktif";
+  }
+
+  if (moduleId === "documentsChecklist") {
+    ["identity", "sgk", "contract", "kvkk", "health", "iban", "criminalRecord"].forEach((key) => {
+      record[key] = "Tam";
+    });
+    record.status = "Tam";
+  }
+
+  if (moduleId === "tasks" || moduleId === "notifications") {
+    record.status = "Tamamlandı";
+  }
+
+  addAudit("Onay", module, record, "Onay Merkezi üzerinden tamamlandı.");
+  saveRecords();
+  renderApprovalsCenter();
+  renderSideNav();
+  renderIcons();
+}
+
 function toggleRecordStatus(moduleId, recordId) {
   const module = getModule(moduleId);
   const record = module.records.find((item) => item.id === recordId);
@@ -2495,6 +2926,10 @@ function renderModule(module) {
 
   if (module.dashboard) {
     renderDashboard();
+  } else if (module.id === "personnel360") {
+    renderPersonnel360();
+  } else if (module.id === "approvals") {
+    renderApprovalsCenter();
   } else {
     renderDataPage(module);
   }
@@ -2847,6 +3282,14 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const person360Button = event.target.closest("[data-person360]");
+  if (person360Button) {
+    selectedPersonnel360Id = person360Button.dataset.person360;
+    renderPersonnel360();
+    renderIcons();
+    return;
+  }
+
   if (event.target.id === "dashboardMonthSelect" || event.target.id === "dashboardRangeSelect") {
     return;
   }
@@ -2873,7 +3316,7 @@ document.addEventListener("click", (event) => {
   const action = manageButton.dataset.action;
   const module = getModule();
   const recordId = manageButton.dataset.id || selectedRecordId;
-  const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen"];
+  const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete"];
   if (manageActions.includes(action) && !canManageRecords()) return;
 
   if (action === "add") {
@@ -2908,6 +3351,15 @@ document.addEventListener("click", (event) => {
 
   if (action === "project-chart") {
     openProjectChart(recordId);
+  }
+
+  if (action === "personnel-360") {
+    selectedPersonnel360Id = recordId;
+    switchModule("personnel360");
+  }
+
+  if (action === "approval-complete") {
+    completeApproval(manageButton.dataset.module, recordId);
   }
 
   if (action === "toggle-status") {
