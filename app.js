@@ -904,7 +904,7 @@ async function loadRecords() {
   modules.forEach((module) => {
     const moduleRows = rows.filter((row) => row.module_id === module.id);
     if (!moduleRows.length) {
-      module.records = module.records.map((record) => hydrateRecord(module, record));
+      module.records = Array.isArray(module.records) ? module.records.map((record) => hydrateRecord(module, record)) : [];
       return;
     }
 
