@@ -1946,12 +1946,16 @@ tbody tr.selected {
 }
 
 .brand-logo {
-  padding: 8px 20px;
+  overflow: hidden;
+  padding: 0;
 }
 
 .brand-logo img {
-  width: 410px;
-  max-height: 154px;
+  width: 640px;
+  max-width: none;
+  max-height: none;
+  transform: scale(1.35);
+  transform-origin: center;
 }
 
 .sidebar {
@@ -2023,6 +2027,43 @@ tbody tr.selected {
 .monthly-breakdown span {
   color: var(--muted);
   font-size: 13px;
+  font-weight: 800;
+}
+
+.corporate-lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.lane-card {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(13, 49, 84, 0.1);
+  border-left: 5px solid #16805a;
+  border-radius: 8px;
+  background: #fff;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(7, 29, 54, 0.05);
+}
+
+.lane-card.bad {
+  border-left-color: #c8453b;
+}
+
+.lane-card .nav-icon {
+  grid-row: span 2;
+}
+
+.lane-card strong {
+  color: var(--navy);
+}
+
+.lane-card small {
+  color: var(--muted);
   font-weight: 800;
 }
 
@@ -2175,8 +2216,9 @@ tbody tr.selected {
   }
 
   .brand-logo img {
-    width: min(320px, 86vw);
-    max-height: 104px;
+    width: min(430px, 116vw);
+    max-height: none;
+    transform: scale(1.22);
   }
 
   .sidebar {

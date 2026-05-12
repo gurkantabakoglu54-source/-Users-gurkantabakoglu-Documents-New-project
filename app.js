@@ -4,6 +4,10 @@ const icons = {
   chart: '<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
   barChart:
     '<path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/>',
+  bell:
+    '<path d="M10 21h4"/><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>',
+  checklist:
+    '<path d="M9 11 11 13 15 9"/><path d="M9 17 11 19 15 15"/><path d="M4 5h16"/><path d="M4 11h2"/><path d="M4 17h2"/>',
   contact: '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/>',
   edit:
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
@@ -11,6 +15,8 @@ const icons = {
     '<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>',
   invoice:
     '<path d="M6 2h12v20l-3-2-3 2-3-2-3 2Z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>',
+  lock:
+    '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
   calendar:
     '<path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>',
@@ -31,6 +37,10 @@ const icons = {
   users:
     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/>',
+  wallet:
+    '<path d="M20 7V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v10H5a3 3 0 0 1-3-3V6"/><path d="M16 13h.01"/>',
+  settings:
+    '<path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 1 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 
@@ -336,13 +346,110 @@ const modules = [
       ["amount", "Tutar"],
       ["tax", "KDV"],
       ["withholding", "Tevkifat", "select", ["Yok", "2/10", "3/10", "4/10", "5/10", "7/10", "9/10", "Diğer"]],
+      ["paymentStatus", "Ödeme Durumu", "select", ["Tahsil Bekliyor", "Ödendi", "Gecikti"]],
+      ["collectionDate", "Tahsil Tarihi", "date"],
       ["dueDate", "Vade", "date"],
       ["status", "Durumu", "select", ["Fatura Kesildi", "Fatura Beklemede", "Onay Verilmedi"]],
       ["file", "Fatura Dosyası", "file"],
     ],
     records: [
-      { id: "i1", invoiceNo: "GKK2026000000219", company: "Kale Oto", project: "AD54000000005", amount: "36.500 TL", tax: "%20", withholding: "Yok", dueDate: "2026-05-30", status: "Fatura Kesildi", file: "" },
-      { id: "i2", invoiceNo: "GKK2026000000220", company: "Cofle TK Otomotiv", project: "AD54000000004", amount: "24.800 TL", tax: "%20", withholding: "Yok", dueDate: "2026-06-15", status: "Fatura Beklemede", file: "" },
+      { id: "i1", invoiceNo: "GKK2026000000219", company: "Kale Oto", project: "AD54000000005", amount: "36.500 TL", tax: "%20", withholding: "Yok", paymentStatus: "Tahsil Bekliyor", collectionDate: "", dueDate: "2026-05-30", status: "Fatura Kesildi", file: "" },
+      { id: "i2", invoiceNo: "GKK2026000000220", company: "Cofle TK Otomotiv", project: "AD54000000004", amount: "24.800 TL", tax: "%20", withholding: "Yok", paymentStatus: "Gecikti", collectionDate: "", dueDate: "2026-06-15", status: "Fatura Beklemede", file: "" },
+    ],
+  },
+  {
+    id: "quality",
+    title: "Kalite Yönetimi",
+    icon: "barChart",
+    breadcrumb: ["Panel", "Kalite Yönetimi", "Kalite Riskleri"],
+    noActions: true,
+    columns: [
+      ["projectCode", "Proje Kodu"],
+      ["company", "Firma"],
+      ["part", "Parça Kodu"],
+      ["problem", "Problem"],
+      ["total", "Toplam Adet"],
+      ["defectRate", "Hata Oranı %"],
+      ["risk", "Risk"],
+    ],
+    records: [],
+  },
+  {
+    id: "documentsChecklist",
+    title: "Evrak Kontrol",
+    icon: "checklist",
+    breadcrumb: ["Panel", "Evrak Kontrol", "Özlük Checklist"],
+    columns: [
+      ["person", "Personel"],
+      ["identity", "Kimlik", "select", ["Tam", "Eksik"]],
+      ["sgk", "SGK", "select", ["Tam", "Eksik"]],
+      ["contract", "Sözleşme", "select", ["Tam", "Eksik"]],
+      ["kvkk", "KVKK", "select", ["Tam", "Eksik"]],
+      ["health", "Sağlık Raporu", "select", ["Tam", "Eksik"]],
+      ["iban", "IBAN", "select", ["Tam", "Eksik"]],
+      ["criminalRecord", "Adli Sicil", "select", ["Tam", "Eksik"]],
+      ["status", "Durumu", "select", ["Tam", "Eksik", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "dc1", person: "Zehra Battal", identity: "Tam", sgk: "Tam", contract: "Tam", kvkk: "Tam", health: "Tam", iban: "Tam", criminalRecord: "Tam", status: "Tam" },
+      { id: "dc2", person: "Faruk Türker", identity: "Tam", sgk: "Tam", contract: "Eksik", kvkk: "Tam", health: "Eksik", iban: "Tam", criminalRecord: "Tam", status: "Eksik" },
+    ],
+  },
+  {
+    id: "notifications",
+    title: "Bildirim Merkezi",
+    icon: "bell",
+    breadcrumb: ["Panel", "Bildirim Merkezi", "Uyarılar"],
+    columns: [
+      ["date", "Tarih"],
+      ["type", "Tür"],
+      ["moduleName", "Modül"],
+      ["description", "Açıklama"],
+      ["priority", "Öncelik", "select", ["Düşük", "Normal", "Yüksek", "Acil"]],
+      ["status", "Durumu", "select", ["Açık", "Tamamlandı"]],
+    ],
+    records: [
+      { id: "n1", date: "2026-05-12", type: "Fatura", moduleName: "Faturalar", description: "Vadesi yaklaşan tahsilatları kontrol et.", priority: "Yüksek", status: "Açık" },
+      { id: "n2", date: "2026-05-12", type: "İK", moduleName: "Özlük Belgeleri", description: "Eksik özlük belgelerini tamamla.", priority: "Acil", status: "Açık" },
+    ],
+  },
+  {
+    id: "security",
+    title: "Güvenlik",
+    icon: "lock",
+    breadcrumb: ["Panel", "Güvenlik", "Yetki ve Erişim"],
+    adminOnly: true,
+    columns: [
+      ["role", "Rol"],
+      ["scope", "Erişim Alanı"],
+      ["canAdd", "Ekleme"],
+      ["canEdit", "Düzenleme"],
+      ["canDelete", "Silme"],
+      ["sensitiveAccess", "Hassas Veri"],
+      ["approvalRule", "Onay Kuralı"],
+    ],
+    records: [
+      { id: "sec1", role: "Admin", scope: "Tüm modüller", canAdd: "Var", canEdit: "Var", canDelete: "Var", sensitiveAccess: "Var", approvalRule: "Kritik işlemde onay sorulur" },
+      { id: "sec2", role: "Kullanıcı", scope: "Operasyon izleme", canAdd: "Yok", canEdit: "Yok", canDelete: "Yok", sensitiveAccess: "Yok", approvalRule: "Sadece izleme" },
+      { id: "sec3", role: "Müşteri", scope: "Kendi firması", canAdd: "Yok", canEdit: "Yok", canDelete: "Yok", sensitiveAccess: "Yok", approvalRule: "Sadece kendi kayıtları" },
+    ],
+  },
+  {
+    id: "settings",
+    title: "Kurumsal Ayarlar",
+    icon: "settings",
+    breadcrumb: ["Panel", "Kurumsal Ayarlar", "Marka ve Sistem"],
+    adminOnly: true,
+    columns: [
+      ["setting", "Ayar"],
+      ["value", "Değer"],
+      ["description", "Açıklama"],
+      ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
+    ],
+    records: [
+      { id: "set1", setting: "Panel Markası", value: "Artı Destek", description: "Logo ve üst alan marka görünümü", status: "AKTİF" },
+      { id: "set2", setting: "Kritik Hata Eşiği", value: "%5 NOK", description: "Kalite risk kartlarında kırmızı uyarı üretir", status: "AKTİF" },
+      { id: "set3", setting: "Bordro Kilidi", value: "Ay kapanınca kilitlenir", description: "Bordro dönemleri onaydan sonra korunur", status: "AKTİF" },
     ],
   },
   {
@@ -459,6 +566,8 @@ const moduleQuickFilters = {
   payroll: { key: "payrollStatus", options: ["Tümü", "Hazırlandı", "Onay Bekliyor", "Onaylandı", "Personele Açıldı"] },
   tasks: { key: "status", options: ["Tümü", "Bekliyor", "Devam Ediyor", "Tamamlandı"] },
   leaves: { key: "approval", options: ["Tümü", "Bekliyor", "Onaylandı", "Reddedildi"] },
+  documentsChecklist: { key: "status", options: ["Tümü", "Tam", "Eksik", "Kontrol Edilecek"] },
+  notifications: { key: "status", options: ["Tümü", "Açık", "Tamamlandı"] },
 };
 
 const moduleAccentColors = {
@@ -474,6 +583,11 @@ const moduleAccentColors = {
   assets: "#475569",
   tasks: "#ef4444",
   invoices: "#f97316",
+  quality: "#0f766e",
+  documentsChecklist: "#2563eb",
+  notifications: "#e11d48",
+  security: "#334155",
+  settings: "#0d3154",
   reports: "#0f766e",
   archive: "#64748b",
   audit: "#1d4ed8",
@@ -512,6 +626,16 @@ const translations = {
   "Denetim": "Audit",
   "Bordro": "Payroll",
   "Bordro Listesi": "Payroll List",
+  "Kalite Yönetimi": "Quality Management",
+  "Kalite Riskleri": "Quality Risks",
+  "Evrak Kontrol": "Document Check",
+  "Özlük Checklist": "Personnel Checklist",
+  "Bildirim Merkezi": "Notification Center",
+  "Uyarılar": "Alerts",
+  "Güvenlik": "Security",
+  "Yetki ve Erişim": "Authorization and Access",
+  "Kurumsal Ayarlar": "Corporate Settings",
+  "Marka ve Sistem": "Brand and System",
   "Firma Adı": "Company Name",
   "Yetkili": "Authorized Person",
   "Email": "Email",
@@ -578,6 +702,8 @@ const translations = {
   "Tutar": "Amount",
   "KDV": "VAT",
   "Tevkifat": "Withholding",
+  "Ödeme Durumu": "Payment Status",
+  "Tahsil Tarihi": "Collection Date",
   "Vade": "Due Date",
   "Fatura Dosyası": "Invoice File",
   "Rapor Adı": "Report Name",
@@ -599,6 +725,26 @@ const translations = {
   "Portal Durumu": "Portal Status",
   "Görüntülenme": "View Status",
   "Bordro Dosyası / Resim": "Payroll File / Image",
+  "Toplam Adet": "Total Quantity",
+  "Hata Oranı %": "Defect Rate %",
+  "Risk": "Risk",
+  "Kimlik": "ID",
+  "SGK": "Social Security",
+  "KVKK": "KVKK",
+  "Sağlık Raporu": "Health Report",
+  "IBAN": "IBAN",
+  "Adli Sicil": "Criminal Record",
+  "Modül": "Module",
+  "Açıklama": "Description",
+  "Rol": "Role",
+  "Erişim Alanı": "Access Scope",
+  "Ekleme": "Add",
+  "Düzenleme": "Edit",
+  "Silme": "Delete",
+  "Hassas Veri": "Sensitive Data",
+  "Onay Kuralı": "Approval Rule",
+  "Ayar": "Setting",
+  "Değer": "Value",
   "Online İşlemler": "Online Operations",
   "Yönetici Özeti": "Executive Summary",
   "Artı Destek operasyon görünümü": "Artı Destek operations view",
@@ -612,6 +758,10 @@ const translations = {
   "Aktif Proje": "Active Projects",
   "Pasif Proje": "Passive Projects",
   "Bekleyen Proje": "Waiting Projects",
+  "Kalite Hata Oranı": "Quality Defect Rate",
+  "Geciken Tahsilat": "Overdue Collections",
+  "Eksik Checklist": "Missing Checklist",
+  "Açık Bildirim": "Open Notifications",
   "Fatura Kesilen": "Issued Invoices",
   "Kesilmeyen Fatura": "Unissued Invoices",
   "Çalışma": "Work Hours",
@@ -653,6 +803,26 @@ const translations = {
   "Toplam Çalışma": "Total Work",
   "Toplam Mesai": "Total Overtime",
   "Aktif Puantaj": "Active Timesheets",
+  "Toplam Fatura": "Total Invoice",
+  "Checklist Tamamlanma": "Checklist Completion",
+  "Tamamlanan": "Completed",
+  "Toplam Kontrol": "Total Inspection",
+  "Ortalama Hata": "Average Defect",
+  "Riskli Proje": "Risky Project",
+  "Kalite": "Quality",
+  "İK / HR": "HR",
+  "Riskli": "Risky",
+  "Kontrol altında": "Under Control",
+  "Evrak takibi var": "Document Follow-up",
+  "Bordro": "Payroll",
+  "Onay bekliyor": "Awaiting Approval",
+  "Yayınlandı": "Published",
+  "Finans": "Finance",
+  "Tahsilat gecikti": "Collection Overdue",
+  "Rol bazlı erişim aktif": "Role-based access active",
+  "Raporlama": "Reporting",
+  "PDF / Excel çıktıları aktif": "PDF / Excel exports active",
+  "Marka ve eşikler hazır": "Brand and thresholds ready",
   "Aktif": "Active",
   "AKTİF": "ACTIVE",
   "PASİF": "PASSIVE",
@@ -684,6 +854,12 @@ const translations = {
   "Kapalı": "Closed",
   "Görülmedi": "Not Viewed",
   "Görüldü": "Viewed",
+  "Açık": "Open",
+  "Tahsil Bekliyor": "Awaiting Collection",
+  "Ödendi": "Paid",
+  "Gecikti": "Overdue",
+  "Var": "Yes",
+  "Yok": "No",
 };
 
 function trText(value) {
@@ -728,7 +904,7 @@ async function loadRecords() {
   modules.forEach((module) => {
     const moduleRows = rows.filter((row) => row.module_id === module.id);
     if (!moduleRows.length) {
-      module.records = [];
+      module.records = module.records.map((record) => hydrateRecord(module, record));
       return;
     }
 
@@ -821,6 +997,8 @@ function hydrateRecord(module, record) {
   if (module.id === "invoices") {
     return {
       withholding: "Yok",
+      paymentStatus: "Tahsil Bekliyor",
+      collectionDate: "",
       ...record,
       status: normalizeInvoiceStatus(record.status),
     };
@@ -955,8 +1133,8 @@ function canAccessModule(module) {
   const type = normalizeUserType(currentUser.type);
   if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
-  if (type === "PERSONEL") return ["panel", "tasks", "payroll", "presentations", "reports", "attendance", "leaves", "trainings", "assets"].includes(module.id);
-  if (type === "MUSTERI") return ["panel", "projects", "invoices", "reports"].includes(module.id);
+  if (type === "PERSONEL") return ["panel", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications"].includes(module.id);
+  if (type === "MUSTERI") return ["panel", "projects", "quality", "invoices", "reports", "notifications"].includes(module.id);
   return true;
 }
 
@@ -1136,6 +1314,46 @@ function hasDocumentForPerson(person, documents) {
   });
 }
 
+function getProjectQuality(record) {
+  const ok = parseHour(record.okCount);
+  const nok = parseHour(record.nokCount);
+  const rok = parseHour(record.rokCount);
+  const rnok = parseHour(record.rnokCount);
+  const total = ok + nok + rok + rnok;
+  const defectRate = total ? ((nok + rnok) / total) * 100 : 0;
+  return {
+    ok,
+    nok,
+    rok,
+    rnok,
+    total,
+    defectRate,
+    risk: defectRate >= 5 ? "Yüksek" : defectRate > 0 ? "Normal" : "Düşük",
+  };
+}
+
+function getQualityRecords() {
+  return getModule("projects").records.map((project) => {
+    const quality = getProjectQuality(project);
+    return {
+      id: `quality-${project.id}`,
+      projectCode: project.code,
+      company: project.company,
+      part: project.part,
+      problem: project.problem,
+      total: quality.total,
+      defectRate: quality.defectRate.toLocaleString("tr-TR", { maximumFractionDigits: 2 }),
+      risk: quality.risk,
+    };
+  });
+}
+
+function getChecklistCompletion(record) {
+  const keys = ["identity", "sgk", "contract", "kvkk", "health", "iban", "criminalRecord"];
+  const complete = keys.filter((key) => record[key] === "Tam").length;
+  return { complete, total: keys.length, rate: Math.round((complete / keys.length) * 100) };
+}
+
 function getKpiState(value, positiveWhenZero = true) {
   const number = Number.parseFloat(String(value).replace(",", "."));
   if (!Number.isFinite(number)) return "neutral";
@@ -1153,6 +1371,8 @@ function renderDashboard() {
   const documents = getModule("presentations").records;
   const leaves = getModule("leaves").records.filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
   const tasks = getModule("tasks").records.filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
+  const notifications = getModule("notifications").records.filter((record) => record.status === "Açık");
+  const checklist = getModule("documentsChecklist").records;
   const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
   const passiveProjects = projects.filter((record) => normalizeText(record.status) === "pasif").length;
   const waitingProjects = projects.filter((record) => normalizeText(record.status) === "beklemede").length;
@@ -1166,22 +1386,43 @@ function renderDashboard() {
   ).length;
   const pendingLeaves = leaves.filter((record) => record.approval === "Bekliyor").length;
   const openTasks = tasks.filter((record) => record.status !== "Tamamlandı").length;
+  const qualityTotals = projects.reduce(
+    (summary, project) => {
+      const quality = getProjectQuality(project);
+      summary.total += quality.total;
+      summary.defects += quality.nok + quality.rnok;
+      if (quality.defectRate >= 5) summary.risky += 1;
+      return summary;
+    },
+    { total: 0, defects: 0, risky: 0 },
+  );
+  const qualityRate = qualityTotals.total ? (qualityTotals.defects / qualityTotals.total) * 100 : 0;
+  const incompleteChecklist = checklist.filter((record) => record.status !== "Tam").length;
+  const overdueInvoices = invoices.filter((record) => record.paymentStatus === "Gecikti").length;
   const alerts = [
+    qualityTotals.risky ? `${qualityTotals.risky} projede kalite hata oranı kritik eşiğe yaklaştı.` : "",
     pendingInvoices ? `${pendingInvoices} fatura sonuçlandırılmayı bekliyor.` : "",
+    overdueInvoices ? `${overdueInvoices} faturada tahsilat gecikmesi görünüyor.` : "",
     pendingPayroll ? `${pendingPayroll} bordro personele açılmadan bekliyor.` : "",
     missingDocuments ? `${missingDocuments} personelde özlük belgesi kontrolü eksik görünüyor.` : "",
+    incompleteChecklist ? `${incompleteChecklist} personelde checklist tamamlanmamış.` : "",
     pendingLeaves ? `${pendingLeaves} izin talebi onay bekliyor.` : "",
+    notifications.length ? `${notifications.length} açık bildirim takip bekliyor.` : "",
   ].filter(Boolean);
   const kpis = [
     ["Aktif Proje", activeProjects, "projects", "good"],
     ["Pasif Proje", passiveProjects, "projects", passiveProjects > 0 ? "bad" : "good"],
     ["Bekleyen Proje", waitingProjects, "projects", getKpiState(waitingProjects)],
+    ["Kalite Hata Oranı", `%${qualityRate.toLocaleString("tr-TR", { maximumFractionDigits: 1 })}`, "quality", qualityRate >= 5 ? "bad" : "good"],
     ["Fatura Kesilen", issuedInvoices, "invoices", "good"],
     ["Kesilmeyen Fatura", pendingInvoices, "invoices", getKpiState(pendingInvoices)],
+    ["Geciken Tahsilat", overdueInvoices, "invoices", getKpiState(overdueInvoices)],
     [`${periodLabel} ${trText("Çalışma")}`, `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
     [`${periodLabel} ${trText("Mesai")}`, `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "attendance", "neutral"],
     ["Eksik Özlük", missingDocuments, "presentations", getKpiState(missingDocuments)],
+    ["Eksik Checklist", incompleteChecklist, "documentsChecklist", getKpiState(incompleteChecklist)],
     ["Açık Görev", openTasks, "tasks", getKpiState(openTasks)],
+    ["Açık Bildirim", notifications.length, "notifications", getKpiState(notifications.length)],
   ];
   const cards = [
     { id: "companies", value: getRecordCount("companies"), label: "Firmalar", icon: "building", color: "cyan" },
@@ -1195,7 +1436,12 @@ function renderDashboard() {
     { id: "assets", value: getRecordCount("assets"), label: "Zimmetler", icon: "folder", color: "purple" },
     { id: "tasks", value: getRecordCount("tasks"), label: "Görevler", icon: "note", color: "blue" },
     { id: "invoices", value: getRecordCount("invoices"), label: "Faturalar", icon: "invoice", color: "cyan" },
+    { id: "quality", value: `%${qualityRate.toLocaleString("tr-TR", { maximumFractionDigits: 1 })}`, label: "Kalite Yönetimi", icon: "barChart", color: "green" },
+    { id: "documentsChecklist", value: getRecordCount("documentsChecklist"), label: "Evrak Kontrol", icon: "checklist", color: "blue" },
+    { id: "notifications", value: notifications.length, label: "Bildirim Merkezi", icon: "bell", color: "red" },
     { id: "reports", value: getRecordCount("reports"), label: "Raporlar", icon: "chart", color: "green" },
+    { id: "security", value: getRecordCount("security"), label: "Güvenlik", icon: "lock", color: "purple" },
+    { id: "settings", value: getRecordCount("settings"), label: "Kurumsal Ayarlar", icon: "settings", color: "dark-green" },
     { id: "payroll", value: getRecordCount("payroll"), label: "Bordro", icon: "invoice", color: "dark-green" },
   ];
   const visibleCards = cards.filter((card) => canAccessModule(getModule(card.id)));
@@ -1285,6 +1531,28 @@ function renderDashboard() {
               : `<p class="empty-state">${escapeHtml(trText("Henüz işlem kaydı yok."))}</p>`
           }
         </section>
+      </div>
+      <div class="corporate-lanes">
+        ${[
+          ["Kalite", qualityRate >= 5 ? "Riskli" : "Kontrol altında", "quality", qualityRate >= 5 ? "bad" : "good"],
+          ["İK / HR", missingDocuments || incompleteChecklist ? "Evrak takibi var" : "Tamam", "documentsChecklist", missingDocuments || incompleteChecklist ? "bad" : "good"],
+          ["Bordro", pendingPayroll ? "Onay bekliyor" : "Yayınlandı", "payroll", pendingPayroll ? "bad" : "good"],
+          ["Finans", overdueInvoices ? "Tahsilat gecikti" : "Normal", "invoices", overdueInvoices ? "bad" : "good"],
+          ["Güvenlik", "Rol bazlı erişim aktif", "security", "good"],
+          ["Raporlama", "PDF / Excel çıktıları aktif", "reports", "good"],
+          ["Kurumsal Ayarlar", "Marka ve eşikler hazır", "settings", "good"],
+        ]
+          .filter(([, , moduleId]) => canAccessModule(getModule(moduleId)))
+          .map(
+            ([title, text, moduleId, state]) => `
+              <button class="lane-card ${state}" type="button" data-nav="${moduleId}">
+                <span class="nav-icon" style="--module-color:${moduleAccentColors[moduleId] || "#0d3154"}" data-icon="${getModule(moduleId).icon}"></span>
+                <strong>${escapeHtml(trText(title))}</strong>
+                <small>${escapeHtml(trText(text))}</small>
+              </button>
+            `,
+          )
+          .join("")}
       </div>
     </section>
     <section class="dashboard-grid">
@@ -1429,11 +1697,12 @@ function renderMonthRows(monthData) {
 }
 
 function getFilteredRecords(module) {
+  const sourceRecords = module.id === "quality" ? getQualityRecords() : module.records;
   const filter = filterValue.trim().toLocaleLowerCase("tr");
   const quickFilter = quickFilters[module.id];
   const quickConfig = moduleQuickFilters[module.id];
 
-  return module.records.filter((record) => {
+  return sourceRecords.filter((record) => {
     const passesQuickFilter =
       !quickConfig || !quickFilter || quickFilter === "Tümü" || normalizeText(record[quickConfig.key]) === normalizeText(quickFilter);
     const passesTextFilter =
@@ -1502,6 +1771,7 @@ function isOptionalField(module, key) {
     "contractFile",
     "offerFile",
     "withholding",
+    "collectionDate",
   ].includes(key) || (module.id === "projects" && (key === "endDate" || key.endsWith("Count")));
 }
 
@@ -1571,6 +1841,90 @@ function renderPayrollOverview(records) {
       <span>Yönetici Onaylar</span>
       <span>Personele Açılır</span>
       <span>Görüldü Takibi</span>
+    </div>
+  `;
+}
+
+function renderInvoiceOverview(records) {
+  const total = records.reduce((sum, record) => sum + parseMoney(record.amount), 0);
+  const waiting = records.filter((record) => record.paymentStatus === "Tahsil Bekliyor").length;
+  const overdue = records.filter((record) => record.paymentStatus === "Gecikti").length;
+  const paid = records.filter((record) => record.paymentStatus === "Ödendi").length;
+  const items = [
+    ["Toplam Fatura", formatMoney(total)],
+    ["Tahsil Bekliyor", waiting],
+    ["Gecikti", overdue],
+    ["Ödendi", paid],
+  ];
+
+  return `
+    <div class="payroll-summary compact-summary" aria-label="Fatura özeti">
+      ${items
+        .map(
+          ([label, value]) => `
+            <div>
+              <strong>${escapeHtml(value)}</strong>
+              <span>${escapeHtml(trText(label))}</span>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderChecklistOverview(records) {
+  const completed = records.filter((record) => record.status === "Tam").length;
+  const missing = records.length - completed;
+  const avg = records.length
+    ? Math.round(records.reduce((sum, record) => sum + getChecklistCompletion(record).rate, 0) / records.length)
+    : 100;
+  const items = [
+    ["Checklist Tamamlanma", `%${avg}`],
+    ["Tamamlanan", completed],
+    ["Eksik", missing],
+  ];
+
+  return `
+    <div class="payroll-summary compact-summary" aria-label="Evrak kontrol özeti">
+      ${items
+        .map(
+          ([label, value]) => `
+            <div>
+              <strong>${escapeHtml(value)}</strong>
+              <span>${escapeHtml(trText(label))}</span>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderQualityOverview(records) {
+  const risky = records.filter((record) => record.risk === "Yüksek").length;
+  const totalPieces = records.reduce((sum, record) => sum + parseHour(record.total), 0);
+  const avgRate = records.length
+    ? records.reduce((sum, record) => sum + parseHour(record.defectRate), 0) / records.length
+    : 0;
+  const items = [
+    ["Toplam Kontrol", totalPieces],
+    ["Ortalama Hata", `%${avgRate.toLocaleString("tr-TR", { maximumFractionDigits: 2 })}`],
+    ["Riskli Proje", risky],
+  ];
+
+  return `
+    <div class="payroll-summary compact-summary" aria-label="Kalite özeti">
+      ${items
+        .map(
+          ([label, value]) => `
+            <div>
+              <strong>${escapeHtml(value)}</strong>
+              <span>${escapeHtml(trText(label))}</span>
+            </div>
+          `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -1776,6 +2130,9 @@ function renderDataPage(module) {
       ${renderModuleIntro(module, filteredRecords)}
       ${module.id === "payroll" ? renderPayrollOverview(filteredRecords) : ""}
       ${module.id === "attendance" ? renderAttendanceOverview(filteredRecords) : ""}
+      ${module.id === "invoices" ? renderInvoiceOverview(filteredRecords) : ""}
+      ${module.id === "documentsChecklist" ? renderChecklistOverview(filteredRecords) : ""}
+      ${module.id === "quality" ? renderQualityOverview(filteredRecords) : ""}
       ${renderQuickFilters(module)}
       <div class="toolbar">
         <div class="toolbar-actions">
@@ -1848,9 +2205,9 @@ function renderCell(module, record, key, index, label = "") {
 
   const titleLike = index === 0 || key === "code" || key === "part" || key === "email";
   const valueText = String(value);
-  const redStatus = ["Onaysız", "Onay Verilmedi", "Bekliyor", "Kapalı", "Görülmedi", "Pasif", "Reddedildi"].includes(valueText);
-  const greenStatus = ["Onaylı", "Onaylandı", "AKTİF", "Aktif", "Ödendi", "Kesildi", "Fatura Kesildi", "Hazır", "Personele Açıldı", "Görüldü", "Tamamlandı"].includes(valueText);
-  const orangeStatus = ["Onay Bekliyor", "Hazırlandı", "Taslak", "Devam Ediyor", "Beklemede", "Fatura Beklemede"].includes(valueText);
+  const redStatus = ["Onaysız", "Onay Verilmedi", "Bekliyor", "Kapalı", "Görülmedi", "Pasif", "Reddedildi", "Gecikti", "Yüksek", "Açık", "Eksik"].includes(valueText);
+  const greenStatus = ["Onaylı", "Onaylandı", "AKTİF", "Aktif", "Ödendi", "Kesildi", "Fatura Kesildi", "Hazır", "Personele Açıldı", "Görüldü", "Tamamlandı", "Tam", "Düşük"].includes(valueText);
+  const orangeStatus = ["Onay Bekliyor", "Hazırlandı", "Taslak", "Devam Ediyor", "Beklemede", "Fatura Beklemede", "Tahsil Bekliyor", "Normal", "Kontrol Edilecek"].includes(valueText);
 
   if (redStatus) return `<td ${labelAttr}><span class="status-red">${escapeHtml(trText(value))}</span></td>`;
   if (orangeStatus) return `<td ${labelAttr}><span class="status-orange">${escapeHtml(trText(value))}</span></td>`;
