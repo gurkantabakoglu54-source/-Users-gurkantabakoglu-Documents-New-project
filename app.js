@@ -1892,6 +1892,10 @@ function renderPayrollCenter() {
   const totalOvertime = attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
   const payrollProgress = payroll.length ? Math.round((finalPayroll / payroll.length) * 100) : 0;
   const workplaceNames = [...new Set(getScopedRecords(getModule("companies")).map((record) => record.name).filter(Boolean))];
+  const companies = getScopedRecords(getModule("companies"));
+  const tasks = getScopedRecords(getModule("tasks")).filter((record) => record.status !== "Tamamlandı");
+  const reports = getScopedRecords(getModule("reports"));
+  const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "collectionDate", "date"]));
   const roles = getScopedRecords(getModule("users"))
     .slice(0, 6)
     .map((user) => ({
@@ -1946,6 +1950,275 @@ function renderPayrollCenter() {
     ["Hesaplanmış / Final", `${finalPayroll}/${Math.max(payroll.length, 1)}`, "checklist"],
     ["Devir", activePersonnel.length, "send"],
   ];
+  const compactRows = (headers, rows) => `
+    <div class="bordro-table">
+      <table>
+        <thead><tr>${headers.map((header) => `<th>${escapeHtml(trText(header))}</th>`).join("")}</tr></thead>
+        <tbody>
+          ${
+            rows.length
+              ? rows
+                  .map(
+                    (row) => `
+                      <tr>${row.map((cell) => `<td>${escapeHtml(trText(String(cell || "-")))}</td>`).join("")}</tr>
+                    `,
+                  )
+                  .join("")
+              : `<tr><td colspan="${headers.length}">${escapeHtml(trText("Kayıt bulunamadı."))}</td></tr>`
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+  const quickActions = `
+    <section class="bordro-actions">
+      <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
+      <button type="button" data-nav="payroll">${escapeHtml(trText("Bordro Listesine Git"))}</button>
+      <button type="button" data-nav="attendance">${escapeHtml(trText("Puantajı Aç"))}</button>
+      <button type="button" data-nav="approvals">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
+      <button type="button" data-nav="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
+    </section>
+  `;
+  const calendarPanel = `
+    <article class="bordro-panel calendar-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Takvimler"))}</b>
+          <h3>${escapeHtml(monthName)}</h3>
+        </div>
+        <div class="calendar-legend">
+          <span class="today">${escapeHtml(trText("Bugün"))}</span>
+          <span class="holiday">${escapeHtml(trText("Tatil Günleri"))}</span>
+          <span class="weekend">${escapeHtml(trText("Haftasonu"))}</span>
+        </div>
+      </header>
+      <div class="mini-calendar">
+        ${["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((day) => `<strong>${escapeHtml(currentLanguage === "en" ? trText(day) : day)}</strong>`).join("")}
+        ${days
+          .map(
+            ({ day, weekend, events: dayEvents }) => `
+              <button class="${weekend ? "weekend" : ""} ${dayEvents.length ? "has-event" : ""}" type="button">
+                <small>${day}</small>
+                ${dayEvents.map((event) => `<span>${escapeHtml(trText(event))}</span>`).join("")}
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+  const authorityPanel = `
+    <aside class="bordro-panel authority-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(workplaceNames[0] || "Artı Destek Hizmetleri A.Ş.")}</b>
+          <h3>${escapeHtml(trText("Bordro Süreci"))}</h3>
+        </div>
+        <button type="button" data-nav="approvals">${escapeHtml(approvals.length || "OK")}</button>
+      </header>
+      <label class="workplace-filter">
+        ${escapeHtml(trText("İş Yeri Listesi"))}
+        <select>
+          <option>${escapeHtml(trText("Tümü"))}</option>
+          ${workplaceNames.slice(0, 8).map((name) => `<option>${escapeHtml(name)}</option>`).join("")}
+        </select>
+      </label>
+      <div class="process-flow">
+        ${processSteps
+          .map(
+            ([label, count, state, nav]) => `
+              <button class="${state}" type="button" data-nav="${nav}">
+                <span>${escapeHtml(trText(label))}</span>
+                <strong>${escapeHtml(count)}</strong>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="authority-table">
+        <div class="authority-head">
+          <b>${escapeHtml(trText("Yetki Tablosu"))}</b>
+          <button type="button" data-action="export">${escapeHtml(trText("EXCEL"))}</button>
+        </div>
+        ${compactRows(
+          ["Rol Listesi", "Başlangıç Tarihi", "Bitiş Tarihi", "Ad Soyad"],
+          roles.map((role) => [role.role, role.start, role.end, role.name]),
+        )}
+        <p><span>${escapeHtml(trText("Bağlı Olunan Yönetici"))}</span><b>${escapeHtml(trText("Yönetici"))}</b></p>
+      </div>
+    </aside>
+  `;
+  const tabContents = {
+    home: `
+      <section class="bordro-hero">
+        <div>
+          <span>${escapeHtml(periodLabel)}</span>
+          <h2>${escapeHtml(trText("Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin."))}</h2>
+          <p>${escapeHtml(`${formatMoney(totalNet)} net bordro · ${formatMoney(totalAdvance)} avans · ${formatMoney(totalDeduction)} kesinti · ${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat çalışma`)}</p>
+        </div>
+        <div class="payroll-progress">
+          <strong>%${escapeHtml(payrollProgress)}</strong>
+          <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
+        </div>
+      </section>
+      <section class="bordro-kpis">
+        ${kpis
+          .map(
+            ([label, value, icon]) => `
+              <article>
+                <span data-icon="${icon}"></span>
+                <small>${escapeHtml(monthName)}</small>
+                <strong>${escapeHtml(value)}</strong>
+                <b>${escapeHtml(trText(label))}</b>
+              </article>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="bordro-board">${calendarPanel}${authorityPanel}</section>
+      ${quickActions}
+    `,
+    menu: `
+      <section class="bordro-tab-grid">
+        ${[
+          ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
+          ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
+          ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
+          ["Dinamik Rapor", "Bordro, avans, mesai ve maliyet çıktıları.", "reports"],
+        ]
+          .map(
+            ([title, text, nav]) => `
+              <button type="button" data-nav="${nav}">
+                <strong>${escapeHtml(trText(title))}</strong>
+                <span>${escapeHtml(trText(text))}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </section>
+    `,
+    system: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Sistem Yönetimi"))}</h3>
+          ${compactRows(["Ayar", "Değer", "Durumu"], [
+            ["Bordro Kilidi", "Ay kapanınca kilitlenir", "AKTİF"],
+            ["Rol Bazlı Erişim", "Admin / Kullanıcı / Müşteri", "AKTİF"],
+            ["Dosya Güvenliği", "Supabase Storage", "AKTİF"],
+            ["Denetim Kaydı", "Tüm kritik işlemler izlenir", "AKTİF"],
+          ])}
+        </article>
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Onay Merkezi"))}</h3>
+          ${compactRows(["Modül", "Bekleyen", "Durumu"], [
+            ["Bordro", approvals.filter((item) => item.moduleId === "payroll").length, approvals.some((item) => item.moduleId === "payroll") ? "Onay Bekliyor" : "Tamam"],
+            ["İzinler", approvals.filter((item) => item.moduleId === "leaves").length, approvals.some((item) => item.moduleId === "leaves") ? "Onay Bekliyor" : "Tamam"],
+            ["Görevler", tasks.length, tasks.length ? "Açık" : "Tamam"],
+          ])}
+        </article>
+      </section>
+      ${quickActions}
+    `,
+    calendar: `
+      <section class="bordro-tab-content">${calendarPanel}</section>
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">${compactRows(["Tarih", "İşlem", "Sorumlu"], [["05", "Maaş Ödeme", "Muhasebe"], ["10", "Puantaj Teslim", "İK"], ["15", "SGK Son Gün", "Muhasebe"], ["25", "Müşteri Onayı", "Yönetici"], ["28", "Bordro Kapanış", "İK"]])}</article>
+        <article class="bordro-panel">${compactRows(["Dönem", "Çalışma", "Mesai"], attendance.map((record) => [record.period, `${calculateAttendanceTotal(record)} sa`, `${parseHour(record.overtimeHours) + getAttendanceDayOvertime(record)} sa`]))}</article>
+      </section>
+    `,
+    company: `
+      <section class="bordro-tab-content">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Şirket Yönetimi"))}</h3>
+          ${compactRows(["Firma", "Yetkili", "Şehir", "Sözleşme"], companies.map((company) => [company.name, company.authorized, company.city, company.contractStatus || "Beklemede"]))}
+        </article>
+      </section>
+    `,
+    definitions: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">${compactRows(["Tanım", "Değer", "Durumu"], [["Günlük Çalışma", "7,5 / 9 saat", "AKTİF"], ["İzin Türleri", "Yıllık / Rapor / Görev", "AKTİF"], ["Çalışan Durumu", "Aktif / Pasif", "AKTİF"], ["Şehir / Şube", "Plaka kodlu takip", "AKTİF"]])}</article>
+        <article class="bordro-panel">${compactRows(["Bordro Alanı", "Açıklama"], [["Avans", "Bordrodan düşülecek tutar"], ["Mesai", "Manuel veya günlük mesai"], ["Kesinti", "Eksik gün / özel kesinti"], ["IBAN", "Maaş ödeme hesabı"]])}</article>
+      </section>
+    `,
+    payrollDefinitions: `
+      <section class="bordro-tab-content">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Bordro Tanımları"))}</h3>
+          ${compactRows(["Alan", "Kural", "Durumu"], [["Brüt Maaş", "Personel bazlı girilir", "AKTİF"], ["Net Maaş", "Bordroda takip edilir", "AKTİF"], ["Avans", "Borç / Avans Yönetimi ile takip edilir", "AKTİF"], ["Personele Yayın", "Yönetici onayından sonra açılır", "AKTİF"]])}
+        </article>
+      </section>
+      ${quickActions}
+    `,
+    reports: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Raporlar"))}</h3>
+          ${compactRows(["Rapor Adı", "Dönem", "Durumu"], reports.map((report) => [report.title, report.period, report.status]))}
+        </article>
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Dinamik Rapor"))}</h3>
+          ${compactRows(["Başlık", "Toplam"], [["Net Bordro", formatMoney(totalNet)], ["Avans", formatMoney(totalAdvance)], ["Kesinti", formatMoney(totalDeduction)], ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`]])}
+        </article>
+      </section>
+      ${quickActions}
+    `,
+    operations: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("İşlemler"))}</h3>
+          ${compactRows(["Personel", "Dönem", "Bordro Durumu", "Portal Durumu"], payroll.map((record) => [record.person, record.period, record.payrollStatus, record.publishStatus]))}
+        </article>
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Faturalar"))}</h3>
+          ${compactRows(["Firma", "Tutar", "Durumu", "Ödeme Durumu"], invoices.map((record) => [record.company, record.amount, record.status, record.paymentStatus]))}
+        </article>
+      </section>
+    `,
+    dynamic: `
+      <section class="bordro-tab-content">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Dinamik Rapor"))}</h3>
+          <div class="dynamic-bars">
+            ${[
+              ["Net Bordro", totalNet, "#6847b8"],
+              ["Avans", totalAdvance, "#f59e0b"],
+              ["Kesinti", totalDeduction, "#ef4444"],
+              ["Mesai", totalOvertime * 1000, "#0891b2"],
+            ]
+              .map(([label, value, color]) => {
+                const max = Math.max(totalNet, totalAdvance, totalDeduction, totalOvertime * 1000, 1);
+                return `<div><span>${escapeHtml(trText(label))}</span><i style="--bar-color:${color};width:${Math.max(6, Math.round((value / max) * 100))}%"></i><b>${escapeHtml(label === "Mesai" ? `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa` : formatMoney(value))}</b></div>`;
+              })
+              .join("")}
+          </div>
+        </article>
+      </section>
+    `,
+    integrate: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">${compactRows(["Entegrasyon", "Kullanım", "Durumu"], [["Supabase", "Canlı veri ve giriş", "AKTİF"], ["Vercel", "Canlı yayın", "AKTİF"], ["Excel", "Dışa aktarım", "AKTİF"], ["PDF", "Yazdırılabilir çıktı", "AKTİF"]])}</article>
+        <article class="bordro-panel">${compactRows(["Aktarım", "Açıklama"], [["Personel", "Kullanıcı ve personel eşleşmesi"], ["Bordro", "Bordro durum ve dosya takibi"], ["Puantaj", "Günlük saat ve mesai"], ["Rapor", "Yönetim çıktıları"]])}</article>
+      </section>
+    `,
+    advance: `
+      <section class="bordro-tab-content">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Borç / Avans Yönetimi"))}</h3>
+          ${compactRows(["Personel", "Dönem", "Avans", "Kesinti"], payroll.map((record) => [record.person, record.period, record.advance || "0 TL", record.deduction || "0 TL"]))}
+        </article>
+      </section>
+    `,
+    redBulletin: `
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Kırmızı Bülten"))}</h3>
+          ${compactRows(["Uyarı", "Adet", "Durumu"], [["Onay bekleyen bordro", approvals.filter((item) => item.moduleId === "payroll").length, approvals.some((item) => item.moduleId === "payroll") ? "Onay Bekliyor" : "Tamam"], ["Açık görev", tasks.length, tasks.length ? "Açık" : "Tamam"], ["Kesilmeyen fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Kontrol"]])}
+        </article>
+        <article class="bordro-panel">${compactRows(["Bildirim", "Öncelik"], getScopedRecords(getModule("notifications")).filter((record) => record.status === "Açık").map((record) => [record.description, record.priority]))}</article>
+      </section>
+    `,
+  };
+  const activeContent = tabContents[payrollCenterTab] || tabContents.home;
 
   document.querySelector("#pageContent").innerHTML = `
     <section class="bordro-center">
@@ -1995,129 +2268,7 @@ function renderPayrollCenter() {
             </label>
           </div>
         </header>
-        <section class="bordro-hero">
-          <div>
-            <span>${escapeHtml(periodLabel)}</span>
-            <h2>${escapeHtml(trText("Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin."))}</h2>
-            <p>${escapeHtml(`${formatMoney(totalNet)} net bordro · ${formatMoney(totalAdvance)} avans · ${formatMoney(totalDeduction)} kesinti · ${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat çalışma`)}</p>
-          </div>
-          <div class="payroll-progress">
-            <strong>%${escapeHtml(payrollProgress)}</strong>
-            <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
-          </div>
-        </section>
-        <section class="bordro-kpis">
-          ${kpis
-            .map(
-              ([label, value, icon]) => `
-                <article>
-                  <span data-icon="${icon}"></span>
-                  <small>${escapeHtml(monthName)}</small>
-                  <strong>${escapeHtml(value)}</strong>
-                  <b>${escapeHtml(trText(label))}</b>
-                </article>
-              `,
-            )
-            .join("")}
-        </section>
-        <section class="bordro-board">
-          <article class="bordro-panel calendar-panel">
-            <header>
-              <div>
-                <b>${escapeHtml(trText("Takvimler"))}</b>
-                <h3>${escapeHtml(monthName)}</h3>
-              </div>
-              <div class="calendar-legend">
-                <span class="today">${escapeHtml(trText("Bugün"))}</span>
-                <span class="holiday">${escapeHtml(trText("Tatil Günleri"))}</span>
-                <span class="weekend">${escapeHtml(trText("Haftasonu"))}</span>
-              </div>
-            </header>
-            <div class="mini-calendar">
-              ${["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((day) => `<strong>${escapeHtml(currentLanguage === "en" ? trText(day) : day)}</strong>`).join("")}
-              ${days
-                .map(
-                  ({ day, weekend, events: dayEvents }) => `
-                    <button class="${weekend ? "weekend" : ""} ${dayEvents.length ? "has-event" : ""}" type="button">
-                      <small>${day}</small>
-                      ${dayEvents.map((event) => `<span>${escapeHtml(trText(event))}</span>`).join("")}
-                    </button>
-                  `,
-                )
-                .join("")}
-            </div>
-          </article>
-          <aside class="bordro-panel authority-panel">
-            <header>
-              <div>
-                <b>${escapeHtml(workplaceNames[0] || "Artı Destek Hizmetleri A.Ş.")}</b>
-                <h3>${escapeHtml(trText("Bordro Süreci"))}</h3>
-              </div>
-              <button type="button" data-nav="approvals">${escapeHtml(approvals.length || "OK")}</button>
-            </header>
-            <label class="workplace-filter">
-              ${escapeHtml(trText("İş Yeri Listesi"))}
-              <select>
-                <option>${escapeHtml(trText("Tümü"))}</option>
-                ${workplaceNames.slice(0, 8).map((name) => `<option>${escapeHtml(name)}</option>`).join("")}
-              </select>
-            </label>
-            <div class="process-flow">
-              ${processSteps
-                .map(
-                  ([label, count, state, nav]) => `
-                    <button class="${state}" type="button" data-nav="${nav}">
-                      <span>${escapeHtml(trText(label))}</span>
-                      <strong>${escapeHtml(count)}</strong>
-                    </button>
-                  `,
-                )
-                .join("")}
-            </div>
-            <div class="authority-table">
-              <div class="authority-head">
-                <b>${escapeHtml(trText("Yetki Tablosu"))}</b>
-                <button type="button" data-action="export">${escapeHtml(trText("EXCEL"))}</button>
-              </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>${escapeHtml(trText("Rol Listesi"))}</th>
-                    <th>${escapeHtml(trText("Başlangıç Tarihi"))}</th>
-                    <th>${escapeHtml(trText("Bitiş Tarihi"))}</th>
-                    <th>${escapeHtml(trText("Ad Soyad"))}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${
-                    roles.length
-                      ? roles
-                          .map(
-                            (role) => `
-                              <tr>
-                                <td>${escapeHtml(trText(role.role))}</td>
-                                <td>${escapeHtml(role.start)}</td>
-                                <td>${escapeHtml(role.end)}</td>
-                                <td>${escapeHtml(role.name)}</td>
-                              </tr>
-                            `,
-                          )
-                          .join("")
-                      : `<tr><td colspan="4">${escapeHtml(trText("Kayıt bulunamadı."))}</td></tr>`
-                  }
-                </tbody>
-              </table>
-              <p><span>${escapeHtml(trText("Bağlı Olunan Yönetici"))}</span><b>${escapeHtml(trText("Yönetici"))}</b></p>
-            </div>
-          </aside>
-        </section>
-        <section class="bordro-actions">
-          <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
-          <button type="button" data-nav="payroll">${escapeHtml(trText("Bordro Listesine Git"))}</button>
-          <button type="button" data-nav="attendance">${escapeHtml(trText("Puantajı Aç"))}</button>
-          <button type="button" data-nav="approvals">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
-          <button type="button" data-nav="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
-        </section>
+        ${activeContent}
       </main>
     </section>
   `;

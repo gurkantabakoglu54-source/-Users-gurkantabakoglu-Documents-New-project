@@ -1199,6 +1199,106 @@ tbody tr.selected {
   font-weight: 900;
 }
 
+.bordro-tab-grid,
+.bordro-tab-content {
+  display: grid;
+  gap: 14px;
+}
+
+.bordro-tab-grid {
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.bordro-tab-grid button {
+  display: grid;
+  gap: 8px;
+  min-height: 148px;
+  align-content: end;
+  padding: 18px;
+  border: 1px solid rgba(104, 71, 184, 0.16);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(246, 244, 255, 0.96));
+  color: #343957;
+  text-align: left;
+  box-shadow: 0 14px 30px rgba(48, 56, 92, 0.08);
+}
+
+.bordro-tab-grid button strong {
+  color: #4a2b96;
+  font-size: 20px;
+}
+
+.bordro-tab-grid button span {
+  color: #69718c;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.bordro-tab-content.two-col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bordro-panel > h3 {
+  margin: 0 0 14px;
+  color: #353c60;
+}
+
+.bordro-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.bordro-table table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.bordro-table th,
+.bordro-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #edf0f5;
+  color: #4f5874;
+  font-size: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.bordro-table th {
+  background: #fbfcff;
+  color: #7b84a0;
+  font-weight: 950;
+}
+
+.dynamic-bars {
+  display: grid;
+  gap: 14px;
+}
+
+.dynamic-bars div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 130px;
+  gap: 12px;
+  align-items: center;
+}
+
+.dynamic-bars span,
+.dynamic-bars b {
+  color: #4f5874;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.dynamic-bars i {
+  display: block;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--bar-color);
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--bar-color) 28%, transparent);
+}
+
 @media (max-width: 1180px) {
   .kpi-grid,
   .dashboard-grid,
@@ -1217,6 +1317,11 @@ tbody tr.selected {
 
   .bordro-board {
     grid-template-columns: 1fr;
+  }
+
+  .bordro-tab-grid,
+  .bordro-tab-content.two-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1354,6 +1459,15 @@ tbody tr.selected {
 
   .process-flow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bordro-tab-grid,
+  .bordro-tab-content.two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .dynamic-bars div {
+    grid-template-columns: 1fr;
   }
 
   .calendar-panel {
