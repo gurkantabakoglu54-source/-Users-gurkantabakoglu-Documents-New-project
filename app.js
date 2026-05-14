@@ -580,7 +580,7 @@ const supabaseClient =
     : null;
 const isRemoteMode = Boolean(supabaseClient);
 const remoteClientMissing = hasRemoteConfig && !supabaseClient;
-let activeModuleId = "panel";
+let activeModuleId = "payrollCenter";
 let selectedRecordId = "";
 let filterValue = "";
 let selectedMonth = "05.2026";
