@@ -608,6 +608,22 @@ const moduleQuickFilters = {
   notifications: { key: "status", options: ["Tümü", "Açık", "Tamamlandı"] },
 };
 
+const payrollCenterTabs = [
+  ["home", "Anasayfa", "panel"],
+  ["menu", "Bordro Merkezi Menü", "grid"],
+  ["system", "Sistem Yönetimi", "settings"],
+  ["calendar", "Takvim Yönetimi", "calendar"],
+  ["company", "Şirket Yönetimi", "building"],
+  ["definitions", "Tanımlar", "checklist"],
+  ["payrollDefinitions", "Bordro Tanımları", "invoice"],
+  ["reports", "Raporlar", "chart"],
+  ["operations", "İşlemler", "wallet"],
+  ["dynamic", "Dinamik Rapor", "barChart"],
+  ["integrate", "Fintegrate", "send"],
+  ["advance", "Borç / Avans Yönetimi", "wallet"],
+  ["redBulletin", "Kırmızı Bülten", "bell"],
+];
+
 const moduleAccentColors = {
   panel: "#2f80ed",
   payrollCenter: "#6947b8",
@@ -1406,27 +1422,20 @@ function switchLanguage(language) {
 }
 
 function renderSideNav() {
-  document.querySelector("#sideNav").innerHTML = modules
-    .filter((module) => canAccessModule(module) && !module.navHidden)
-    .map(
-      (module) => `
-        <button class="${module.id === activeModuleId ? "active" : ""}" type="button" data-nav="${module.id}">
-          <span class="nav-icon" style="--module-color:${moduleAccentColors[module.id] || "#0d3154"}" data-icon="${module.icon}"></span>
-          <span>${escapeHtml(trText(module.title))}</span>
+  activeModuleId = "payrollCenter";
+  document.querySelector("#sideNav").innerHTML = `
+    <div class="side-section-title">${escapeHtml(trText("Bordro Merkezi"))}</div>
+    ${payrollCenterTabs
+      .map(
+        ([id, label, icon]) => `
+        <button class="${payrollCenterTab === id ? "active" : ""}" type="button" data-payroll-center-tab="${id}">
+          <span class="nav-icon" style="--module-color:#6947b8" data-icon="${icon}"></span>
+          <span>${escapeHtml(trText(label))}</span>
         </button>
-        ${(module.children ?? [])
-          .map(
-            (child) => `
-              <button class="child" type="button" data-nav="${module.id}">
-                <span data-icon="${module.icon}"></span>
-                <span>${escapeHtml(trText(child))}</span>
-              </button>
-            `,
-          )
-          .join("")}
       `,
-    )
-    .join("");
+      )
+      .join("")}
+  `;
 }
 
 function renderBreadcrumb(module) {
@@ -1905,21 +1914,6 @@ function renderPayrollCenter() {
       name: `${user.name || ""} ${user.surname || ""}`.trim() || user.email || "-",
       manager: user.type === "Admin" ? "Yönetici" : "Bordro Yöneticisi",
     }));
-  const centerTabs = [
-    ["home", "Anasayfa", "panel"],
-    ["menu", "Bordro Merkezi Menü", "grid"],
-    ["system", "Sistem Yönetimi", "settings"],
-    ["calendar", "Takvim Yönetimi", "calendar"],
-    ["company", "Şirket Yönetimi", "building"],
-    ["definitions", "Tanımlar", "checklist"],
-    ["payrollDefinitions", "Bordro Tanımları", "invoice"],
-    ["reports", "Raporlar", "chart"],
-    ["operations", "İşlemler", "wallet"],
-    ["dynamic", "Dinamik Rapor", "barChart"],
-    ["integrate", "Fintegrate", "send"],
-    ["advance", "Borç / Avans Yönetimi", "wallet"],
-    ["redBulletin", "Kırmızı Bülten", "bell"],
-  ];
   const events = {
     5: ["Maaş Ödeme"],
     10: ["Puantaj Teslim"],
@@ -1935,12 +1929,12 @@ function renderPayrollCenter() {
     return { day, weekend, events: events[day] || [] };
   });
   const processSteps = [
-    ["Puantaj Teslim", attendance.length, attendance.length ? "done" : "waiting", "attendance"],
-    ["İK Kontrol", payroll.filter((record) => record.hrApproval === "Onaylandı").length, "done", "payroll"],
-    ["Muhasebe", payroll.filter((record) => record.accountingApproval === "Onaylandı").length, "done", "payroll"],
-    ["Yönetici Onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "done", "approvals"],
-    ["Personele Yayın", openedPayroll, openedPayroll === payroll.length && payroll.length ? "done" : "waiting", "payroll"],
-    ["Görüldü Takibi", payroll.filter((record) => record.viewStatus === "Görüldü").length, "waiting", "payroll"],
+    ["Puantaj Teslim", attendance.length, attendance.length ? "done" : "waiting", "calendar"],
+    ["İK Kontrol", payroll.filter((record) => record.hrApproval === "Onaylandı").length, "done", "system"],
+    ["Muhasebe", payroll.filter((record) => record.accountingApproval === "Onaylandı").length, "done", "operations"],
+    ["Yönetici Onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "done", "system"],
+    ["Personele Yayın", openedPayroll, openedPayroll === payroll.length && payroll.length ? "done" : "waiting", "operations"],
+    ["Görüldü Takibi", payroll.filter((record) => record.viewStatus === "Görüldü").length, "waiting", "operations"],
   ];
   const kpis = [
     ["Çalışan", personnel.length, "users"],
@@ -1973,10 +1967,10 @@ function renderPayrollCenter() {
   const quickActions = `
     <section class="bordro-actions">
       <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
-      <button type="button" data-nav="payroll">${escapeHtml(trText("Bordro Listesine Git"))}</button>
-      <button type="button" data-nav="attendance">${escapeHtml(trText("Puantajı Aç"))}</button>
-      <button type="button" data-nav="approvals">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
-      <button type="button" data-nav="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
+      <button type="button" data-payroll-center-tab="operations">${escapeHtml(trText("Bordro Listesine Git"))}</button>
+      <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
+      <button type="button" data-payroll-center-tab="system">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
+      <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
     </section>
   `;
   const calendarPanel = `
@@ -2014,7 +2008,7 @@ function renderPayrollCenter() {
           <b>${escapeHtml(workplaceNames[0] || "Artı Destek Hizmetleri A.Ş.")}</b>
           <h3>${escapeHtml(trText("Bordro Süreci"))}</h3>
         </div>
-        <button type="button" data-nav="approvals">${escapeHtml(approvals.length || "OK")}</button>
+        <button type="button" data-payroll-center-tab="system">${escapeHtml(approvals.length || "OK")}</button>
       </header>
       <label class="workplace-filter">
         ${escapeHtml(trText("İş Yeri Listesi"))}
@@ -2027,7 +2021,7 @@ function renderPayrollCenter() {
         ${processSteps
           .map(
             ([label, count, state, nav]) => `
-              <button class="${state}" type="button" data-nav="${nav}">
+              <button class="${state}" type="button" data-payroll-center-tab="${nav}">
                 <span>${escapeHtml(trText(label))}</span>
                 <strong>${escapeHtml(count)}</strong>
               </button>
@@ -2088,7 +2082,7 @@ function renderPayrollCenter() {
         ]
           .map(
             ([title, text, nav]) => `
-              <button type="button" data-nav="${nav}">
+              <button type="button" data-payroll-center-tab="${nav === "personnel360" ? "menu" : nav === "payroll" ? "operations" : nav === "reports" ? "reports" : "calendar"}">
                 <strong>${escapeHtml(trText(title))}</strong>
                 <span>${escapeHtml(trText(text))}</span>
               </button>
@@ -2221,35 +2215,13 @@ function renderPayrollCenter() {
   const activeContent = tabContents[payrollCenterTab] || tabContents.home;
 
   document.querySelector("#pageContent").innerHTML = `
-    <section class="bordro-center">
-      <aside class="bordro-center-menu">
-        <div class="mini-brand">
-          <strong>Artı Destek</strong>
-          <span>${escapeHtml(trText("Bordro operasyon merkezi"))}</span>
-        </div>
-        <div class="workplace-select">
-          <b>${escapeHtml(workplaceNames[0] || "Artı Destek A.Ş.")}</b>
-          <span data-icon="chevron"></span>
-        </div>
-        <nav>
-          ${centerTabs
-            .map(
-              ([id, label, icon]) => `
-                <button class="${payrollCenterTab === id ? "active" : ""}" type="button" data-payroll-center-tab="${id}">
-                  <span data-icon="${icon}"></span>
-                  ${escapeHtml(trText(label))}
-                </button>
-              `,
-            )
-            .join("")}
-        </nav>
-      </aside>
+    <section class="bordro-center bordro-center-full">
       <main class="bordro-workspace">
         <header class="bordro-topline">
           <div>
             <span>${escapeHtml(trText("Personel Yönetimi"))}</span>
             <span>${escapeHtml(trText("Bordro İşlemleri"))}</span>
-            <strong>${escapeHtml(trText(centerTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa"))}</strong>
+            <strong>${escapeHtml(trText(payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa"))}</strong>
           </div>
           <div class="bordro-period">
             <label>${escapeHtml(trText("Tarih Aralığı"))}
@@ -3452,10 +3424,15 @@ function renderModule(module) {
 }
 
 function switchModule(id) {
+  if (id !== "payrollCenter") {
+    payrollCenterTab = id === "panel" ? "home" : payrollCenterTab;
+    id = "payrollCenter";
+  }
+
   if (!canAccessModule(getModule(id))) {
-    activeModuleId = "panel";
+    activeModuleId = "payrollCenter";
     renderSideNav();
-    renderModule(getModule("panel"));
+    renderModule(getModule("payrollCenter"));
     return;
   }
 
@@ -3534,7 +3511,8 @@ function showLogin() {
 function showApp(user) {
   renderLanguageSwitch();
   currentUser = user;
-  if (!canAccessModule(getModule(activeModuleId))) activeModuleId = "panel";
+  activeModuleId = "payrollCenter";
+  if (!canAccessModule(getModule(activeModuleId))) activeModuleId = "payrollCenter";
   document.querySelector("#currentUserName").textContent = user.displayName;
   document.querySelector("#loginPage").hidden = true;
   document.querySelector("#appShell").hidden = false;
@@ -3807,6 +3785,8 @@ document.addEventListener("click", (event) => {
   const payrollCenterButton = event.target.closest("[data-payroll-center-tab]");
   if (payrollCenterButton) {
     payrollCenterTab = payrollCenterButton.dataset.payrollCenterTab;
+    activeModuleId = "payrollCenter";
+    renderSideNav();
     renderPayrollCenter();
     renderIcons();
     return;

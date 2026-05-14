@@ -101,6 +101,15 @@ body {
   padding: 10px 12px 18px;
 }
 
+.side-section-title {
+  padding: 10px 12px 8px;
+  color: #6947b8;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
 .side-nav button {
   min-height: 48px;
   border-radius: 10px;
@@ -689,6 +698,10 @@ tbody tr.selected {
   border-radius: 18px;
   background: #f4f6fb;
   box-shadow: var(--ad-shadow);
+}
+
+.bordro-center-full {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .bordro-center-menu {
