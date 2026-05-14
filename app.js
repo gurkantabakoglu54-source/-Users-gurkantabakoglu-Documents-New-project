@@ -1964,6 +1964,83 @@ function renderPayrollCenter() {
       </table>
     </div>
   `;
+  const crudPanel = (title, moduleId, columnKeys, sourceRecords = getScopedRecords(getModule(moduleId))) => {
+    const module = getModule(moduleId);
+    const visibleColumns = columnKeys
+      .map((key) => module.columns?.find(([columnKey]) => columnKey === key))
+      .filter(Boolean);
+    const canEdit = canManageRecords() && !module.noActions;
+
+    return `
+      <article class="bordro-panel crud-panel">
+        <header>
+          <div>
+            <b>${escapeHtml(trText(module.title))}</b>
+            <h3>${escapeHtml(trText(title))}</h3>
+          </div>
+          <div class="panel-tools">
+            ${canEdit ? `<button type="button" data-action="add" data-module="${moduleId}">${escapeHtml(trText("Ekle"))}</button>` : ""}
+            <button type="button" data-action="export" data-module="${moduleId}">${escapeHtml(trText("EXCEL"))}</button>
+            <button type="button" data-action="export-pdf" data-module="${moduleId}">${escapeHtml(trText("PDF"))}</button>
+          </div>
+        </header>
+        <div class="bordro-table">
+          <table>
+            <thead>
+              <tr>
+                ${canEdit ? `<th>${escapeHtml(trText("İşlemler"))}</th>` : ""}
+                ${visibleColumns.map(([, label]) => `<th>${escapeHtml(trText(label))}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>
+              ${
+                sourceRecords.length
+                  ? sourceRecords
+                      .map(
+                        (record) => `
+                          <tr>
+                            ${
+                              canEdit
+                                ? `<td>
+                                    <span class="actions">
+                                      <button class="icon-action" type="button" title="${escapeHtml(trText("Düzenle"))}" data-action="edit" data-module="${moduleId}" data-id="${record.id}"><span data-icon="edit"></span></button>
+                                      <button class="icon-action" type="button" title="${escapeHtml(trText("Sil"))}" data-action="delete" data-module="${moduleId}" data-id="${record.id}"><span data-icon="trash"></span></button>
+                                      ${
+                                        moduleId === "payroll"
+                                          ? `
+                                            <button class="icon-action" type="button" title="${escapeHtml(trText("Muhasebe Onayı"))}" data-action="payroll-accounting" data-id="${record.id}"><span data-icon="check"></span></button>
+                                            <button class="icon-action" type="button" title="${escapeHtml(trText("Yönetici Onayı"))}" data-action="payroll-management" data-id="${record.id}"><span data-icon="check"></span></button>
+                                            <button class="icon-action" type="button" title="${escapeHtml(trText("Personele Yayın"))}" data-action="payroll-publish" data-id="${record.id}"><span data-icon="send"></span></button>
+                                          `
+                                          : ""
+                                      }
+                                      ${
+                                        ["leaves", "tasks", "notifications", "invoices"].includes(moduleId)
+                                          ? `<button class="icon-action" type="button" title="${escapeHtml(trText("Onayla"))}" data-action="approval-complete" data-module="${moduleId}" data-id="${record.id}"><span data-icon="check"></span></button>`
+                                          : ""
+                                      }
+                                    </span>
+                                  </td>`
+                                : ""
+                            }
+                            ${visibleColumns
+                              .map(([key]) => {
+                                const value = moduleId === "attendance" && key === "totalHours" ? calculateAttendanceTotal(record) : getExportValue(record[key]);
+                                return `<td>${escapeHtml(trText(String(value || "-")))}</td>`;
+                              })
+                              .join("")}
+                          </tr>
+                        `,
+                      )
+                      .join("")
+                  : `<tr><td colspan="${visibleColumns.length + (canEdit ? 1 : 0)}">${escapeHtml(trText("Kayıt bulunamadı."))}</td></tr>`
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    `;
+  };
   const quickActions = `
     <section class="bordro-actions">
       <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
@@ -2093,62 +2170,38 @@ function renderPayrollCenter() {
     `,
     system: `
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Sistem Yönetimi"))}</h3>
-          ${compactRows(["Ayar", "Değer", "Durumu"], [
-            ["Bordro Kilidi", "Ay kapanınca kilitlenir", "AKTİF"],
-            ["Rol Bazlı Erişim", "Admin / Kullanıcı / Müşteri", "AKTİF"],
-            ["Dosya Güvenliği", "Supabase Storage", "AKTİF"],
-            ["Denetim Kaydı", "Tüm kritik işlemler izlenir", "AKTİF"],
-          ])}
-        </article>
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Onay Merkezi"))}</h3>
-          ${compactRows(["Modül", "Bekleyen", "Durumu"], [
-            ["Bordro", approvals.filter((item) => item.moduleId === "payroll").length, approvals.some((item) => item.moduleId === "payroll") ? "Onay Bekliyor" : "Tamam"],
-            ["İzinler", approvals.filter((item) => item.moduleId === "leaves").length, approvals.some((item) => item.moduleId === "leaves") ? "Onay Bekliyor" : "Tamam"],
-            ["Görevler", tasks.length, tasks.length ? "Açık" : "Tamam"],
-          ])}
-        </article>
+        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
+        ${crudPanel("Sistem Ayarları", "settings", ["setting", "value", "description", "status"], getScopedRecords(getModule("settings")))}
       </section>
       ${quickActions}
     `,
     calendar: `
       <section class="bordro-tab-content">${calendarPanel}</section>
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">${compactRows(["Tarih", "İşlem", "Sorumlu"], [["05", "Maaş Ödeme", "Muhasebe"], ["10", "Puantaj Teslim", "İK"], ["15", "SGK Son Gün", "Muhasebe"], ["25", "Müşteri Onayı", "Yönetici"], ["28", "Bordro Kapanış", "İK"]])}</article>
-        <article class="bordro-panel">${compactRows(["Dönem", "Çalışma", "Mesai"], attendance.map((record) => [record.period, `${calculateAttendanceTotal(record)} sa`, `${parseHour(record.overtimeHours) + getAttendanceDayOvertime(record)} sa`]))}</article>
+        ${crudPanel("Aylık Puantaj Girişi", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
+        ${crudPanel("İzin ve Tatil Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], getScopedRecords(getModule("leaves")))}
       </section>
     `,
     company: `
       <section class="bordro-tab-content">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Şirket Yönetimi"))}</h3>
-          ${compactRows(["Firma", "Yetkili", "Şehir", "Sözleşme"], companies.map((company) => [company.name, company.authorized, company.city, company.contractStatus || "Beklemede"]))}
-        </article>
+        ${crudPanel("Şirket Yönetimi", "companies", ["name", "authorized", "email", "phone", "city", "contractStatus", "contractFile", "offerFile"], companies)}
       </section>
     `,
     definitions: `
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">${compactRows(["Tanım", "Değer", "Durumu"], [["Günlük Çalışma", "7,5 / 9 saat", "AKTİF"], ["İzin Türleri", "Yıllık / Rapor / Görev", "AKTİF"], ["Çalışan Durumu", "Aktif / Pasif", "AKTİF"], ["Şehir / Şube", "Plaka kodlu takip", "AKTİF"]])}</article>
-        <article class="bordro-panel">${compactRows(["Bordro Alanı", "Açıklama"], [["Avans", "Bordrodan düşülecek tutar"], ["Mesai", "Manuel veya günlük mesai"], ["Kesinti", "Eksik gün / özel kesinti"], ["IBAN", "Maaş ödeme hesabı"]])}</article>
+        ${crudPanel("Personel Tanımları", "personnel", ["name", "department", "role", "city", "startDate", "documentStatus", "status"], personnel)}
+        ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
       </section>
     `,
     payrollDefinitions: `
       <section class="bordro-tab-content">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Bordro Tanımları"))}</h3>
-          ${compactRows(["Alan", "Kural", "Durumu"], [["Brüt Maaş", "Personel bazlı girilir", "AKTİF"], ["Net Maaş", "Bordroda takip edilir", "AKTİF"], ["Avans", "Borç / Avans Yönetimi ile takip edilir", "AKTİF"], ["Personele Yayın", "Yönetici onayından sonra açılır", "AKTİF"]])}
-        </article>
+        ${crudPanel("Bordro Tanımları ve Kayıtları", "payroll", ["person", "period", "grossSalary", "netSalary", "advance", "overtime", "deduction", "payrollStatus", "publishStatus"], payroll)}
       </section>
       ${quickActions}
     `,
     reports: `
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Raporlar"))}</h3>
-          ${compactRows(["Rapor Adı", "Dönem", "Durumu"], reports.map((report) => [report.title, report.period, report.status]))}
-        </article>
+        ${crudPanel("Raporlar", "reports", ["title", "period", "type", "owner", "status"], reports)}
         <article class="bordro-panel">
           <h3>${escapeHtml(trText("Dinamik Rapor"))}</h3>
           ${compactRows(["Başlık", "Toplam"], [["Net Bordro", formatMoney(totalNet)], ["Avans", formatMoney(totalAdvance)], ["Kesinti", formatMoney(totalDeduction)], ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`]])}
@@ -2158,14 +2211,8 @@ function renderPayrollCenter() {
     `,
     operations: `
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("İşlemler"))}</h3>
-          ${compactRows(["Personel", "Dönem", "Bordro Durumu", "Portal Durumu"], payroll.map((record) => [record.person, record.period, record.payrollStatus, record.publishStatus]))}
-        </article>
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Faturalar"))}</h3>
-          ${compactRows(["Firma", "Tutar", "Durumu", "Ödeme Durumu"], invoices.map((record) => [record.company, record.amount, record.status, record.paymentStatus]))}
-        </article>
+        ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "netSalary", "payrollStatus", "accountingApproval", "managementApproval", "publishStatus", "viewStatus"], payroll)}
+        ${crudPanel("Fatura ve Tahsilat İşlemleri", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
       </section>
     `,
     dynamic: `
@@ -2196,10 +2243,7 @@ function renderPayrollCenter() {
     `,
     advance: `
       <section class="bordro-tab-content">
-        <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Borç / Avans Yönetimi"))}</h3>
-          ${compactRows(["Personel", "Dönem", "Avans", "Kesinti"], payroll.map((record) => [record.person, record.period, record.advance || "0 TL", record.deduction || "0 TL"]))}
-        </article>
+        ${crudPanel("Borç / Avans Yönetimi", "payroll", ["person", "period", "advance", "deduction", "netSalary", "payrollStatus"], payroll)}
       </section>
     `,
     redBulletin: `
@@ -2208,7 +2252,7 @@ function renderPayrollCenter() {
           <h3>${escapeHtml(trText("Kırmızı Bülten"))}</h3>
           ${compactRows(["Uyarı", "Adet", "Durumu"], [["Onay bekleyen bordro", approvals.filter((item) => item.moduleId === "payroll").length, approvals.some((item) => item.moduleId === "payroll") ? "Onay Bekliyor" : "Tamam"], ["Açık görev", tasks.length, tasks.length ? "Açık" : "Tamam"], ["Kesilmeyen fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Kontrol"]])}
         </article>
-        <article class="bordro-panel">${compactRows(["Bildirim", "Öncelik"], getScopedRecords(getModule("notifications")).filter((record) => record.status === "Açık").map((record) => [record.description, record.priority]))}</article>
+        ${crudPanel("Bildirim ve Kırmızı Bülten Girişi", "notifications", ["date", "type", "moduleName", "description", "priority", "status"], getScopedRecords(getModule("notifications")))}
       </section>
     `,
   };
@@ -3145,8 +3189,8 @@ function getChartExportRows() {
   ];
 }
 
-function getActiveExportRows() {
-  const module = getModule();
+function getActiveExportRows(moduleId = activeModuleId) {
+  const module = getModule(moduleId);
   if (module.dashboard || module.chart) return getChartExportRows();
   if (module.id === "payrollCenter") {
     const periodMonths = getDashboardPeriodMonths();
@@ -3191,10 +3235,10 @@ function toCsv(rows) {
     .join("\n");
 }
 
-function downloadExport() {
-  const module = getModule();
+function downloadExport(moduleId = activeModuleId) {
+  const module = getModule(moduleId);
   const exportName = module.dashboard || module.chart ? `${selectedMonth}-grafik` : module.title;
-  const blob = new Blob(["\uFEFF", toCsv(getActiveExportRows())], { type: "text/csv;charset=utf-8" });
+  const blob = new Blob(["\uFEFF", toCsv(getActiveExportRows(module.id))], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -3205,9 +3249,9 @@ function downloadExport() {
   URL.revokeObjectURL(url);
 }
 
-function downloadPdfExport() {
-  const module = getModule();
-  const rows = getActiveExportRows();
+function downloadPdfExport(moduleId = activeModuleId) {
+  const module = getModule(moduleId);
+  const rows = getActiveExportRows(module.id);
   const title = module.dashboard ? "Online İşlemler" : module.title;
   const logoUrl = new URL("assets/arti-destek-logo.png", window.location.href).href;
   const printWindow = window.open("", "_blank");
@@ -3293,7 +3337,11 @@ function updatePayrollWorkflow(recordId, action) {
   addAudit("Bordro Akışı", module, record, action.replace("payroll-", "Bordro işlemi: "));
   selectedRecordId = record.id;
   saveRecords();
-  renderDataPage(module);
+  if (activeModuleId === "payrollCenter") {
+    renderPayrollCenter();
+  } else {
+    renderDataPage(module);
+  }
   renderSideNav();
   renderIcons();
 }
@@ -3337,7 +3385,11 @@ function completeApproval(moduleId, recordId) {
 
   addAudit("Onay", module, record, "Onay Merkezi üzerinden tamamlandı.");
   saveRecords();
-  renderApprovalsCenter();
+  if (activeModuleId === "payrollCenter") {
+    renderPayrollCenter();
+  } else {
+    renderApprovalsCenter();
+  }
   renderSideNav();
   renderIcons();
 }
@@ -3351,7 +3403,11 @@ function toggleRecordStatus(moduleId, recordId) {
   addAudit("Durum Değişikliği", module, record, `Yeni durum: ${record.status}`);
   selectedRecordId = record.id;
   saveRecords();
-  renderDataPage(module);
+  if (activeModuleId === "payrollCenter") {
+    renderPayrollCenter();
+  } else {
+    renderDataPage(module);
+  }
   renderSideNav();
   renderIcons();
 }
@@ -3568,8 +3624,9 @@ async function initSession() {
   renderIcons();
 }
 
-function openDialog(recordId = "") {
-  const module = getModule();
+function openDialog(recordId = "", moduleId = activeModuleId) {
+  const module = getModule(moduleId);
+  if (!module.columns?.length) return;
   const record = module.records.find((item) => item.id === recordId);
   document.querySelector("#moduleIdInput").value = module.id;
   document.querySelector("#recordIdInput").value = record?.id ?? "";
@@ -3738,7 +3795,11 @@ async function upsertRecord(event) {
   addAudit(recordId ? "Düzenleme" : "Ekleme", module, record, recordId ? "Kayıt güncellendi." : "Yeni kayıt oluşturuldu.");
   selectedRecordId = record.id;
   saveRecords();
-  renderDataPage(module);
+  if (activeModuleId === "payrollCenter") {
+    renderPayrollCenter();
+  } else {
+    renderDataPage(module);
+  }
   renderSideNav();
   renderIcons();
   closeDialog();
@@ -3816,17 +3877,17 @@ document.addEventListener("click", (event) => {
   }
 
   const action = manageButton.dataset.action;
-  const module = getModule();
+  const module = getModule(manageButton.dataset.module || activeModuleId);
   const recordId = manageButton.dataset.id || selectedRecordId;
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete"];
   if (manageActions.includes(action) && !canManageRecords()) return;
 
   if (action === "add") {
-    openDialog();
+    openDialog("", module.id);
   }
 
   if (action === "edit") {
-    openDialog(recordId);
+    openDialog(recordId, module.id);
   }
 
   if (action === "delete") {
@@ -3837,18 +3898,22 @@ document.addEventListener("click", (event) => {
       module.records = module.records.filter((item) => item.id !== recordId);
       selectedRecordId = module.records[0]?.id ?? "";
       saveRecords();
-      renderDataPage(module);
+      if (activeModuleId === "payrollCenter") {
+        renderPayrollCenter();
+      } else {
+        renderDataPage(module);
+      }
       renderSideNav();
       renderIcons();
     }
   }
 
   if (action === "export") {
-    downloadExport();
+    downloadExport(module.id);
   }
 
   if (action === "export-pdf") {
-    downloadPdfExport();
+    downloadPdfExport(module.id);
   }
 
   if (action === "project-chart") {

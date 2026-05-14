@@ -974,6 +974,28 @@ tbody tr.selected {
   margin-bottom: 14px;
 }
 
+.crud-panel header {
+  align-items: flex-start;
+}
+
+.panel-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.panel-tools button {
+  min-height: 32px;
+  padding: 7px 10px;
+  border: 1px solid #d9ddec;
+  border-radius: 8px;
+  background: #fff;
+  color: #503797;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .bordro-panel header b {
   color: #5c6380;
   font-size: 13px;
