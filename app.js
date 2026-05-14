@@ -39,8 +39,11 @@ const icons = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/>',
   wallet:
     '<path d="M20 7V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v10H5a3 3 0 0 1-3-3V6"/><path d="M16 13h.01"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
   settings:
     '<path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 1 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.1a2 2 0 1 1 0 4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+  grid:
+    '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 
@@ -89,6 +92,14 @@ const modules = [
     icon: "panel",
     breadcrumb: ["Panel"],
     dashboard: true,
+  },
+  {
+    id: "payrollCenter",
+    title: "Bordro Merkezi",
+    icon: "grid",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Ana Sayfa"],
+    noActions: true,
+    records: [],
   },
   {
     id: "companies",
@@ -577,6 +588,7 @@ let selectedDay = 4;
 let dashboardMonth = "05.2026";
 let dashboardRange = "month";
 let selectedPersonnel360Id = "";
+let payrollCenterTab = "home";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
@@ -598,6 +610,7 @@ const moduleQuickFilters = {
 
 const moduleAccentColors = {
   panel: "#2f80ed",
+  payrollCenter: "#6947b8",
   companies: "#0ea5a3",
   projects: "#f59e0b",
   users: "#7c3aed",
@@ -624,6 +637,8 @@ const moduleAccentColors = {
 
 const translations = {
   "Panel": "Dashboard",
+  "Bordro Merkezi": "Payroll Center",
+  "Ana Sayfa": "Home",
   "Firmalar": "Companies",
   "Firma Listesi": "Company List",
   "Projeler": "Projects",
@@ -811,6 +826,65 @@ const translations = {
   "EKLE": "ADD",
   "EXCEL": "EXCEL",
   "PDF": "PDF",
+  "Bordro Merkezi Menü": "Payroll Center Menu",
+  "Personel Yönetimi": "Personnel Management",
+  "Bordro İşlemleri": "Payroll Operations",
+  "Tarih Aralığı": "Date Range",
+  "Sistem Yönetimi": "System Management",
+  "Takvim Yönetimi": "Calendar Management",
+  "Şirket Yönetimi": "Company Management",
+  "Tanımlar": "Definitions",
+  "Bordro Tanımları": "Payroll Definitions",
+  "İşlemler": "Operations",
+  "Dinamik Rapor": "Dynamic Report",
+  "Fintegrate": "Fintegrate",
+  "Borç / Avans Yönetimi": "Debt / Advance Management",
+  "Kırmızı Bülten": "Red Bulletin",
+  "Bordro operasyon merkezi": "Payroll operations center",
+  "Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin.": "Track the whole payroll flow from timesheet to employee publishing on one screen.",
+  "Çalışan": "Employee",
+  "İşe Alınan": "Hired",
+  "İşten Ayrılan": "Left",
+  "Mevcut Çalışan": "Current Employee",
+  "Hesaplanmış / Final": "Calculated / Final",
+  "Devir": "Transfer",
+  "Takvimler": "Calendars",
+  "Bugün": "Today",
+  "Tatil Günleri": "Holidays",
+  "Haftasonu": "Weekend",
+  "Bordro Süreci": "Payroll Process",
+  "Yetki Tablosu": "Authority Table",
+  "İş Yeri Listesi": "Workplace List",
+  "Tümü": "All",
+  "Rol Listesi": "Role List",
+  "Başlangıç Tarihi": "Start Date",
+  "Bitiş Tarihi": "End Date",
+  "Ad Soyad": "Full Name",
+  "Bağlı Olunan Yönetici": "Reporting Manager",
+  "Yönetici": "Manager",
+  "Puantaj Teslim": "Timesheet Delivery",
+  "İK Kontrol": "HR Check",
+  "Muhasebe": "Accounting",
+  "Yönetici Onayı": "Manager Approval",
+  "Personele Yayın": "Employee Release",
+  "Görüldü Takibi": "View Tracking",
+  "SGK Son Gün": "Social Security Deadline",
+  "Maaş Ödeme": "Salary Payment",
+  "Bordro Kapanış": "Payroll Closing",
+  "Müşteri Onayı": "Customer Approval",
+  "Resmi Tatil": "Public Holiday",
+  "Hızlı İşlemler": "Quick Actions",
+  "Bordro Listesine Git": "Go to Payroll List",
+  "Puantajı Aç": "Open Timesheet",
+  "Onay Merkezini Aç": "Open Approval Center",
+  "Rapor Hazırla": "Prepare Report",
+  "Pzt": "Mon",
+  "Sal": "Tue",
+  "Çar": "Wed",
+  "Per": "Thu",
+  "Cum": "Fri",
+  "Cmt": "Sat",
+  "Paz": "Sun",
   "Ara:": "Search:",
   "Filtrele :": "Filter:",
   "İşlemler": "Actions",
@@ -1179,7 +1253,7 @@ function canAccessModule(module) {
   if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
   if (type === "PERSONEL") return ["panel", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications"].includes(module.id);
-  if (type === "MUSTERI") return ["panel", "projects", "quality", "invoices", "reports", "notifications"].includes(module.id);
+  if (type === "MUSTERI") return ["panel", "payrollCenter", "projects", "quality", "invoices", "reports", "notifications", "approvals"].includes(module.id);
   return true;
 }
 
@@ -1383,6 +1457,20 @@ function getDashboardPeriodMonths() {
 function getDashboardPeriodLabel(months = getDashboardPeriodMonths()) {
   if (months.length === 1) return months[0];
   return `${months[0]} - ${months[months.length - 1]}`;
+}
+
+function getMonthName(month = dashboardMonth) {
+  const [monthPart, yearPart] = String(month).split(".");
+  const names = currentLanguage === "en"
+    ? ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    : ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+  const index = Number(monthPart) - 1;
+  return `${names[index] || monthPart} ${yearPart || dashboardYear}`;
+}
+
+function getDateFromDashboardDay(day, month = dashboardMonth) {
+  const [monthPart, yearPart] = String(month).split(".");
+  return new Date(Number(yearPart || dashboardYear), Number(monthPart || "1") - 1, day);
 }
 
 function recordMatchesMonths(record, months, keys = ["date", "period", "startDate", "dueDate", "paymentDate"]) {
@@ -1630,6 +1718,7 @@ function renderDashboard() {
     ["Açık Bildirim", notifications.length, "notifications", getKpiState(notifications.length)],
   ];
   const cards = [
+    { id: "payrollCenter", value: pendingPayroll ? `${pendingPayroll}` : "OK", label: "Bordro Merkezi", icon: "grid", color: "purple" },
     { id: "companies", value: getRecordCount("companies"), label: "Firmalar", icon: "building", color: "cyan" },
     { id: "projects", value: `${getRecordCount("projects")} / ${getRecordCount("projects")}`, label: "Projeler / Parçalar", icon: "folder", color: "green" },
     { id: "personnel", value: getPersonnelTotal(), label: "Personeller", icon: "users", color: "orange" },
@@ -1747,7 +1836,7 @@ function renderDashboard() {
           ["Kalite", qualityRate >= 5 ? "Riskli" : "Kontrol altında", "quality", qualityRate >= 5 ? "bad" : "good"],
           ["İK / HR", missingDocuments || incompleteChecklist ? "Evrak takibi var" : "Tamam", "personnel360", missingDocuments || incompleteChecklist ? "bad" : "good"],
           ["Onay Merkezi", pendingApprovals ? "Onay bekliyor" : "Tamam", "approvals", pendingApprovals ? "bad" : "good"],
-          ["Bordro", pendingPayroll ? "Onay bekliyor" : "Yayınlandı", "payroll", pendingPayroll ? "bad" : "good"],
+          ["Bordro", pendingPayroll ? "Onay bekliyor" : "Yayınlandı", "payrollCenter", pendingPayroll ? "bad" : "good"],
           ["Finans", overdueInvoices ? "Tahsilat gecikti" : "Normal", "invoices", overdueInvoices ? "bad" : "good"],
           ["Raporlama", "PDF / Excel çıktıları aktif", "reports", "good"],
         ]
@@ -1779,6 +1868,257 @@ function renderDashboard() {
           `,
         )
         .join("")}
+    </section>
+  `;
+}
+
+function renderPayrollCenter() {
+  const periodMonths = getDashboardPeriodMonths();
+  const periodLabel = getDashboardPeriodLabel(periodMonths);
+  const monthName = getMonthName(dashboardMonth);
+  const personnel = getScopedRecords(getModule("personnel"));
+  const activePersonnel = personnel.filter((record) => String(record.status).toLocaleUpperCase("tr") !== "PASİF");
+  const hired = personnel.filter((record) => recordMatchesMonths(record, periodMonths, ["startDate"])).length;
+  const left = personnel.filter((record) => recordMatchesMonths(record, periodMonths, ["exitDate"])).length;
+  const payroll = getScopedRecords(getModule("payroll")).filter((record) => periodMonths.includes(record.period));
+  const attendance = getScopedRecords(getModule("attendance")).filter((record) => periodMonths.includes(record.period));
+  const approvals = getApprovalItems().filter((item) => item.moduleId === "payroll" || item.moduleId === "leaves");
+  const finalPayroll = payroll.filter((record) => record.payrollStatus === "Personele Açıldı" || record.managementApproval === "Onaylandı").length;
+  const openedPayroll = payroll.filter((record) => record.publishStatus === "Personele Açıldı").length;
+  const totalNet = payroll.reduce((sum, record) => sum + parseMoney(record.netSalary), 0);
+  const totalAdvance = payroll.reduce((sum, record) => sum + parseMoney(record.advance), 0);
+  const totalDeduction = payroll.reduce((sum, record) => sum + parseMoney(record.deduction), 0);
+  const totalHours = attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
+  const totalOvertime = attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
+  const payrollProgress = payroll.length ? Math.round((finalPayroll / payroll.length) * 100) : 0;
+  const workplaceNames = [...new Set(getScopedRecords(getModule("companies")).map((record) => record.name).filter(Boolean))];
+  const roles = getScopedRecords(getModule("users"))
+    .slice(0, 6)
+    .map((user) => ({
+      role: user.type || "Kullanıcı",
+      start: user.startDate || "12.12.2025",
+      end: user.endDate || "12.05.2053",
+      name: `${user.name || ""} ${user.surname || ""}`.trim() || user.email || "-",
+      manager: user.type === "Admin" ? "Yönetici" : "Bordro Yöneticisi",
+    }));
+  const centerTabs = [
+    ["home", "Anasayfa", "panel"],
+    ["menu", "Bordro Merkezi Menü", "grid"],
+    ["system", "Sistem Yönetimi", "settings"],
+    ["calendar", "Takvim Yönetimi", "calendar"],
+    ["company", "Şirket Yönetimi", "building"],
+    ["definitions", "Tanımlar", "checklist"],
+    ["payrollDefinitions", "Bordro Tanımları", "invoice"],
+    ["reports", "Raporlar", "chart"],
+    ["operations", "İşlemler", "wallet"],
+    ["dynamic", "Dinamik Rapor", "barChart"],
+    ["integrate", "Fintegrate", "send"],
+    ["advance", "Borç / Avans Yönetimi", "wallet"],
+    ["redBulletin", "Kırmızı Bülten", "bell"],
+  ];
+  const events = {
+    5: ["Maaş Ödeme"],
+    10: ["Puantaj Teslim"],
+    15: ["SGK Son Gün"],
+    19: ["Resmi Tatil"],
+    25: ["Müşteri Onayı"],
+    28: ["Bordro Kapanış"],
+  };
+  const days = Array.from({ length: 31 }, (_, index) => {
+    const day = index + 1;
+    const date = getDateFromDashboardDay(day);
+    const weekend = date.getDay() === 0 || date.getDay() === 6;
+    return { day, weekend, events: events[day] || [] };
+  });
+  const processSteps = [
+    ["Puantaj Teslim", attendance.length, attendance.length ? "done" : "waiting", "attendance"],
+    ["İK Kontrol", payroll.filter((record) => record.hrApproval === "Onaylandı").length, "done", "payroll"],
+    ["Muhasebe", payroll.filter((record) => record.accountingApproval === "Onaylandı").length, "done", "payroll"],
+    ["Yönetici Onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "done", "approvals"],
+    ["Personele Yayın", openedPayroll, openedPayroll === payroll.length && payroll.length ? "done" : "waiting", "payroll"],
+    ["Görüldü Takibi", payroll.filter((record) => record.viewStatus === "Görüldü").length, "waiting", "payroll"],
+  ];
+  const kpis = [
+    ["Çalışan", personnel.length, "users"],
+    ["İşe Alınan", hired, "contact"],
+    ["İşten Ayrılan", left, "contact"],
+    ["Mevcut Çalışan", activePersonnel.length, "users"],
+    ["Hesaplanmış / Final", `${finalPayroll}/${Math.max(payroll.length, 1)}`, "checklist"],
+    ["Devir", activePersonnel.length, "send"],
+  ];
+
+  document.querySelector("#pageContent").innerHTML = `
+    <section class="bordro-center">
+      <aside class="bordro-center-menu">
+        <div class="mini-brand">
+          <strong>Artı Destek</strong>
+          <span>${escapeHtml(trText("Bordro operasyon merkezi"))}</span>
+        </div>
+        <div class="workplace-select">
+          <b>${escapeHtml(workplaceNames[0] || "Artı Destek A.Ş.")}</b>
+          <span data-icon="chevron"></span>
+        </div>
+        <nav>
+          ${centerTabs
+            .map(
+              ([id, label, icon]) => `
+                <button class="${payrollCenterTab === id ? "active" : ""}" type="button" data-payroll-center-tab="${id}">
+                  <span data-icon="${icon}"></span>
+                  ${escapeHtml(trText(label))}
+                </button>
+              `,
+            )
+            .join("")}
+        </nav>
+      </aside>
+      <main class="bordro-workspace">
+        <header class="bordro-topline">
+          <div>
+            <span>${escapeHtml(trText("Personel Yönetimi"))}</span>
+            <span>${escapeHtml(trText("Bordro İşlemleri"))}</span>
+            <strong>${escapeHtml(trText(centerTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa"))}</strong>
+          </div>
+          <div class="bordro-period">
+            <label>${escapeHtml(trText("Tarih Aralığı"))}
+              <select id="dashboardRangeSelect">
+                ${dashboardRangeOptions
+                  .map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === dashboardRange ? "selected" : ""}>${escapeHtml(trText(label))}</option>`)
+                  .join("")}
+              </select>
+            </label>
+            <label>${escapeHtml(trText("Dönem"))}
+              <select id="dashboardMonthSelect">
+                ${getDashboardMonths()
+                  .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
+                  .join("")}
+              </select>
+            </label>
+          </div>
+        </header>
+        <section class="bordro-hero">
+          <div>
+            <span>${escapeHtml(periodLabel)}</span>
+            <h2>${escapeHtml(trText("Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin."))}</h2>
+            <p>${escapeHtml(`${formatMoney(totalNet)} net bordro · ${formatMoney(totalAdvance)} avans · ${formatMoney(totalDeduction)} kesinti · ${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat çalışma`)}</p>
+          </div>
+          <div class="payroll-progress">
+            <strong>%${escapeHtml(payrollProgress)}</strong>
+            <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
+          </div>
+        </section>
+        <section class="bordro-kpis">
+          ${kpis
+            .map(
+              ([label, value, icon]) => `
+                <article>
+                  <span data-icon="${icon}"></span>
+                  <small>${escapeHtml(monthName)}</small>
+                  <strong>${escapeHtml(value)}</strong>
+                  <b>${escapeHtml(trText(label))}</b>
+                </article>
+              `,
+            )
+            .join("")}
+        </section>
+        <section class="bordro-board">
+          <article class="bordro-panel calendar-panel">
+            <header>
+              <div>
+                <b>${escapeHtml(trText("Takvimler"))}</b>
+                <h3>${escapeHtml(monthName)}</h3>
+              </div>
+              <div class="calendar-legend">
+                <span class="today">${escapeHtml(trText("Bugün"))}</span>
+                <span class="holiday">${escapeHtml(trText("Tatil Günleri"))}</span>
+                <span class="weekend">${escapeHtml(trText("Haftasonu"))}</span>
+              </div>
+            </header>
+            <div class="mini-calendar">
+              ${["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map((day) => `<strong>${escapeHtml(currentLanguage === "en" ? trText(day) : day)}</strong>`).join("")}
+              ${days
+                .map(
+                  ({ day, weekend, events: dayEvents }) => `
+                    <button class="${weekend ? "weekend" : ""} ${dayEvents.length ? "has-event" : ""}" type="button">
+                      <small>${day}</small>
+                      ${dayEvents.map((event) => `<span>${escapeHtml(trText(event))}</span>`).join("")}
+                    </button>
+                  `,
+                )
+                .join("")}
+            </div>
+          </article>
+          <aside class="bordro-panel authority-panel">
+            <header>
+              <div>
+                <b>${escapeHtml(workplaceNames[0] || "Artı Destek Hizmetleri A.Ş.")}</b>
+                <h3>${escapeHtml(trText("Bordro Süreci"))}</h3>
+              </div>
+              <button type="button" data-nav="approvals">${escapeHtml(approvals.length || "OK")}</button>
+            </header>
+            <label class="workplace-filter">
+              ${escapeHtml(trText("İş Yeri Listesi"))}
+              <select>
+                <option>${escapeHtml(trText("Tümü"))}</option>
+                ${workplaceNames.slice(0, 8).map((name) => `<option>${escapeHtml(name)}</option>`).join("")}
+              </select>
+            </label>
+            <div class="process-flow">
+              ${processSteps
+                .map(
+                  ([label, count, state, nav]) => `
+                    <button class="${state}" type="button" data-nav="${nav}">
+                      <span>${escapeHtml(trText(label))}</span>
+                      <strong>${escapeHtml(count)}</strong>
+                    </button>
+                  `,
+                )
+                .join("")}
+            </div>
+            <div class="authority-table">
+              <div class="authority-head">
+                <b>${escapeHtml(trText("Yetki Tablosu"))}</b>
+                <button type="button" data-action="export">${escapeHtml(trText("EXCEL"))}</button>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>${escapeHtml(trText("Rol Listesi"))}</th>
+                    <th>${escapeHtml(trText("Başlangıç Tarihi"))}</th>
+                    <th>${escapeHtml(trText("Bitiş Tarihi"))}</th>
+                    <th>${escapeHtml(trText("Ad Soyad"))}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${
+                    roles.length
+                      ? roles
+                          .map(
+                            (role) => `
+                              <tr>
+                                <td>${escapeHtml(trText(role.role))}</td>
+                                <td>${escapeHtml(role.start)}</td>
+                                <td>${escapeHtml(role.end)}</td>
+                                <td>${escapeHtml(role.name)}</td>
+                              </tr>
+                            `,
+                          )
+                          .join("")
+                      : `<tr><td colspan="4">${escapeHtml(trText("Kayıt bulunamadı."))}</td></tr>`
+                  }
+                </tbody>
+              </table>
+              <p><span>${escapeHtml(trText("Bağlı Olunan Yönetici"))}</span><b>${escapeHtml(trText("Yönetici"))}</b></p>
+            </div>
+          </aside>
+        </section>
+        <section class="bordro-actions">
+          <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
+          <button type="button" data-nav="payroll">${escapeHtml(trText("Bordro Listesine Git"))}</button>
+          <button type="button" data-nav="attendance">${escapeHtml(trText("Puantajı Aç"))}</button>
+          <button type="button" data-nav="approvals">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
+          <button type="button" data-nav="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
+        </section>
+      </main>
     </section>
   `;
 }
@@ -2685,6 +3025,27 @@ function getChartExportRows() {
 function getActiveExportRows() {
   const module = getModule();
   if (module.dashboard || module.chart) return getChartExportRows();
+  if (module.id === "payrollCenter") {
+    const periodMonths = getDashboardPeriodMonths();
+    const payroll = getScopedRecords(getModule("payroll")).filter((record) => periodMonths.includes(record.period));
+    const attendance = getScopedRecords(getModule("attendance")).filter((record) => periodMonths.includes(record.period));
+    return [
+      ["Dönem", "Personel", "Net Bordro", "Avans", "Kesinti", "Bordro Durumu", "Toplam Saat", "Mesai"],
+      ...payroll.map((record) => {
+        const personAttendance = attendance.find((item) => normalizeText(item.person) === normalizeText(record.person) && item.period === record.period);
+        return [
+          record.period,
+          record.person,
+          record.netSalary,
+          record.advance,
+          record.deduction,
+          record.payrollStatus,
+          personAttendance ? calculateAttendanceTotal(personAttendance) : "",
+          personAttendance ? parseHour(personAttendance.overtimeHours) + getAttendanceDayOvertime(personAttendance) : "",
+        ];
+      }),
+    ];
+  }
 
   return [
     module.columns.map(([, label]) => label),
@@ -2926,6 +3287,8 @@ function renderModule(module) {
 
   if (module.dashboard) {
     renderDashboard();
+  } else if (module.id === "payrollCenter") {
+    renderPayrollCenter();
   } else if (module.id === "personnel360") {
     renderPersonnel360();
   } else if (module.id === "approvals") {
@@ -3290,6 +3653,14 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const payrollCenterButton = event.target.closest("[data-payroll-center-tab]");
+  if (payrollCenterButton) {
+    payrollCenterTab = payrollCenterButton.dataset.payrollCenterTab;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   if (event.target.id === "dashboardMonthSelect" || event.target.id === "dashboardRangeSelect") {
     return;
   }
@@ -3375,14 +3746,22 @@ document.addEventListener("click", (event) => {
 document.addEventListener("input", (event) => {
   if (event.target.id === "dashboardMonthSelect") {
     dashboardMonth = event.target.value;
-    renderDashboard();
+    if (activeModuleId === "payrollCenter") {
+      renderPayrollCenter();
+    } else {
+      renderDashboard();
+    }
     renderIcons();
     return;
   }
 
   if (event.target.id === "dashboardRangeSelect") {
     dashboardRange = event.target.value;
-    renderDashboard();
+    if (activeModuleId === "payrollCenter") {
+      renderPayrollCenter();
+    } else {
+      renderDashboard();
+    }
     renderIcons();
     return;
   }
