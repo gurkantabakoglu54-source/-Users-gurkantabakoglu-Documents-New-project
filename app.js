@@ -484,6 +484,89 @@ const modules = [
     ],
   },
   {
+    id: "payrollCalendar",
+    title: "Bordro Takvimi",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Takvim"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["date", "Tarih", "date"],
+      ["event", "İşlem"],
+      ["period", "Dönem"],
+      ["responsible", "Sorumlu"],
+      ["reminder", "Hatırlatma", "select", ["Aynı gün", "1 gün önce", "3 gün önce", "1 hafta önce"]],
+      ["status", "Durumu", "select", ["Planlandı", "Devam Ediyor", "Tamamlandı"]],
+    ],
+    records: [
+      { id: "pc1", date: "2026-05-05", event: "Maaş Ödeme", period: "05.2026", responsible: "Muhasebe", reminder: "1 gün önce", status: "Planlandı" },
+      { id: "pc2", date: "2026-05-10", event: "Puantaj Teslim", period: "05.2026", responsible: "İK", reminder: "3 gün önce", status: "Devam Ediyor" },
+      { id: "pc3", date: "2026-05-28", event: "Bordro Kapanış", period: "05.2026", responsible: "Yönetici", reminder: "1 hafta önce", status: "Planlandı" },
+    ],
+  },
+  {
+    id: "integrations",
+    title: "Entegrasyonlar",
+    icon: "send",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Entegrasyon"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["name", "Entegrasyon"],
+      ["type", "Tür"],
+      ["provider", "Sağlayıcı"],
+      ["lastSync", "Son Aktarım"],
+      ["direction", "Aktarım", "select", ["İçe Aktarım", "Dışa Aktarım", "Çift Yönlü"]],
+      ["status", "Durumu", "select", ["AKTİF", "PASİF", "Beklemede"]],
+    ],
+    records: [
+      { id: "int1", name: "Supabase", type: "Veri ve giriş", provider: "Artı Destek", lastSync: "14.05.2026", direction: "Çift Yönlü", status: "AKTİF" },
+      { id: "int2", name: "Excel Bordro Aktarımı", type: "Bordro çıktısı", provider: "İK", lastSync: "10.05.2026", direction: "Dışa Aktarım", status: "AKTİF" },
+      { id: "int3", name: "Fintegrate", type: "Finans aktarımı", provider: "Muhasebe", lastSync: "", direction: "İçe Aktarım", status: "Beklemede" },
+    ],
+  },
+  {
+    id: "legislation",
+    title: "Mevzuat",
+    icon: "shield",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Mevzuat"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["title", "Mevzuat Başlığı"],
+      ["period", "Dönem"],
+      ["value", "Değer"],
+      ["source", "Kaynak"],
+      ["validUntil", "Geçerlilik"],
+      ["status", "Durumu", "select", ["Güncel", "Kontrol Edilecek", "Pasif"]],
+    ],
+    records: [
+      { id: "leg1", title: "SGK Prim Günü", period: "2026", value: "30 gün", source: "SGK", validUntil: "31.12.2026", status: "Güncel" },
+      { id: "leg2", title: "Fazla Mesai Katsayısı", period: "2026", value: "1,5", source: "İş Kanunu", validUntil: "31.12.2026", status: "Güncel" },
+      { id: "leg3", title: "Asgari Ücret Parametresi", period: "2026", value: "Kontrol edilecek", source: "Resmi Gazete", validUntil: "31.12.2026", status: "Kontrol Edilecek" },
+    ],
+  },
+  {
+    id: "automationRules",
+    title: "Otomasyon Kuralları",
+    icon: "settings",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Otomasyon"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["rule", "Kural"],
+      ["trigger", "Tetikleyici"],
+      ["target", "Hedef"],
+      ["owner", "Sorumlu"],
+      ["status", "Durumu", "select", ["AKTİF", "PASİF", "Beklemede"]],
+    ],
+    records: [
+      { id: "auto1", rule: "Puantaj teslim hatırlatması", trigger: "Ayın 10'u", target: "İK ve Operasyon", owner: "Zehra Battal", status: "AKTİF" },
+      { id: "auto2", rule: "Yönetici onayı gecikirse uyar", trigger: "2 gün beklerse", target: "Onay Merkezi", owner: "Murat Oğuz", status: "AKTİF" },
+      { id: "auto3", rule: "Personele açılan bordro görüntülenme takibi", trigger: "Yayın sonrası", target: "Kırmızı Bülten", owner: "İK", status: "AKTİF" },
+    ],
+  },
+  {
     id: "reports",
     title: "Raporlar",
     icon: "chart",
@@ -616,10 +699,12 @@ const payrollCenterTabs = [
   ["company", "Şirket Yönetimi", "building"],
   ["definitions", "Tanımlar", "checklist"],
   ["payrollDefinitions", "Bordro Tanımları", "invoice"],
+  ["selfService", "Self-servis", "contact"],
   ["reports", "Raporlar", "chart"],
   ["operations", "İşlemler", "wallet"],
   ["dynamic", "Dinamik Rapor", "barChart"],
   ["integrate", "Fintegrate", "send"],
+  ["legislation", "Mevzuat", "shield"],
   ["advance", "Borç / Avans Yönetimi", "wallet"],
   ["redBulletin", "Kırmızı Bülten", "bell"],
 ];
@@ -655,6 +740,10 @@ const translations = {
   "Panel": "Dashboard",
   "Bordro Merkezi": "Payroll Center",
   "Ana Sayfa": "Home",
+  "Bordro Takvimi": "Payroll Calendar",
+  "Entegrasyonlar": "Integrations",
+  "Mevzuat": "Legislation",
+  "Otomasyon Kuralları": "Automation Rules",
   "Firmalar": "Companies",
   "Firma Listesi": "Company List",
   "Projeler": "Projects",
@@ -851,11 +940,34 @@ const translations = {
   "Şirket Yönetimi": "Company Management",
   "Tanımlar": "Definitions",
   "Bordro Tanımları": "Payroll Definitions",
+  "Self-servis": "Self-service",
   "İşlemler": "Operations",
   "Dinamik Rapor": "Dynamic Report",
   "Fintegrate": "Fintegrate",
   "Borç / Avans Yönetimi": "Debt / Advance Management",
   "Kırmızı Bülten": "Red Bulletin",
+  "Bordro self-servis": "Payroll self-service",
+  "Personel bordrosunu görür, onaylar ve yayın durumunu takip eder.": "Employees view, approve and track payroll publication status.",
+  "Mevzuat ve Yasal Parametreler": "Legislation and Legal Parameters",
+  "Bordro hesaplama parametreleri ve yasal kontroller tek yerde tutulur.": "Payroll calculation parameters and legal controls are kept in one place.",
+  "Güvenlik ve Otomasyon": "Security and Automation",
+  "Şifreli çıktılar, denetim izi ve otomatik hatırlatma kuralları burada yönetilir.": "Encrypted outputs, audit trail and automatic reminder rules are managed here.",
+  "İşlem": "Operation",
+  "Hatırlatma": "Reminder",
+  "Planlandı": "Planned",
+  "Son Aktarım": "Last Sync",
+  "Aktarım": "Transfer",
+  "İçe Aktarım": "Import",
+  "Dışa Aktarım": "Export",
+  "Çift Yönlü": "Two-way",
+  "Mevzuat Başlığı": "Legislation Title",
+  "Kaynak": "Source",
+  "Güncel": "Current",
+  "Kural": "Rule",
+  "Tetikleyici": "Trigger",
+  "Hedef": "Target",
+  "Bordro görüntülendi": "Payroll viewed",
+  "Bordro onaylandı": "Payroll approved",
   "Bordro operasyon merkezi": "Payroll operations center",
   "Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin.": "Track the whole payroll flow from timesheet to employee publishing on one screen.",
   "Çalışan": "Employee",
@@ -1905,6 +2017,10 @@ function renderPayrollCenter() {
   const tasks = getScopedRecords(getModule("tasks")).filter((record) => record.status !== "Tamamlandı");
   const reports = getScopedRecords(getModule("reports"));
   const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "collectionDate", "date"]));
+  const calendarRecords = getScopedRecords(getModule("payrollCalendar")).filter((record) => periodMonths.includes(record.period) || recordMatchesMonths(record, periodMonths, ["date"]));
+  const integrationRecords = getScopedRecords(getModule("integrations"));
+  const legislationRecords = getScopedRecords(getModule("legislation"));
+  const automationRecords = getScopedRecords(getModule("automationRules"));
   const roles = getScopedRecords(getModule("users"))
     .slice(0, 6)
     .map((user) => ({
@@ -1922,6 +2038,12 @@ function renderPayrollCenter() {
     25: ["Müşteri Onayı"],
     28: ["Bordro Kapanış"],
   };
+  calendarRecords.forEach((record) => {
+    const date = toInputDate(record.date);
+    const day = Number(date.split("-")[2]);
+    if (!day) return;
+    events[day] = [...(events[day] || []), record.event || "İşlem"];
+  });
   const days = Array.from({ length: 31 }, (_, index) => {
     const day = index + 1;
     const date = getDateFromDashboardDay(day);
@@ -2048,6 +2170,28 @@ function renderPayrollCenter() {
       <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
       <button type="button" data-payroll-center-tab="system">${escapeHtml(trText("Onay Merkezini Aç"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
+    </section>
+  `;
+  const selfServiceCards = `
+    <section class="self-service-grid">
+      ${payroll
+        .map(
+          (record) => `
+            <article class="self-service-card">
+              <div>
+                <span>${escapeHtml(record.period || "-")}</span>
+                <h3>${escapeHtml(record.person || "-")}</h3>
+                <p>${escapeHtml(`${trText("Net Maaş")}: ${record.netSalary || "-"} · ${trText("Avans")}: ${record.advance || "0 TL"}`)}</p>
+              </div>
+              <div class="self-service-actions">
+                <strong class="${record.publishStatus === "Personele Açıldı" ? "status-green" : "status-red"}">${escapeHtml(trText(record.publishStatus || "Kapalı"))}</strong>
+                <button type="button" data-action="payroll-seen" data-id="${record.id}">${escapeHtml(trText("Bordro görüntülendi"))}</button>
+                <button type="button" data-action="payroll-publish" data-id="${record.id}">${escapeHtml(trText("Bordro onaylandı"))}</button>
+              </div>
+            </article>
+          `,
+        )
+        .join("") || `<p class="empty-state">${escapeHtml(trText("Kayıt bulunamadı."))}</p>`}
     </section>
   `;
   const calendarPanel = `
@@ -2178,6 +2322,7 @@ function renderPayrollCenter() {
     calendar: `
       <section class="bordro-tab-content">${calendarPanel}</section>
       <section class="bordro-tab-content two-col">
+        ${crudPanel("Bordro Takvimi", "payrollCalendar", ["date", "event", "period", "responsible", "reminder", "status"], calendarRecords)}
         ${crudPanel("Aylık Puantaj Girişi", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
         ${crudPanel("İzin ve Tatil Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], getScopedRecords(getModule("leaves")))}
       </section>
@@ -2198,6 +2343,17 @@ function renderPayrollCenter() {
         ${crudPanel("Bordro Tanımları ve Kayıtları", "payroll", ["person", "period", "grossSalary", "netSalary", "advance", "overtime", "deduction", "payrollStatus", "publishStatus"], payroll)}
       </section>
       ${quickActions}
+    `,
+    selfService: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Bordro self-servis"))}</span>
+          <h2>${escapeHtml(trText("Personel bordrosunu görür, onaylar ve yayın durumunu takip eder."))}</h2>
+          <p>${escapeHtml(`${openedPayroll} ${trText("Personele Açıldı")} · ${payroll.filter((record) => record.viewStatus === "Görüldü").length} ${trText("Görüldü")}`)}</p>
+        </div>
+      </section>
+      ${selfServiceCards}
+      ${crudPanel("Personel Portal Kayıtları", "users", ["email", "name", "surname", "username", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
     `,
     reports: `
       <section class="bordro-tab-content two-col">
@@ -2237,8 +2393,21 @@ function renderPayrollCenter() {
     `,
     integrate: `
       <section class="bordro-tab-content two-col">
-        <article class="bordro-panel">${compactRows(["Entegrasyon", "Kullanım", "Durumu"], [["Supabase", "Canlı veri ve giriş", "AKTİF"], ["Vercel", "Canlı yayın", "AKTİF"], ["Excel", "Dışa aktarım", "AKTİF"], ["PDF", "Yazdırılabilir çıktı", "AKTİF"]])}</article>
+        ${crudPanel("Fintegrate ve Entegrasyonlar", "integrations", ["name", "type", "provider", "lastSync", "direction", "status"], integrationRecords)}
         <article class="bordro-panel">${compactRows(["Aktarım", "Açıklama"], [["Personel", "Kullanıcı ve personel eşleşmesi"], ["Bordro", "Bordro durum ve dosya takibi"], ["Puantaj", "Günlük saat ve mesai"], ["Rapor", "Yönetim çıktıları"]])}</article>
+      </section>
+    `,
+    legislation: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Mevzuat ve Yasal Parametreler"))}</span>
+          <h2>${escapeHtml(trText("Bordro hesaplama parametreleri ve yasal kontroller tek yerde tutulur."))}</h2>
+          <p>${escapeHtml(`${legislationRecords.filter((record) => record.status === "Güncel").length} ${trText("Güncel")} · ${legislationRecords.filter((record) => record.status !== "Güncel").length} ${trText("Kontrol Edilecek")}`)}</p>
+        </div>
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Mevzuat ve Yasal Parametreler", "legislation", ["title", "period", "value", "source", "validUntil", "status"], legislationRecords)}
+        ${crudPanel("Otomasyon Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], automationRecords)}
       </section>
     `,
     advance: `
