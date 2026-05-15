@@ -548,6 +548,9 @@ const modules = [
       { id: "leg1", title: "SGK Prim Günü", period: "2026", value: "30 gün", source: "SGK", validUntil: "31.12.2026", status: "Güncel" },
       { id: "leg2", title: "Fazla Mesai Katsayısı", period: "2026", value: "1,5", source: "İş Kanunu", validUntil: "31.12.2026", status: "Güncel" },
       { id: "leg3", title: "Asgari Ücret Parametresi", period: "2026", value: "Kontrol edilecek", source: "Resmi Gazete", validUntil: "31.12.2026", status: "Kontrol Edilecek" },
+      { id: "leg4", title: "Brüt / Net Hesaplama Referansı", period: "2026", value: "Vergi dilimi ve SGK oranları kontrol edilir", source: "VergiNET", validUntil: "31.12.2026", status: "Kontrol Edilecek" },
+      { id: "leg5", title: "KVKK Personel Verisi", period: "2026", value: "Özlük ve bordro erişim yetkileri", source: "KVKK", validUntil: "31.12.2026", status: "Güncel" },
+      { id: "leg6", title: "İşkur İşe Alım / İşten Ayrılış", period: "2026", value: "Bildirim ve takip linki", source: "İŞKUR", validUntil: "31.12.2026", status: "Güncel" },
     ],
   },
   {
@@ -1156,6 +1159,30 @@ const translations = {
   "Bordro yayınlandığında personel portalında takip edilir.": "When payroll is published, it is tracked in the employee portal.",
   "Her cihazdan bordro erişimi": "Payroll access from any device",
   "Çalışan kendi bordro geçmişini ve evrak durumunu görür.": "Employees see their own payroll history and document status.",
+  "Brüt / Net Hesaplama": "Gross / Net Calculation",
+  "Bordro Hesaplayıcı": "Payroll Calculator",
+  "VergiNET referansı": "VergiNET reference",
+  "Brüt Ücret": "Gross Salary",
+  "Net Ücret": "Net Salary",
+  "Gelir Vergisi": "Income Tax",
+  "Damga Vergisi": "Stamp Tax",
+  "İşsizlik": "Unemployment",
+  "Hesaplama bekliyor": "Waiting for calculation",
+  "Brüt veya net alanına tutar yazınca diğer alan otomatik hesaplanır.": "When you enter gross or net amount, the other field is calculated automatically.",
+  "Not: Hesaplama yaklaşık bordro projeksiyonudur; mevzuat oranları dönemsel olarak kontrol edilmelidir.": "Note: This is an approximate payroll projection; legal rates should be checked periodically.",
+  "Resmi ve Faydalı Linkler": "Official and Useful Links",
+  "İK / Bordro Mevzuat Kütüphanesi": "HR / Payroll Legislation Library",
+  "Prim, bildirge ve sigortalılık kontrolleri": "Premium, declaration and insurance checks",
+  "İş hukuku ve çalışma hayatı duyuruları": "Labor law and working life announcements",
+  "Vergi, beyan ve gelir vergisi duyuruları": "Tax, declaration and income tax announcements",
+  "Yürürlüğe giren mevzuat takibi": "Published legislation tracking",
+  "İşe alım, istihdam ve teşvik takipleri": "Recruitment, employment and incentive tracking",
+  "Personel verisi ve açık rıza süreçleri": "Personnel data and consent processes",
+  "Brüt-net hesap ve vergi bilgi referansı": "Gross-net calculation and tax reference",
+  "Maaş Ödeme Alarmı": "Salary Payment Alert",
+  "Avans Kontrol Alarmı": "Advance Control Alert",
+  "Özel Gün / Mevzuat Alarmı": "Special Day / Legislation Alert",
+  "Geciken Tahsilat": "Overdue Collection",
   "İK Metrikleri Paneli": "HR Metrics Panel",
   "Çalışan devir oranı, performans, işe alım ve eğitim kırılımları tek ekranda izlenir.": "Employee turnover, performance, recruitment and training breakdowns are tracked in one screen.",
   "Güvenli bordro paylaşımı": "Secure payroll sharing",
@@ -2263,6 +2290,10 @@ function renderPayrollCenter() {
     : 0;
   const verifiedShares = secureSharingRecords.filter((record) => record.status === "Tamamlandı" || record.otpStatus === "Doğrulandı").length;
   const besCount = bankBesRecords.filter((record) => record.besStatus === "Var").length;
+  const overdueInvoices = invoices.filter((record) => record.paymentStatus !== "Ödendi" && isDueOrOverdue(record.dueDate));
+  const payrollPaymentAlerts = payroll.filter((record) => isDueOrOverdue(record.paymentDate) && record.publishStatus !== "Personele Açıldı");
+  const advanceAlerts = payroll.filter((record) => parseMoney(record.advance) > 0 && record.payrollStatus !== "Personele Açıldı");
+  const calendarDueAlerts = calendarRecords.filter((record) => isDueOrOverdue(record.date) && !["Tamamlandı", "Devam Ediyor"].includes(record.status));
   const roles = getScopedRecords(getModule("users"))
     .slice(0, 6)
     .map((user) => ({
@@ -2506,6 +2537,58 @@ function renderPayrollCenter() {
     </aside>
   `;
   const renderStatusPill = (label, type = "neutral") => `<span class="ad-status-pill ${type}">${escapeHtml(trText(label))}</span>`;
+  const payrollCalculatorPanel = `
+    <article class="bordro-panel payroll-calculator-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Brüt / Net Hesaplama"))}</b>
+          <h3>${escapeHtml(trText("Bordro Hesaplayıcı"))}</h3>
+        </div>
+        <a href="https://www.verginet.net/" target="_blank" rel="noreferrer">${escapeHtml(trText("VergiNET referansı"))}</a>
+      </header>
+      <div class="salary-calculator" id="salaryCalculator">
+        <label>${escapeHtml(trText("Brüt Ücret"))}<input id="calcGrossSalary" inputmode="decimal" placeholder="50.000 TL" /></label>
+        <label>${escapeHtml(trText("Net Ücret"))}<input id="calcNetSalary" inputmode="decimal" placeholder="37.000 TL" /></label>
+        <label>${escapeHtml(trText("Gelir Vergisi"))}<input id="calcIncomeTaxRate" inputmode="decimal" value="15" /></label>
+        <label>${escapeHtml(trText("Damga Vergisi"))}<input id="calcStampTaxRate" inputmode="decimal" value="0,759" /></label>
+        <div class="salary-result" id="salaryCalcResult">
+          <strong>${escapeHtml(trText("Hesaplama bekliyor"))}</strong>
+          <span>${escapeHtml(trText("Brüt veya net alanına tutar yazınca diğer alan otomatik hesaplanır."))}</span>
+        </div>
+      </div>
+      <p class="calculator-note">${escapeHtml(trText("Not: Hesaplama yaklaşık bordro projeksiyonudur; mevzuat oranları dönemsel olarak kontrol edilmelidir."))}</p>
+    </article>
+  `;
+  const legislationLinksPanel = `
+    <article class="bordro-panel legislation-links">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Resmi ve Faydalı Linkler"))}</b>
+          <h3>${escapeHtml(trText("İK / Bordro Mevzuat Kütüphanesi"))}</h3>
+        </div>
+      </header>
+      <div>
+        ${[
+          ["SGK", "https://www.sgk.gov.tr/", "Prim, bildirge ve sigortalılık kontrolleri"],
+          ["Çalışma ve Sosyal Güvenlik Bakanlığı", "https://www.csgb.gov.tr/", "İş hukuku ve çalışma hayatı duyuruları"],
+          ["Gelir İdaresi Başkanlığı", "https://www.gib.gov.tr/", "Vergi, beyan ve gelir vergisi duyuruları"],
+          ["Resmi Gazete", "https://www.resmigazete.gov.tr/", "Yürürlüğe giren mevzuat takibi"],
+          ["İŞKUR", "https://www.iskur.gov.tr/", "İşe alım, istihdam ve teşvik takipleri"],
+          ["KVKK", "https://www.kvkk.gov.tr/", "Personel verisi ve açık rıza süreçleri"],
+          ["VergiNET", "https://www.verginet.net/", "Brüt-net hesap ve vergi bilgi referansı"],
+        ]
+          .map(
+            ([name, url, detail]) => `
+              <a href="${escapeHtml(url)}" target="_blank" rel="noreferrer">
+                <strong>${escapeHtml(name)}</strong>
+                <span>${escapeHtml(trText(detail))}</span>
+              </a>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
   const payrollWorkflowPanel = `
     <article class="bordro-panel workflow-panel">
       <header>
@@ -2548,13 +2631,17 @@ function renderPayrollCenter() {
         ${[
           ["Onay Bekleyen Bordro", approvals.filter((item) => item.moduleId === "payroll").length, "danger", "operations"],
           ["Eksik Puantaj / Kontrol", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "warning", "calendar"],
+          ["Maaş Ödeme Alarmı", payrollPaymentAlerts.length, "danger", "payrollDefinitions"],
+          ["Avans Kontrol Alarmı", advanceAlerts.length, "danger", "advance"],
+          ["Özel Gün / Mevzuat Alarmı", calendarDueAlerts.length, "danger", "calendar"],
           ["Açık Görev", tasks.length, tasks.length ? "danger" : "good", "redBulletin"],
           ["Güvenli Paylaşım Bekleyen", secureSharingRecords.filter((record) => record.status !== "Tamamlandı").length, "warning", "secureSharing"],
+          ["Geciken Tahsilat", overdueInvoices.length, "danger", "operations"],
           ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operations"],
         ]
           .map(
             ([label, count, tone, tab]) => `
-              <button type="button" data-payroll-center-tab="${tab}">
+              <button class="${count && tone === "danger" ? "critical-blink" : ""}" type="button" data-payroll-center-tab="${tab}">
                 ${renderStatusPill(count ? String(count) : "OK", count ? tone : "good")}
                 <span>${escapeHtml(trText(label))}</span>
               </button>
@@ -2769,6 +2856,7 @@ function renderPayrollCenter() {
       </section>
     `,
     payrollDefinitions: `
+      <section class="bordro-tab-content">${payrollCalculatorPanel}</section>
       <section class="bordro-tab-content">
         ${crudPanel("Bordro Tanımları ve Kayıtları", "payroll", ["person", "period", "grossSalary", "netSalary", "advance", "overtime", "deduction", "payrollStatus", "publishStatus"], payroll)}
       </section>
@@ -2896,6 +2984,7 @@ function renderPayrollCenter() {
       </section>
       <section class="bordro-tab-content two-col">
         ${crudPanel("Mevzuat ve Yasal Parametreler", "legislation", ["title", "period", "value", "source", "validUntil", "status"], legislationRecords)}
+        ${legislationLinksPanel}
         ${crudPanel("Otomasyon Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], automationRecords)}
       </section>
     `,
@@ -3311,6 +3400,62 @@ function formatMoney(value) {
   }).format(value);
 }
 
+function parsePercent(value, fallback = 0) {
+  const number = Number(String(value ?? "").replace("%", "").replace(",", "."));
+  return Number.isFinite(number) ? number / 100 : fallback;
+}
+
+const defaultPayrollTaxRates = {
+  sgkEmployee: 0.14,
+  unemploymentEmployee: 0.01,
+  incomeTax: 0.15,
+  stampTax: 0.00759,
+};
+
+function grossToNet(grossAmount, customRates = {}) {
+  const rates = { ...defaultPayrollTaxRates, ...customRates };
+  const gross = Math.max(0, Number(grossAmount) || 0);
+  const sgk = gross * rates.sgkEmployee;
+  const unemployment = gross * rates.unemploymentEmployee;
+  const incomeTaxBase = Math.max(0, gross - sgk - unemployment);
+  const incomeTax = incomeTaxBase * rates.incomeTax;
+  const stampTax = gross * rates.stampTax;
+  const net = Math.max(0, gross - sgk - unemployment - incomeTax - stampTax);
+  return { gross, net, sgk, unemployment, incomeTaxBase, incomeTax, stampTax };
+}
+
+function netToGross(netAmount, customRates = {}) {
+  const target = Math.max(0, Number(netAmount) || 0);
+  if (!target) return grossToNet(0, customRates);
+  let low = 0;
+  let high = target * 2.2 || 1;
+  while (grossToNet(high, customRates).net < target) high *= 1.35;
+  for (let index = 0; index < 36; index += 1) {
+    const mid = (low + high) / 2;
+    if (grossToNet(mid, customRates).net < target) low = mid;
+    else high = mid;
+  }
+  return grossToNet(high, customRates);
+}
+
+function formatPayrollAmount(value) {
+  return `${Math.round(Number(value) || 0).toLocaleString("tr-TR")} TL`;
+}
+
+function calculatePayrollRecordAmounts(record, changedField = "") {
+  const gross = parseMoney(record.grossSalary);
+  const net = parseMoney(record.netSalary);
+  if (changedField === "netSalary" || (!gross && net)) {
+    const result = netToGross(net);
+    return { ...record, grossSalary: formatPayrollAmount(result.gross), netSalary: formatPayrollAmount(net) };
+  }
+  if (changedField === "grossSalary" || (gross && !net)) {
+    const result = grossToNet(gross);
+    return { ...record, grossSalary: formatPayrollAmount(gross), netSalary: formatPayrollAmount(result.net) };
+  }
+  return record;
+}
+
 function toInputDate(value) {
   const text = String(value ?? "").trim();
   if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
@@ -3324,6 +3469,23 @@ function formatDate(value) {
   const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match) return text;
   return `${match[3]}/${match[2]}/${match[1]}`;
+}
+
+function dateFromAny(value) {
+  const iso = toInputDate(value) || String(value ?? "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+  const [year, month, day] = iso.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isDueOrOverdue(value) {
+  const date = dateFromAny(value);
+  if (!date) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  return date <= today;
 }
 
 function isOptionalField(module, key) {
@@ -4424,6 +4586,55 @@ function closeDialog() {
   document.querySelector("#recordDialog").close();
 }
 
+function getSalaryCalculatorRates() {
+  return {
+    incomeTax: parsePercent(document.querySelector("#calcIncomeTaxRate")?.value, defaultPayrollTaxRates.incomeTax),
+    stampTax: parsePercent(document.querySelector("#calcStampTaxRate")?.value, defaultPayrollTaxRates.stampTax),
+  };
+}
+
+function renderSalaryCalculation(result, modeLabel) {
+  const resultBox = document.querySelector("#salaryCalcResult");
+  if (!resultBox) return;
+  resultBox.innerHTML = `
+    <strong>${escapeHtml(`${trText(modeLabel)}: ${formatPayrollAmount(modeLabel === "Net Ücret" ? result.net : result.gross)}`)}</strong>
+    <span>${escapeHtml(`${trText("SGK")}: ${formatPayrollAmount(result.sgk)} · ${trText("İşsizlik")}: ${formatPayrollAmount(result.unemployment)} · ${trText("Gelir Vergisi")}: ${formatPayrollAmount(result.incomeTax)} · ${trText("Damga Vergisi")}: ${formatPayrollAmount(result.stampTax)}`)}</span>
+  `;
+}
+
+function updateSalaryCalculator(source) {
+  const grossInput = document.querySelector("#calcGrossSalary");
+  const netInput = document.querySelector("#calcNetSalary");
+  if (!grossInput || !netInput) return;
+  const rates = getSalaryCalculatorRates();
+  if (source === "net") {
+    const result = netToGross(parseMoney(netInput.value), rates);
+    grossInput.value = result.gross ? formatPayrollAmount(result.gross) : "";
+    renderSalaryCalculation(result, "Brüt Ücret");
+    return;
+  }
+  const result = grossToNet(parseMoney(grossInput.value), rates);
+  netInput.value = result.net ? formatPayrollAmount(result.net) : "";
+  renderSalaryCalculation(result, "Net Ücret");
+}
+
+function syncPayrollSalaryDialog(target) {
+  const form = document.querySelector("#recordForm");
+  if (document.querySelector("#moduleIdInput")?.value !== "payroll") return;
+  const grossInput = form.querySelector('[name="grossSalary"]');
+  const netInput = form.querySelector('[name="netSalary"]');
+  if (!grossInput || !netInput) return;
+  if (target === netInput) {
+    const result = netToGross(parseMoney(netInput.value));
+    grossInput.value = result.gross ? formatPayrollAmount(result.gross) : "";
+    return;
+  }
+  if (target === grossInput) {
+    const result = grossToNet(parseMoney(grossInput.value));
+    netInput.value = result.net ? formatPayrollAmount(result.net) : "";
+  }
+}
+
 async function upsertRecord(event) {
   event.preventDefault();
   const module = getModule(document.querySelector("#moduleIdInput").value);
@@ -4469,6 +4680,11 @@ async function upsertRecord(event) {
       maximumFractionDigits: 1,
     });
     record.totalHours = calculateAttendanceTotal(record);
+  }
+
+  if (module.id === "payroll") {
+    const changedField = parseMoney(record.netSalary) && !parseMoney(record.grossSalary) ? "netSalary" : "grossSalary";
+    Object.assign(record, calculatePayrollRecordAmounts(record, changedField));
   }
 
   if (module.id === "projects") {
@@ -4629,6 +4845,26 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("input", (event) => {
+  if (event.target.id === "calcGrossSalary") {
+    updateSalaryCalculator("gross");
+    return;
+  }
+
+  if (event.target.id === "calcNetSalary") {
+    updateSalaryCalculator("net");
+    return;
+  }
+
+  if (event.target.id === "calcIncomeTaxRate" || event.target.id === "calcStampTaxRate") {
+    updateSalaryCalculator(document.querySelector("#calcNetSalary")?.value ? "net" : "gross");
+    return;
+  }
+
+  if (event.target.name === "grossSalary" || event.target.name === "netSalary") {
+    syncPayrollSalaryDialog(event.target);
+    return;
+  }
+
   if (event.target.id === "dashboardMonthSelect") {
     dashboardMonth = event.target.value;
     if (activeModuleId === "payrollCenter") {
