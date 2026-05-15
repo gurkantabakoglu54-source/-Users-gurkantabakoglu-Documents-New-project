@@ -21,26 +21,27 @@
 }
 
 :root {
-  --ad-ink: #071b33;
-  --ad-ink-2: #102d4d;
-  --ad-blue: #16476f;
+  --ad-ink: #20103f;
+  --ad-ink-2: #3b1b73;
+  --ad-blue: #6d28d9;
   --ad-slate: #526274;
   --ad-muted: #7b8794;
   --ad-line: #dbe4ee;
   --ad-soft: #f6f8fb;
   --ad-card: rgba(255, 255, 255, 0.94);
-  --ad-orange: #e3902f;
-  --ad-orange-soft: #fff3e4;
-  --ad-green: #15845b;
-  --ad-red: #c7443d;
-  --ad-shadow: 0 18px 42px rgba(7, 27, 51, 0.1);
-  --ad-shadow-soft: 0 10px 24px rgba(7, 27, 51, 0.07);
+  --ad-orange: #ec4899;
+  --ad-orange-soft: #fdf2f8;
+  --ad-green: #8b5cf6;
+  --ad-red: #e11d48;
+  --ad-shadow: 0 18px 42px rgba(76, 29, 149, 0.12);
+  --ad-shadow-soft: 0 10px 24px rgba(76, 29, 149, 0.08);
 }
 
 body {
   background:
-    radial-gradient(circle at 18% 8%, rgba(227, 144, 47, 0.08), transparent 26%),
-    linear-gradient(180deg, #fbfcfe 0%, #eef3f8 100%);
+    radial-gradient(circle at 18% 8%, rgba(236, 72, 153, 0.1), transparent 26%),
+    radial-gradient(circle at 86% 4%, rgba(139, 92, 246, 0.11), transparent 24%),
+    linear-gradient(180deg, #fffafe 0%, #f5f0ff 100%);
   color: var(--ad-ink);
 }
 
@@ -62,7 +63,7 @@ body {
 
 .topbar {
   background:
-    linear-gradient(135deg, #071b33 0%, #102d4d 56%, #153a61 100%);
+    linear-gradient(135deg, #20103f 0%, #4c1d95 52%, #9d174d 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -81,7 +82,7 @@ body {
 
 .language-switch button.active {
   background: var(--ad-orange);
-  color: #06182f;
+  color: #fff;
 }
 
 .logout-button {
@@ -1410,7 +1411,7 @@ tbody tr.selected {
   width: min(190px, 100%);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: conic-gradient(#16a34a 0 var(--issued), #f59e0b var(--issued) var(--waiting), #ef4444 var(--waiting) 360deg);
+  background: conic-gradient(#7c3aed 0 var(--issued), #ec4899 var(--issued) var(--waiting), #e11d48 var(--waiting) 360deg);
   box-shadow: 0 18px 36px rgba(40, 49, 82, 0.14);
   position: relative;
 }
@@ -1446,15 +1447,15 @@ tbody tr.selected {
 }
 
 .report-pie-legend .issued {
-  background: #16a34a;
+  background: #7c3aed;
 }
 
 .report-pie-legend .waiting {
-  background: #f59e0b;
+  background: #ec4899;
 }
 
 .report-pie-legend .rejected {
-  background: #ef4444;
+  background: #e11d48;
 }
 
 .self-service-grid {
