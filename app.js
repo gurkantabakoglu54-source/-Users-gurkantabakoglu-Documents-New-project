@@ -523,6 +523,10 @@ const modules = [
       { id: "int1", name: "Supabase", type: "Veri ve giriş", provider: "Artı Destek", lastSync: "14.05.2026", direction: "Çift Yönlü", status: "AKTİF" },
       { id: "int2", name: "Excel Bordro Aktarımı", type: "Bordro çıktısı", provider: "İK", lastSync: "10.05.2026", direction: "Dışa Aktarım", status: "AKTİF" },
       { id: "int3", name: "Fintegrate", type: "Finans aktarımı", provider: "Muhasebe", lastSync: "", direction: "İçe Aktarım", status: "Beklemede" },
+      { id: "int4", name: "Kamu SM Zaman Damgası", type: "Kamusal entegrasyon", provider: "Kamu SM", lastSync: "14.05.2026", direction: "Dışa Aktarım", status: "AKTİF" },
+      { id: "int5", name: "SGK Bildirim Hazırlığı", type: "Kamusal entegrasyon", provider: "SGK", lastSync: "13.05.2026", direction: "Çift Yönlü", status: "AKTİF" },
+      { id: "int6", name: "SMS OTP Onayı", type: "Güvenli erişim", provider: "Artı Destek", lastSync: "14.05.2026", direction: "Dışa Aktarım", status: "AKTİF" },
+      { id: "int7", name: "Informasoft İK Veri Köprüsü", type: "İK senkronizasyonu", provider: "CottGroup benzeri akış", lastSync: "", direction: "Çift Yönlü", status: "Beklemede" },
     ],
   },
   {
@@ -567,6 +571,111 @@ const modules = [
     ],
   },
   {
+    id: "employeeRegistry",
+    title: "Sicil Yönetimi",
+    icon: "contact",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Sicil Yönetimi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["registryNo", "Sicil No"],
+      ["person", "Personel"],
+      ["identityNo", "T.C. Kimlik"],
+      ["department", "Departman"],
+      ["manager", "Yönetici"],
+      ["employmentType", "Çalışma Tipi", "select", ["Tam Zamanlı", "Yarı Zamanlı", "Geçici Görev", "Dış Kaynak"]],
+      ["seniorityDate", "Kıdem Tarihi", "date"],
+      ["status", "Durumu", "select", ["AKTİF", "PASİF", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "reg1", registryNo: "AD-SC-0001", person: "Zehra Battal", identityNo: "11111111110", department: "İnsan Kaynakları", manager: "Murat Oğuz", employmentType: "Tam Zamanlı", seniorityDate: "2024-01-15", status: "AKTİF" },
+      { id: "reg2", registryNo: "AD-SC-0002", person: "Faruk Türker", identityNo: "11111111112", department: "Operasyon", manager: "Gürkan Tabakoğlu", employmentType: "Tam Zamanlı", seniorityDate: "2023-09-01", status: "AKTİF" },
+    ],
+  },
+  {
+    id: "performanceReviews",
+    title: "Performans",
+    icon: "barChart",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Performans"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel"],
+      ["period", "Dönem"],
+      ["target", "Hedef"],
+      ["score", "Puan"],
+      ["reviewer", "Değerlendiren"],
+      ["result", "Sonuç", "select", ["Başarılı", "Gelişim Planı", "Takip Edilecek"]],
+      ["status", "Durumu", "select", ["Tamamlandı", "Bekliyor", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "prf1", person: "Zehra Battal", period: "05.2026", target: "Bordro kapanış hatasızlığı", score: "92", reviewer: "Murat Oğuz", result: "Başarılı", status: "Tamamlandı" },
+      { id: "prf2", person: "Faruk Türker", period: "05.2026", target: "Operasyon takibi", score: "88", reviewer: "Gürkan Tabakoğlu", result: "Başarılı", status: "Tamamlandı" },
+    ],
+  },
+  {
+    id: "recruitment",
+    title: "İşe Alım",
+    icon: "contact",
+    breadcrumb: ["Panel", "Bordro Merkezi", "İşe Alım"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["position", "Pozisyon"],
+      ["department", "Departman"],
+      ["candidate", "Aday"],
+      ["stage", "Aşama", "select", ["Başvuru", "Görüşme", "Teklif", "İşe Alındı", "Olumsuz"]],
+      ["interviewDate", "Görüşme Tarihi", "date"],
+      ["responsible", "Sorumlu"],
+      ["status", "Durumu", "select", ["Açık", "Tamamlandı", "Beklemede"]],
+    ],
+    records: [
+      { id: "rec1", position: "Bordro Uzmanı", department: "İK", candidate: "Aday 1", stage: "Görüşme", interviewDate: "2026-05-20", responsible: "Zehra Battal", status: "Açık" },
+    ],
+  },
+  {
+    id: "bankBes",
+    title: "Banka / BES",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Banka / BES"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel"],
+      ["bankName", "Banka"],
+      ["iban", "IBAN"],
+      ["besStatus", "BES Durumu", "select", ["Var", "Yok", "Kontrol Edilecek"]],
+      ["besRate", "BES Oranı"],
+      ["paymentStatus", "Ödeme Durumu", "select", ["Ödendi", "Tahsil Bekliyor", "Kontrol Edilecek"]],
+      ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
+    ],
+    records: [
+      { id: "bb1", person: "Zehra Battal", bankName: "Garanti BBVA", iban: "TR00 0000 0000 0000 0000 0000 01", besStatus: "Var", besRate: "%3", paymentStatus: "Ödendi", status: "AKTİF" },
+      { id: "bb2", person: "Faruk Türker", bankName: "İş Bankası", iban: "TR00 0000 0000 0000 0000 0000 02", besStatus: "Yok", besRate: "-", paymentStatus: "Ödendi", status: "AKTİF" },
+    ],
+  },
+  {
+    id: "secureSharing",
+    title: "Güvenli Paylaşım",
+    icon: "lock",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Güvenli Paylaşım"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel"],
+      ["document", "Belge"],
+      ["period", "Dönem"],
+      ["otpStatus", "OTP Durumu", "select", ["Doğrulandı", "Bekliyor", "Süresi Doldu"]],
+      ["timestamp", "Zaman Damgası"],
+      ["deliveryChannel", "Kanal", "select", ["Portal", "E-posta", "SMS"]],
+      ["status", "Durumu", "select", ["Tamamlandı", "Bekliyor", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "sec1", person: "Faruk Türker", document: "05.2026 Bordro", period: "05.2026", otpStatus: "Doğrulandı", timestamp: "14.05.2026 10:32", deliveryChannel: "Portal", status: "Tamamlandı" },
+      { id: "sec2", person: "Zehra Battal", document: "05.2026 Bordro", period: "05.2026", otpStatus: "Bekliyor", timestamp: "", deliveryChannel: "Portal", status: "Bekliyor" },
+    ],
+  },
+  {
     id: "reports",
     title: "Raporlar",
     icon: "chart",
@@ -582,6 +691,11 @@ const modules = [
     records: [
       { id: "r1", title: "Mayıs Proje Performansı", period: "05.2026", type: "Proje", owner: "Faruk Türker", file: "", status: "Taslak" },
       { id: "r2", title: "Personel Evrak Kontrolü", period: "05.2026", type: "İK", owner: "Zehra Battal", file: "", status: "Hazır" },
+      { id: "r3", title: "SGK Raporları", period: "05.2026", type: "Yasal", owner: "İK", file: "", status: "Hazır" },
+      { id: "r4", title: "BES Ödeme Raporları", period: "05.2026", type: "Finans", owner: "Muhasebe", file: "", status: "Hazır" },
+      { id: "r5", title: "Banka Ödeme Raporları", period: "05.2026", type: "Finans", owner: "Muhasebe", file: "", status: "Taslak" },
+      { id: "r6", title: "Personel Devir ve Performans", period: "05.2026", type: "İK Metrikleri", owner: "Yönetici", file: "", status: "Hazır" },
+      { id: "r7", title: "Muhasebe Bordro Fişi", period: "05.2026", type: "Muhasebe", owner: "Muhasebe", file: "", status: "Taslak" },
     ],
   },
   {
@@ -700,14 +814,38 @@ const payrollCenterTabs = [
   ["definitions", "Tanımlar", "checklist"],
   ["payrollDefinitions", "Bordro Tanımları", "invoice"],
   ["selfService", "Self-servis", "contact"],
+  ["hrMetrics", "İK Metrikleri", "barChart"],
   ["reports", "Raporlar", "chart"],
   ["operations", "İşlemler", "wallet"],
   ["dynamic", "Dinamik Rapor", "barChart"],
   ["integrate", "Fintegrate", "send"],
   ["legislation", "Mevzuat", "shield"],
+  ["bankBes", "Banka / BES", "wallet"],
+  ["secureSharing", "Güvenli Paylaşım", "lock"],
   ["advance", "Borç / Avans Yönetimi", "wallet"],
   ["redBulletin", "Kırmızı Bülten", "bell"],
 ];
+
+const payrollTabColors = {
+  home: "#2f80ed",
+  menu: "#6947b8",
+  system: "#334155",
+  calendar: "#7c3aed",
+  company: "#0ea5a3",
+  definitions: "#16a34a",
+  payrollDefinitions: "#b45309",
+  selfService: "#0891b2",
+  hrMetrics: "#7c3aed",
+  reports: "#0f766e",
+  operations: "#f97316",
+  dynamic: "#2563eb",
+  integrate: "#6947b8",
+  legislation: "#9333ea",
+  bankBes: "#0f766e",
+  secureSharing: "#334155",
+  advance: "#b45309",
+  redBulletin: "#e11d48",
+};
 
 const moduleAccentColors = {
   panel: "#2f80ed",
@@ -734,6 +872,15 @@ const moduleAccentColors = {
   archive: "#64748b",
   audit: "#1d4ed8",
   payroll: "#b45309",
+  employeeRegistry: "#4f46e5",
+  performanceReviews: "#7c3aed",
+  recruitment: "#0891b2",
+  bankBes: "#0f766e",
+  secureSharing: "#334155",
+  integrations: "#6947b8",
+  legislation: "#9333ea",
+  automationRules: "#f59e0b",
+  payrollCalendar: "#7c3aed",
 };
 
 const translations = {
@@ -941,13 +1088,77 @@ const translations = {
   "Tanımlar": "Definitions",
   "Bordro Tanımları": "Payroll Definitions",
   "Self-servis": "Self-service",
+  "İK Metrikleri": "HR Metrics",
   "İşlemler": "Operations",
   "Dinamik Rapor": "Dynamic Report",
   "Fintegrate": "Fintegrate",
+  "Banka / BES": "Bank / Private Pension",
+  "Güvenli Paylaşım": "Secure Sharing",
   "Borç / Avans Yönetimi": "Debt / Advance Management",
   "Kırmızı Bülten": "Red Bulletin",
+  "Sicil Yönetimi": "Employee Registry",
+  "Performans": "Performance",
+  "İşe Alım": "Recruitment",
+  "Sicil No": "Registry No",
+  "T.C. Kimlik": "National ID",
+  "Çalışma Tipi": "Employment Type",
+  "Tam Zamanlı": "Full Time",
+  "Yarı Zamanlı": "Part Time",
+  "Dış Kaynak": "Outsourced",
+  "Kıdem Tarihi": "Seniority Date",
+  "Hedef": "Target",
+  "Puan": "Score",
+  "Değerlendiren": "Reviewer",
+  "Sonuç": "Result",
+  "Başarılı": "Successful",
+  "Gelişim Planı": "Development Plan",
+  "Takip Edilecek": "To Be Followed",
+  "Pozisyon": "Position",
+  "Aday": "Candidate",
+  "Aşama": "Stage",
+  "Başvuru": "Application",
+  "Görüşme": "Interview",
+  "Teklif": "Offer",
+  "İşe Alındı": "Hired",
+  "Olumsuz": "Negative",
+  "Görüşme Tarihi": "Interview Date",
+  "Banka": "Bank",
+  "BES Durumu": "Private Pension Status",
+  "BES Oranı": "Private Pension Rate",
+  "Belge": "Document",
+  "OTP Durumu": "OTP Status",
+  "Doğrulandı": "Verified",
+  "Süresi Doldu": "Expired",
+  "Zaman Damgası": "Timestamp",
+  "Kanal": "Channel",
+  "E-posta": "Email",
+  "SMS": "SMS",
   "Bordro self-servis": "Payroll self-service",
   "Personel bordrosunu görür, onaylar ve yayın durumunu takip eder.": "Employees view, approve and track payroll publication status.",
+  "İK Metrikleri Paneli": "HR Metrics Panel",
+  "Çalışan devir oranı, performans, işe alım ve eğitim kırılımları tek ekranda izlenir.": "Employee turnover, performance, recruitment and training breakdowns are tracked in one screen.",
+  "Güvenli bordro paylaşımı": "Secure payroll sharing",
+  "KVKK uyumlu bordro yayını, OTP doğrulama, zaman damgası ve görüntülenme takibi birlikte yönetilir.": "KVKK-compliant payroll publication, OTP verification, timestamping and view tracking are managed together.",
+  "Banka ve BES Yönetimi": "Bank and Private Pension Management",
+  "Banka ödeme, IBAN ve BES kayıtları bordro süreciyle birlikte izlenir.": "Bank payment, IBAN and private pension records are tracked with the payroll process.",
+  "Ortalama Performans": "Average Performance",
+  "Açık Pozisyon": "Open Position",
+  "Departman Dağılımı": "Department Distribution",
+  "Risk ve Uyum": "Risk and Compliance",
+  "Başlık": "Title",
+  "BES Kaydı": "Private Pension Record",
+  "Kamusal ve Özel Entegrasyonlar": "Public and Private Integrations",
+  "Zaman damgası ve elektronik onay": "Timestamp and electronic approval",
+  "Bildirim ve yasal kontrol hazırlığı": "Notification and legal control preparation",
+  "Kimlik doğrulama kontrol listesi": "Identity verification checklist",
+  "Tek kullanımlık parola ile bordro onayı": "Payroll approval with one-time password",
+  "İK verisi ve özlük senkronizasyonu": "HR data and personnel file synchronization",
+  "Finans ve muhasebe aktarımı": "Finance and accounting transfer",
+  "SGK Raporları": "Social Security Reports",
+  "BES Ödeme Raporları": "Private Pension Payment Reports",
+  "Banka Ödeme Raporları": "Bank Payment Reports",
+  "Personel Raporları": "Personnel Reports",
+  "Muhasebe Raporları": "Accounting Reports",
   "Mevzuat ve Yasal Parametreler": "Legislation and Legal Parameters",
   "Bordro hesaplama parametreleri ve yasal kontroller tek yerde tutulur.": "Payroll calculation parameters and legal controls are kept in one place.",
   "Güvenlik ve Otomasyon": "Security and Automation",
@@ -1541,7 +1752,7 @@ function renderSideNav() {
       .map(
         ([id, label, icon]) => `
         <button class="${payrollCenterTab === id ? "active" : ""}" type="button" data-payroll-center-tab="${id}">
-          <span class="nav-icon" style="--module-color:#6947b8" data-icon="${icon}"></span>
+          <span class="nav-icon" style="--module-color:${payrollTabColors[id] || "#6947b8"}" data-icon="${icon}"></span>
           <span>${escapeHtml(trText(label))}</span>
         </button>
       `,
@@ -2021,6 +2232,16 @@ function renderPayrollCenter() {
   const integrationRecords = getScopedRecords(getModule("integrations"));
   const legislationRecords = getScopedRecords(getModule("legislation"));
   const automationRecords = getScopedRecords(getModule("automationRules"));
+  const registryRecords = getScopedRecords(getModule("employeeRegistry"));
+  const performanceRecords = getScopedRecords(getModule("performanceReviews")).filter((record) => !record.period || periodMonths.includes(record.period));
+  const recruitmentRecords = getScopedRecords(getModule("recruitment")).filter((record) => record.status !== "Tamamlandı" || recordMatchesMonths(record, periodMonths, ["interviewDate"]));
+  const bankBesRecords = getScopedRecords(getModule("bankBes"));
+  const secureSharingRecords = getScopedRecords(getModule("secureSharing")).filter((record) => !record.period || periodMonths.includes(record.period));
+  const avgPerformance = performanceRecords.length
+    ? Math.round(performanceRecords.reduce((sum, record) => sum + Number(record.score || 0), 0) / performanceRecords.length)
+    : 0;
+  const verifiedShares = secureSharingRecords.filter((record) => record.status === "Tamamlandı" || record.otpStatus === "Doğrulandı").length;
+  const besCount = bankBesRecords.filter((record) => record.besStatus === "Var").length;
   const roles = getScopedRecords(getModule("users"))
     .slice(0, 6)
     .map((user) => ({
@@ -2299,11 +2520,24 @@ function renderPayrollCenter() {
           ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
           ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
           ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
+          ["İK Metrikleri", "Devir, performans, işe alım ve departman kırılımları.", "hrMetrics"],
+          ["Güvenli Paylaşım", "OTP, zaman damgası ve KVKK uyumlu bordro erişimi.", "secureSharing"],
+          ["Banka / BES", "IBAN, banka ödeme ve BES kayıt takibi.", "bankBes"],
           ["Dinamik Rapor", "Bordro, avans, mesai ve maliyet çıktıları.", "reports"],
         ]
           .map(
             ([title, text, nav]) => `
-              <button type="button" data-payroll-center-tab="${nav === "personnel360" ? "menu" : nav === "payroll" ? "operations" : nav === "reports" ? "reports" : "calendar"}">
+              <button type="button" data-payroll-center-tab="${
+                nav === "personnel360"
+                  ? "definitions"
+                  : nav === "payroll"
+                    ? "operations"
+                    : nav === "reports"
+                      ? "reports"
+                      : nav === "payrollCenter"
+                        ? "calendar"
+                        : nav
+              }">
                 <strong>${escapeHtml(trText(title))}</strong>
                 <span>${escapeHtml(trText(text))}</span>
               </button>
@@ -2335,7 +2569,9 @@ function renderPayrollCenter() {
     definitions: `
       <section class="bordro-tab-content two-col">
         ${crudPanel("Personel Tanımları", "personnel", ["name", "department", "role", "city", "startDate", "documentStatus", "status"], personnel)}
+        ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "manager", "employmentType", "status"], registryRecords)}
         ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
+        ${crudPanel("İşe Alım", "recruitment", ["position", "department", "candidate", "stage", "interviewDate", "responsible", "status"], recruitmentRecords)}
       </section>
     `,
     payrollDefinitions: `
@@ -2355,12 +2591,66 @@ function renderPayrollCenter() {
       ${selfServiceCards}
       ${crudPanel("Personel Portal Kayıtları", "users", ["email", "name", "surname", "username", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
     `,
+    hrMetrics: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("İK Metrikleri Paneli"))}</span>
+          <h2>${escapeHtml(trText("Çalışan devir oranı, performans, işe alım ve eğitim kırılımları tek ekranda izlenir."))}</h2>
+          <p>${escapeHtml(`${activePersonnel.length} ${trText("Mevcut Çalışan")} · ${avgPerformance} ${trText("Puan")} · ${recruitmentRecords.filter((record) => record.status === "Açık").length} ${trText("Açık")}`)}</p>
+        </div>
+        <div class="payroll-progress">
+          <strong>${escapeHtml(`${avgPerformance || 0}`)}</strong>
+          <span>${escapeHtml(trText("Ortalama Performans"))}</span>
+        </div>
+      </section>
+      <section class="bordro-kpis">
+        ${[
+          ["Mevcut Çalışan", activePersonnel.length, "users"],
+          ["İşe Alınan", hired, "contact"],
+          ["İşten Ayrılan", left, "contact"],
+          ["Performans", avgPerformance, "barChart"],
+          ["Açık Pozisyon", recruitmentRecords.filter((record) => record.status === "Açık").length, "checklist"],
+          ["Eğitim", getScopedRecords(getModule("trainings")).length, "presentation"],
+        ]
+          .map(
+            ([label, value, icon]) => `
+              <article>
+                <span data-icon="${icon}"></span>
+                <small>${escapeHtml(periodLabel)}</small>
+                <strong>${escapeHtml(value)}</strong>
+                <b>${escapeHtml(trText(label))}</b>
+              </article>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Performans", "performanceReviews", ["person", "period", "target", "score", "reviewer", "result", "status"], performanceRecords)}
+        ${crudPanel("İşe Alım", "recruitment", ["position", "department", "candidate", "stage", "interviewDate", "responsible", "status"], recruitmentRecords)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Departman Dağılımı"))}</h3>
+          ${compactRows(
+            ["Departman", "Çalışan"],
+            [...new Set(personnel.map((record) => record.department || "Tanımsız"))].map((department) => [
+              department,
+              personnel.filter((record) => (record.department || "Tanımsız") === department).length,
+            ]),
+          )}
+        </article>
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Risk ve Uyum"))}</h3>
+          ${compactRows(["Başlık", "Durum"], [["Eksik Checklist", getScopedRecords(getModule("documentsChecklist")).filter((record) => record.status !== "Tam").length], ["Açık Onay", approvals.length], ["BES Kaydı", besCount], ["Güvenli Paylaşım", `${verifiedShares}/${Math.max(secureSharingRecords.length, 1)}`]])}
+        </article>
+      </section>
+    `,
     reports: `
       <section class="bordro-tab-content two-col">
         ${crudPanel("Raporlar", "reports", ["title", "period", "type", "owner", "status"], reports)}
         <article class="bordro-panel">
           <h3>${escapeHtml(trText("Dinamik Rapor"))}</h3>
-          ${compactRows(["Başlık", "Toplam"], [["Net Bordro", formatMoney(totalNet)], ["Avans", formatMoney(totalAdvance)], ["Kesinti", formatMoney(totalDeduction)], ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`]])}
+          ${compactRows(["Başlık", "Toplam"], [["Net Bordro", formatMoney(totalNet)], ["Avans", formatMoney(totalAdvance)], ["Kesinti", formatMoney(totalDeduction)], ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`], ["SGK Raporları", payroll.length], ["BES Ödeme Raporları", besCount], ["Personel Raporları", personnel.length], ["Muhasebe Raporları", invoices.length]])}
         </article>
       </section>
       ${quickActions}
@@ -2394,7 +2684,10 @@ function renderPayrollCenter() {
     integrate: `
       <section class="bordro-tab-content two-col">
         ${crudPanel("Fintegrate ve Entegrasyonlar", "integrations", ["name", "type", "provider", "lastSync", "direction", "status"], integrationRecords)}
-        <article class="bordro-panel">${compactRows(["Aktarım", "Açıklama"], [["Personel", "Kullanıcı ve personel eşleşmesi"], ["Bordro", "Bordro durum ve dosya takibi"], ["Puantaj", "Günlük saat ve mesai"], ["Rapor", "Yönetim çıktıları"]])}</article>
+        <article class="bordro-panel">
+          <h3>${escapeHtml(trText("Kamusal ve Özel Entegrasyonlar"))}</h3>
+          ${compactRows(["Aktarım", "Açıklama"], [["Kamu SM", "Zaman damgası ve elektronik onay"], ["SGK", "Bildirim ve yasal kontrol hazırlığı"], ["Nüfus Müdürlüğü", "Kimlik doğrulama kontrol listesi"], ["SMS OTP", "Tek kullanımlık parola ile bordro onayı"], ["Informasoft", "İK verisi ve özlük senkronizasyonu"], ["Fintegrate", "Finans ve muhasebe aktarımı"]])}
+        </article>
       </section>
     `,
     legislation: `
@@ -2414,6 +2707,37 @@ function renderPayrollCenter() {
       <section class="bordro-tab-content">
         ${crudPanel("Borç / Avans Yönetimi", "payroll", ["person", "period", "advance", "deduction", "netSalary", "payrollStatus"], payroll)}
       </section>
+    `,
+    bankBes: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Banka ve BES Yönetimi"))}</span>
+          <h2>${escapeHtml(trText("Banka ödeme, IBAN ve BES kayıtları bordro süreciyle birlikte izlenir."))}</h2>
+          <p>${escapeHtml(`${bankBesRecords.length} ${trText("Personel")} · ${besCount} BES · ${bankBesRecords.filter((record) => record.paymentStatus === "Ödendi").length} ${trText("Ödendi")}`)}</p>
+        </div>
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Banka / BES", "bankBes", ["person", "bankName", "iban", "besStatus", "besRate", "paymentStatus", "status"], bankBesRecords)}
+        ${crudPanel("Borç / Avans Yönetimi", "payroll", ["person", "period", "advance", "deduction", "netSalary", "payrollStatus"], payroll)}
+      </section>
+    `,
+    secureSharing: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Güvenli bordro paylaşımı"))}</span>
+          <h2>${escapeHtml(trText("KVKK uyumlu bordro yayını, OTP doğrulama, zaman damgası ve görüntülenme takibi birlikte yönetilir."))}</h2>
+          <p>${escapeHtml(`${verifiedShares}/${Math.max(secureSharingRecords.length, 1)} ${trText("Doğrulandı")} · ${openedPayroll} ${trText("Personele Açıldı")}`)}</p>
+        </div>
+        <div class="payroll-progress">
+          <strong>${escapeHtml(`${Math.round((verifiedShares / Math.max(secureSharingRecords.length, 1)) * 100)}%`)}</strong>
+          <span>${escapeHtml(trText("Güvenli Paylaşım"))}</span>
+        </div>
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Güvenli Paylaşım", "secureSharing", ["person", "document", "period", "otpStatus", "timestamp", "deliveryChannel", "status"], secureSharingRecords)}
+        ${crudPanel("Otomasyon Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], automationRecords)}
+      </section>
+      ${selfServiceCards}
     `,
     redBulletin: `
       <section class="bordro-tab-content two-col">
