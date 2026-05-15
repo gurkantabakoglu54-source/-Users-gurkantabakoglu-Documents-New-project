@@ -1509,6 +1509,143 @@ tbody tr.selected {
   font-weight: 900;
 }
 
+.smart-assistant,
+.smart-alert-panel,
+.easy-portal-panel {
+  border-color: rgba(236, 72, 153, 0.18);
+}
+
+.assistant-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.assistant-box label {
+  display: grid;
+  gap: 7px;
+  color: #51446b;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.assistant-box input {
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #e3d7f8;
+  border-radius: 10px;
+  background: #fff;
+  color: #24133f;
+  font-weight: 800;
+}
+
+.assistant-box button,
+.ai-prompt-row button,
+.easy-portal-grid button {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(236, 72, 153, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+  font-weight: 950;
+}
+
+.ai-prompt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ai-prompt-row button {
+  min-height: 32px;
+  background: #fff;
+  color: #7c3aed;
+}
+
+.ai-answer {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #eadcfb;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #faf5ff, #fdf2f8);
+}
+
+.ai-answer strong {
+  color: #6d28d9;
+  font-weight: 950;
+}
+
+.ai-answer p {
+  margin: 6px 0 0;
+  color: #4b3d63;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.smart-alert-list,
+.easy-portal-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.smart-alert-list button,
+.easy-portal-grid button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  align-items: center;
+  padding: 13px;
+  border: 1px solid #eadcfb;
+  border-radius: 14px;
+  background: #fff;
+  color: #2c1f45;
+  text-align: left;
+}
+
+.smart-alert-list button strong {
+  grid-row: span 2;
+  display: grid;
+  min-width: 42px;
+  min-height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f5e8ff;
+  color: #7c3aed;
+}
+
+.smart-alert-list button.needs-attention strong {
+  background: #fdf2f8;
+  color: #db2777;
+}
+
+.smart-alert-list button span,
+.easy-portal-grid button strong {
+  color: #24133f;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.smart-alert-list button small,
+.easy-portal-grid button span {
+  color: #786b91;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.easy-portal-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.easy-portal-grid button {
+  grid-template-columns: 1fr;
+  min-height: 104px;
+  align-content: center;
+  background: linear-gradient(135deg, #ffffff, #fbf5ff);
+}
+
 .workflow-panel header > button {
   min-height: 34px;
   padding: 7px 12px;
@@ -2089,7 +2226,9 @@ tbody tr.selected {
 
   .workflow-steps,
   .employee-mobile-preview,
-  .salary-calculator {
+  .salary-calculator,
+  .assistant-box,
+  .easy-portal-grid {
     grid-template-columns: 1fr;
   }
 

@@ -17,6 +17,10 @@ const icons = {
     '<path d="M6 2h12v20l-3-2-3 2-3-2-3 2Z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>',
   lock:
     '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  bot:
+    '<path d="M12 8V4"/><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M9 17h6"/><path d="M8 4h8"/>',
+  message:
+    '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8"/><path d="M8 13h6"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
   calendar:
     '<path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>',
@@ -443,6 +447,28 @@ const modules = [
     ],
   },
   {
+    id: "messages",
+    title: "Mesajlar",
+    icon: "message",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Mesajlar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["date", "Tarih", "date"],
+      ["type", "Tür", "select", ["Duyuru", "Personel Mesajı", "Müşteri Mesajı", "İç Not"]],
+      ["sender", "Gönderen"],
+      ["recipient", "Alıcı"],
+      ["subject", "Konu"],
+      ["message", "Mesaj"],
+      ["priority", "Öncelik", "select", ["Düşük", "Normal", "Yüksek", "Acil"]],
+      ["status", "Durumu", "select", ["Açık", "Cevaplandı", "Kapandı"]],
+    ],
+    records: [
+      { id: "msg1", date: "2026-05-14", type: "Duyuru", sender: "İK", recipient: "Tüm Personel", subject: "Puantaj kapanışı", message: "Ay sonu puantaj girişleri kontrol edilecek.", priority: "Yüksek", status: "Açık" },
+      { id: "msg2", date: "2026-05-14", type: "Müşteri Mesajı", sender: "TOPDAL PLASTİK", recipient: "Operasyon", subject: "Rapor talebi", message: "Mayıs kalite raporu paylaşımı bekleniyor.", priority: "Normal", status: "Açık" },
+    ],
+  },
+  {
     id: "security",
     title: "Güvenlik",
     icon: "lock",
@@ -790,6 +816,8 @@ const moduleQuickFilters = {
 
 const payrollCenterTabs = [
   ["home", "Anasayfa", "panel"],
+  ["assistant", "Akıllı Asistan", "bot"],
+  ["messages", "Mesajlar", "message"],
   ["menu", "Bordro Merkezi Menü", "grid"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
@@ -807,6 +835,8 @@ const payrollCenterTabs = [
 
 const payrollTabColors = {
   home: "#7c3aed",
+  assistant: "#ec4899",
+  messages: "#d946ef",
   menu: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
@@ -841,6 +871,7 @@ const moduleAccentColors = {
   quality: "#9333ea",
   documentsChecklist: "#a855f7",
   notifications: "#e11d48",
+  messages: "#d946ef",
   security: "#6d28d9",
   settings: "#4c1d95",
   reports: "#9333ea",
@@ -904,6 +935,16 @@ const translations = {
   "Evrak Kontrol": "Document Check",
   "Özlük Checklist": "Personnel Checklist",
   "Bildirim Merkezi": "Notification Center",
+  "Mesajlar": "Messages",
+  "Akıllı Asistan": "Smart Assistant",
+  "Duyuru": "Announcement",
+  "Personel Mesajı": "Personnel Message",
+  "Müşteri Mesajı": "Customer Message",
+  "İç Not": "Internal Note",
+  "Gönderen": "Sender",
+  "Alıcı": "Recipient",
+  "Konu": "Subject",
+  "Mesaj": "Message",
   "Uyarılar": "Alerts",
   "Güvenlik": "Security",
   "Yetki ve Erişim": "Authorization and Access",
@@ -1037,6 +1078,7 @@ const translations = {
   "Geciken Tahsilat": "Overdue Collections",
   "Eksik Checklist": "Missing Checklist",
   "Açık Bildirim": "Open Notifications",
+  "Açık Mesaj": "Open Messages",
   "Fatura Kesilen": "Issued Invoices",
   "Kesilmeyen Fatura": "Unissued Invoices",
   "Çalışma": "Work Hours",
@@ -1171,6 +1213,22 @@ const translations = {
   "Fatura Dağılımı": "Invoice Distribution",
   "Rapor Özeti": "Report Summary",
   "Bordro, avans, mesai, fatura ve maliyet grafikleri.": "Payroll, advance, overtime, invoice and cost charts.",
+  "Kolay Portal Görünümleri": "Easy Portal Views",
+  "Admin, personel ve müşteri için en sık kullanılan işler tek ekranda toplandı.": "The most common tasks for admin, employee and customer are gathered on one screen.",
+  "Akıllı Uyarı Merkezi": "Smart Alert Center",
+  "Yapay Zeka Bordro Asistanı": "AI Payroll Assistant",
+  "Sorunu yaz, paneldeki verilerden kısa cevap al.": "Type your question and get a short answer from portal data.",
+  "Örnek soru seç": "Pick a sample question",
+  "Cevap hazır": "Answer ready",
+  "Asistana Sor": "Ask Assistant",
+  "Bu ay kimlerin bordrosu bekliyor?": "Whose payroll is pending this month?",
+  "Eksik evrak var mı?": "Are there missing documents?",
+  "Avans alan personeller kim?": "Who received advances?",
+  "Fatura bekleyen işler neler?": "Which invoices are pending?",
+  "Personel Portalı": "Employee Portal",
+  "Müşteri Portalı": "Customer Portal",
+  "Admin Komuta": "Admin Command",
+  "Duyuru ve Mesaj Merkezi": "Announcement and Message Center",
   "Ortalama Performans": "Average Performance",
   "Açık Pozisyon": "Open Position",
   "Departman Dağılımı": "Department Distribution",
@@ -2013,6 +2071,91 @@ function renderApprovalBadge(item) {
   return item.state === "good" ? "Tamam" : item.state === "neutral" ? "Beklemede" : "Onay Bekliyor";
 }
 
+function getAssistantSnapshot() {
+  const periodMonths = getDashboardPeriodMonths();
+  const payroll = getScopedRecords(getModule("payroll")).filter((record) => periodMonths.includes(record.period));
+  const attendance = getScopedRecords(getModule("attendance")).filter((record) => periodMonths.includes(record.period));
+  const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "collectionDate", "date"]));
+  const personnel = getScopedRecords(getModule("personnel"));
+  const documents = getScopedRecords(getModule("presentations"));
+  const checklist = getScopedRecords(getModule("documentsChecklist"));
+  const tasks = getScopedRecords(getModule("tasks")).filter((record) => record.status !== "Tamamlandı");
+  const messages = getScopedRecords(getModule("messages")).filter((record) => record.status !== "Kapandı");
+  const pendingPayroll = payroll.filter((record) => record.publishStatus !== "Personele Açıldı");
+  const advancePayroll = payroll.filter((record) => parseMoney(record.advance) > 0);
+  const missingDocuments = personnel.filter((person) => !hasDocumentForPerson(person, documents));
+  const incompleteChecklist = checklist.filter((record) => record.status !== "Tam");
+  const pendingInvoices = invoices.filter((record) => record.status !== "Fatura Kesildi");
+  const totalHours = attendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
+  const totalOvertime = attendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
+
+  return {
+    periodLabel: getDashboardPeriodLabel(periodMonths),
+    payroll,
+    pendingPayroll,
+    advancePayroll,
+    missingDocuments,
+    incompleteChecklist,
+    pendingInvoices,
+    tasks,
+    messages,
+    totalHours,
+    totalOvertime,
+  };
+}
+
+function buildAssistantAnswer(question = "") {
+  const normalized = normalizeText(question);
+  const snapshot = getAssistantSnapshot();
+  const listNames = (records, key = "person") => records.map((record) => record[key] || record.name || record.company || "-").slice(0, 5).join(", ") || "Kayıt yok";
+
+  if (!normalized.trim()) {
+    return `${snapshot.periodLabel} için kısa özet: ${snapshot.pendingPayroll.length} bordro bekliyor, ${snapshot.missingDocuments.length} özlük dosyası kontrol istiyor, ${snapshot.pendingInvoices.length} fatura sonuçlanmamış.`;
+  }
+
+  if (normalized.includes("bordro") || normalized.includes("maas") || normalized.includes("maaş")) {
+    return snapshot.pendingPayroll.length
+      ? `${snapshot.periodLabel} döneminde personele açılmayı bekleyen ${snapshot.pendingPayroll.length} bordro var: ${listNames(snapshot.pendingPayroll)}.`
+      : `${snapshot.periodLabel} döneminde bekleyen bordro görünmüyor.`;
+  }
+
+  if (normalized.includes("evrak") || normalized.includes("ozluk") || normalized.includes("özlük") || normalized.includes("checklist")) {
+    return snapshot.missingDocuments.length || snapshot.incompleteChecklist.length
+      ? `${snapshot.missingDocuments.length} personelde özlük dosyası, ${snapshot.incompleteChecklist.length} checklist kaydı kontrol istiyor. İlk kayıtlar: ${listNames(snapshot.missingDocuments, "name")}.`
+      : "Özlük ve checklist tarafında kritik eksik görünmüyor.";
+  }
+
+  if (normalized.includes("avans")) {
+    return snapshot.advancePayroll.length
+      ? `Avans görünen ${snapshot.advancePayroll.length} bordro var: ${snapshot.advancePayroll.map((record) => `${record.person || "-"} (${record.advance})`).slice(0, 5).join(", ")}.`
+      : "Bu dönem avans kaydı görünmüyor.";
+  }
+
+  if (normalized.includes("fatura") || normalized.includes("tahsilat")) {
+    return snapshot.pendingInvoices.length
+      ? `${snapshot.pendingInvoices.length} fatura sonuçlanmamış: ${snapshot.pendingInvoices.map((record) => `${record.company || record.invoiceNo || "-"} (${record.status || "-"})`).slice(0, 5).join(", ")}.`
+      : "Bu dönem bekleyen fatura görünmüyor.";
+  }
+
+  if (normalized.includes("mesai") || normalized.includes("saat") || normalized.includes("puantaj")) {
+    return `${snapshot.periodLabel} döneminde toplam çalışma ${snapshot.totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat, toplam mesai ${snapshot.totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat.`;
+  }
+
+  if (normalized.includes("gorev") || normalized.includes("görev")) {
+    return snapshot.tasks.length
+      ? `${snapshot.tasks.length} açık görev var: ${snapshot.tasks.map((record) => `${record.title || "-"} (${record.assignee || "-"})`).slice(0, 5).join(", ")}.`
+      : "Açık görev görünmüyor.";
+  }
+
+  if (normalized.includes("mesaj") || normalized.includes("duyuru")) {
+    return snapshot.messages.length
+      ? `${snapshot.messages.length} açık mesaj/duyuru var: ${snapshot.messages.map((record) => record.subject || record.type || "-").slice(0, 5).join(", ")}.`
+      : "Açık mesaj veya duyuru görünmüyor.";
+  }
+
+  return `Bu soruyu operasyon özeti olarak okudum: ${snapshot.pendingPayroll.length} bordro, ${snapshot.pendingInvoices.length} fatura, ${snapshot.tasks.length} açık görev ve ${snapshot.messages.length} mesaj takipte. Daha net sonuç için “bordro”, “avans”, “fatura”, “evrak”, “mesai” veya “görev” kelimeleriyle sorabilirsin.`;
+}
+
 function renderDashboard() {
   const periodMonths = getDashboardPeriodMonths();
   const periodLabel = getDashboardPeriodLabel(periodMonths);
@@ -2025,6 +2168,7 @@ function renderDashboard() {
   const leaves = getScopedRecords(getModule("leaves")).filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
   const tasks = getScopedRecords(getModule("tasks")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "date"]));
   const notifications = getScopedRecords(getModule("notifications")).filter((record) => record.status === "Açık");
+  const messages = getScopedRecords(getModule("messages")).filter((record) => record.status !== "Kapandı");
   const checklist = getScopedRecords(getModule("documentsChecklist"));
   const activeProjects = projects.filter((record) => normalizeText(record.status) === "aktif").length;
   const passiveProjects = projects.filter((record) => normalizeText(record.status) === "pasif").length;
@@ -2076,6 +2220,7 @@ function renderDashboard() {
     ["Eksik Checklist", incompleteChecklist, "documentsChecklist", getKpiState(incompleteChecklist)],
     ["Açık Görev", openTasks, "tasks", getKpiState(openTasks)],
     ["Açık Bildirim", notifications.length, "notifications", getKpiState(notifications.length)],
+    ["Açık Mesaj", messages.length, "messages", getKpiState(messages.length)],
   ];
   const cards = [
     { id: "payrollCenter", value: pendingPayroll ? `${pendingPayroll}` : "OK", label: "Bordro Merkezi", icon: "grid", color: "purple" },
@@ -2094,6 +2239,7 @@ function renderDashboard() {
     { id: "quality", value: `%${qualityRate.toLocaleString("tr-TR", { maximumFractionDigits: 1 })}`, label: "Kalite Yönetimi", icon: "barChart", color: "green" },
     { id: "documentsChecklist", value: getRecordCount("documentsChecklist"), label: "Evrak Kontrol", icon: "checklist", color: "blue" },
     { id: "notifications", value: notifications.length, label: "Bildirim Merkezi", icon: "bell", color: "red" },
+    { id: "messages", value: messages.length, label: "Mesajlar", icon: "message", color: "purple" },
     { id: "reports", value: getRecordCount("reports"), label: "Raporlar", icon: "chart", color: "green" },
     { id: "security", value: getRecordCount("security"), label: "Güvenlik", icon: "lock", color: "purple" },
     { id: "settings", value: getRecordCount("settings"), label: "Kurumsal Ayarlar", icon: "settings", color: "dark-green" },
@@ -2252,6 +2398,7 @@ function renderPayrollCenter() {
   const companies = getScopedRecords(getModule("companies"));
   const tasks = getScopedRecords(getModule("tasks")).filter((record) => record.status !== "Tamamlandı");
   const reports = getScopedRecords(getModule("reports"));
+  const messages = getScopedRecords(getModule("messages")).filter((record) => record.status !== "Kapandı");
   const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "collectionDate", "date"]));
   const calendarRecords = getScopedRecords(getModule("payrollCalendar")).filter((record) => periodMonths.includes(record.period) || recordMatchesMonths(record, periodMonths, ["date"]));
   const legislationRecords = getScopedRecords(getModule("legislation"));
@@ -2613,6 +2760,106 @@ function renderPayrollCenter() {
       </div>
     </article>
   `;
+  const smartAlertRows = [
+    ["Bordro", payrollPaymentAlerts.length || payroll.filter((record) => record.publishStatus !== "Personele Açıldı").length, "Bordro yayın ve ödeme kontrolü", "payrollDefinitions"],
+    ["Puantaj", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "Eksik veya sıfır saatli puantaj kontrolü", "calendar"],
+    ["Fatura", overdueInvoices.length || invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Bekleyen fatura ve tahsilat kontrolü", "operations"],
+    ["Mesaj", messages.length, "Açık duyuru ve mesaj takibi", "messages"],
+    ["Görev", tasks.length, "Tamamlanmamış görevler", "redBulletin"],
+  ];
+  const smartAlertsPanel = `
+    <article class="bordro-panel smart-alert-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Akıllı Uyarı Merkezi"))}</b>
+          <h3>${escapeHtml(trText("Bugünün sade öncelikleri"))}</h3>
+        </div>
+      </header>
+      <div class="smart-alert-list">
+        ${smartAlertRows
+          .map(
+            ([label, count, detail, tab]) => `
+              <button class="${count ? "needs-attention" : "is-clear"}" type="button" data-payroll-center-tab="${tab}">
+                <strong>${escapeHtml(count ? String(count) : "OK")}</strong>
+                <span>${escapeHtml(trText(label))}</span>
+                <small>${escapeHtml(trText(detail))}</small>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+  const assistantAnswer = buildAssistantAnswer("");
+  const assistantPanel = `
+    <article class="bordro-panel smart-assistant">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Yapay Zeka Bordro Asistanı"))}</b>
+          <h3>${escapeHtml(trText("Sorunu yaz, paneldeki verilerden kısa cevap al."))}</h3>
+        </div>
+      </header>
+      <div class="assistant-box">
+        <label>
+          ${escapeHtml(trText("Asistana Sor"))}
+          <input id="aiAssistantQuestion" type="search" placeholder="${escapeHtml(trText("Bu ay kimlerin bordrosu bekliyor?"))}" />
+        </label>
+        <button type="button" data-action="ai-ask">${escapeHtml(trText("Asistana Sor"))}</button>
+      </div>
+      <div class="ai-prompt-row">
+        ${["Bu ay kimlerin bordrosu bekliyor?", "Eksik evrak var mı?", "Avans alan personeller kim?", "Fatura bekleyen işler neler?"]
+          .map((question) => `<button type="button" data-ai-question="${escapeHtml(question)}">${escapeHtml(trText(question))}</button>`)
+          .join("")}
+      </div>
+      <div class="ai-answer" id="aiAssistantAnswer">
+        <strong>${escapeHtml(trText("Cevap hazır"))}</strong>
+        <p>${escapeHtml(assistantAnswer)}</p>
+      </div>
+    </article>
+  `;
+  const easyPortalPanel = `
+    <article class="bordro-panel easy-portal-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Kolay Portal Görünümleri"))}</b>
+          <h3>${escapeHtml(trText("Admin, personel ve müşteri için en sık kullanılan işler tek ekranda toplandı."))}</h3>
+        </div>
+      </header>
+      <div class="easy-portal-grid">
+        ${[
+          ["Admin Komuta", "Bordro, uyarı, fatura ve görevleri tek ekranda yönet.", "home"],
+          ["Personel Portalı", "Bordro, evrak, izin ve mesajları sade izleme ekranı.", "selfService"],
+          ["Müşteri Portalı", "Proje, fatura, rapor ve müşteri mesajları tek yerde.", "operations"],
+        ]
+          .map(
+            ([title, text, tab]) => `
+              <button type="button" data-payroll-center-tab="${tab}">
+                <strong>${escapeHtml(trText(title))}</strong>
+                <span>${escapeHtml(trText(text))}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+  const messageBoardPanel = `
+    <section class="bordro-tab-content two-col">
+      ${crudPanel("Duyuru ve Mesaj Merkezi", "messages", ["date", "type", "sender", "recipient", "subject", "priority", "status"], messages)}
+      <article class="bordro-panel message-summary-panel">
+        <h3>${escapeHtml(trText("Mesaj Özeti"))}</h3>
+        ${compactRows(
+          ["Başlık", "Toplam"],
+          [
+            ["Açık", messages.filter((record) => record.status === "Açık").length],
+            ["Acil", messages.filter((record) => record.priority === "Acil").length],
+            ["Duyuru", messages.filter((record) => record.type === "Duyuru").length],
+            ["Müşteri Mesajı", messages.filter((record) => record.type === "Müşteri Mesajı").length],
+          ],
+        )}
+      </article>
+    </section>
+  `;
   const attendanceMatrix = `
     <article class="bordro-panel attendance-matrix-panel">
       <header>
@@ -2788,12 +3035,24 @@ function renderPayrollCenter() {
           .join("")}
       </section>
       <section class="bordro-board">${payrollWorkflowPanel}${alertPanel}</section>
+      <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
       <section class="bordro-board">${calendarPanel}${periodSummaryPanel}</section>
+      ${easyPortalPanel}
+      ${quickActions}
+    `,
+    assistant: `
+      <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
+      ${easyPortalPanel}
+    `,
+    messages: `
+      ${messageBoardPanel}
       ${quickActions}
     `,
     menu: `
       <section class="bordro-tab-grid">
         ${[
+          ["Akıllı Asistan", "Bordro, avans, fatura, mesai ve evrak sorularını hızlı cevaplar.", "assistant"],
+          ["Mesajlar", "Duyuru, personel mesajı ve müşteri mesajları tek yerde.", "messages"],
           ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
           ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
           ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
@@ -4270,7 +4529,7 @@ function renderModule(module) {
 
 function switchModule(id) {
   if (id !== "payrollCenter") {
-    payrollCenterTab = id === "panel" ? "home" : payrollCenterTab;
+    payrollCenterTab = id === "panel" ? "home" : payrollCenterTabs.some(([tabId]) => tabId === id) ? id : payrollCenterTab;
     id = "payrollCenter";
   }
 
@@ -4702,6 +4961,18 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const aiQuestionButton = event.target.closest("[data-ai-question]");
+  if (aiQuestionButton) {
+    const question = aiQuestionButton.dataset.aiQuestion || "";
+    const input = document.querySelector("#aiAssistantQuestion");
+    const answerBox = document.querySelector("#aiAssistantAnswer");
+    if (input) input.value = question;
+    if (answerBox) {
+      answerBox.innerHTML = `<strong>${escapeHtml(trText("Cevap hazır"))}</strong><p>${escapeHtml(buildAssistantAnswer(question))}</p>`;
+    }
+    return;
+  }
+
   if (event.target.id === "dashboardMonthSelect" || event.target.id === "dashboardRangeSelect") {
     return;
   }
@@ -4726,6 +4997,15 @@ document.addEventListener("click", (event) => {
   }
 
   const action = manageButton.dataset.action;
+  if (action === "ai-ask") {
+    const question = document.querySelector("#aiAssistantQuestion")?.value || "";
+    const answerBox = document.querySelector("#aiAssistantAnswer");
+    if (answerBox) {
+      answerBox.innerHTML = `<strong>${escapeHtml(trText("Cevap hazır"))}</strong><p>${escapeHtml(buildAssistantAnswer(question))}</p>`;
+    }
+    return;
+  }
+
   const module = getModule(manageButton.dataset.module || activeModuleId);
   const recordId = manageButton.dataset.id || selectedRecordId;
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete"];
