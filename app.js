@@ -795,6 +795,7 @@ let dashboardMonth = "05.2026";
 let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
+let selectedMessageThreadId = "";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
@@ -945,6 +946,25 @@ const translations = {
   "Alıcı": "Recipient",
   "Konu": "Subject",
   "Mesaj": "Message",
+  "İç İletişim": "Internal Communication",
+  "Konuşmalar": "Conversations",
+  "Yeni Mesaj": "New Message",
+  "Mesaj yaz": "Write a message",
+  "Mesaj Gönder": "Send Message",
+  "Konuşmayı Kapat": "Close Conversation",
+  "Mesaj Özeti": "Message Summary",
+  "Tüm ekip": "All team",
+  "İK Ekibi": "HR Team",
+  "Operasyon": "Operations",
+  "Muhasebe": "Accounting",
+  "Aktif konuşma yok.": "No active conversation.",
+  "Mesaj metni boş olamaz.": "Message text cannot be empty.",
+  "Alıcı seç": "Select recipient",
+  "Konu yaz": "Write subject",
+  "Son mesaj": "Last message",
+  "Kişiler": "People",
+  "Teams tarzı hızlı iletişim": "Teams-style quick communication",
+  "Duyuru, personel ve müşteri mesajlarını tek konuşma ekranında yönet.": "Manage announcements, personnel and customer messages in one conversation screen.",
   "Uyarılar": "Alerts",
   "Güvenlik": "Security",
   "Yetki ve Erişim": "Authorization and Access",
@@ -1398,6 +1418,7 @@ const translations = {
   "Onay Bekliyor": "Awaiting Approval",
   "Personele Açıldı": "Published to Personnel",
   "Kapalı": "Closed",
+  "Cevaplandı": "Answered",
   "Görülmedi": "Not Viewed",
   "Görüldü": "Viewed",
   "Açık": "Open",
@@ -1560,6 +1581,25 @@ function hydrateRecord(module, record) {
       ...record,
       ...Object.fromEntries(overtimeDayColumns.map(([key]) => [key, record[key] || ""])),
       totalHours: calculateAttendanceTotal(record),
+    };
+  }
+
+  if (module.id === "messages") {
+    const threadId =
+      record.threadId ||
+      `thread-${normalizeText(`${record.subject || record.type || "mesaj"}-${record.sender || ""}-${record.recipient || ""}`).replace(/[^a-z0-9]/g, "-") || createId("thread")}`;
+    return {
+      date: new Date().toISOString().slice(0, 10),
+      time: "",
+      type: "Personel Mesajı",
+      sender: "Sistem",
+      recipient: "Tüm ekip",
+      subject: "Genel",
+      message: "",
+      priority: "Normal",
+      status: "Açık",
+      ...record,
+      threadId,
     };
   }
 
@@ -2154,6 +2194,105 @@ function buildAssistantAnswer(question = "") {
   }
 
   return `Bu soruyu operasyon özeti olarak okudum: ${snapshot.pendingPayroll.length} bordro, ${snapshot.pendingInvoices.length} fatura, ${snapshot.tasks.length} açık görev ve ${snapshot.messages.length} mesaj takipte. Daha net sonuç için “bordro”, “avans”, “fatura”, “evrak”, “mesai” veya “görev” kelimeleriyle sorabilirsin.`;
+}
+
+function getMessageTimestamp(record) {
+  const date = record.timestamp || `${toInputDate(record.date) || new Date().toISOString().slice(0, 10)}T${record.time || "09:00"}`;
+  const time = Date.parse(date);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function getMessageParticipants() {
+  const people = [
+    "Tüm ekip",
+    "İK Ekibi",
+    "Operasyon",
+    "Muhasebe",
+    ...getScopedRecords(getModule("personnel")).map((record) => record.name).filter(Boolean),
+    ...getScopedRecords(getModule("users"))
+      .map((record) => `${record.name || ""} ${record.surname || ""}`.trim() || record.email)
+      .filter(Boolean),
+    ...getScopedRecords(getModule("companies")).map((record) => record.name).filter(Boolean),
+  ];
+  return [...new Set(people)];
+}
+
+function getRecordMessageThreadId(record) {
+  return record.threadId || `thread-${normalizeText(`${record.subject || record.type || "mesaj"}-${record.sender || ""}-${record.recipient || ""}`).replace(/[^a-z0-9]/g, "-") || record.id}`;
+}
+
+function getMessageThreads(records) {
+  const groups = new Map();
+  records.forEach((record) => {
+    const threadId = getRecordMessageThreadId(record);
+    if (!groups.has(threadId)) groups.set(threadId, []);
+    groups.get(threadId).push(record);
+  });
+
+  return [...groups.entries()]
+    .map(([id, items]) => {
+      const sorted = [...items].sort((a, b) => getMessageTimestamp(a) - getMessageTimestamp(b));
+      const latest = sorted[sorted.length - 1] || {};
+      const unread = sorted.filter((record) => record.status === "Açık").length;
+      const urgent = sorted.some((record) => record.priority === "Acil" || record.priority === "Yüksek");
+      return {
+        id,
+        items: sorted,
+        latest,
+        unread,
+        urgent,
+        title: latest.subject || latest.type || "Mesaj",
+        recipient: latest.recipient || "Tüm ekip",
+      };
+    })
+    .sort((a, b) => getMessageTimestamp(b.latest) - getMessageTimestamp(a.latest));
+}
+
+function sendPortalMessage(form) {
+  const module = getModule("messages");
+  const formData = new FormData(form);
+  const message = String(formData.get("message") || "").trim();
+  if (!message) {
+    window.alert(trText("Mesaj metni boş olamaz."));
+    return;
+  }
+
+  const now = new Date();
+  const subject = String(formData.get("subject") || "").trim() || "Genel";
+  const existingThread = selectedMessageThreadId && getMessageThreads(module.records).some((thread) => thread.id === selectedMessageThreadId);
+  const record = {
+    id: createId("msg"),
+    threadId: existingThread ? selectedMessageThreadId : createId("thread"),
+    date: now.toISOString().slice(0, 10),
+    time: now.toTimeString().slice(0, 5),
+    timestamp: now.toISOString(),
+    type: String(formData.get("type") || "Personel Mesajı"),
+    sender: currentUser?.displayName || currentUser?.email || "Admin",
+    recipient: String(formData.get("recipient") || "Tüm ekip"),
+    subject,
+    message,
+    priority: String(formData.get("priority") || "Normal"),
+    status: "Açık",
+  };
+
+  module.records = [record, ...module.records];
+  selectedMessageThreadId = record.threadId;
+  addAudit("Mesaj", module, record, `${record.recipient} alıcısına mesaj gönderildi.`);
+  saveRecords();
+  renderPayrollCenter();
+  renderSideNav();
+  renderIcons();
+}
+
+function closeMessageThread(threadId) {
+  const module = getModule("messages");
+  module.records = module.records.map((record) => (getRecordMessageThreadId(record) === threadId ? { ...record, status: "Kapandı", threadId } : record));
+  addAudit("Mesaj", module, { id: threadId, subject: threadId }, "Konuşma kapatıldı.");
+  selectedMessageThreadId = "";
+  saveRecords();
+  renderPayrollCenter();
+  renderSideNav();
+  renderIcons();
 }
 
 function renderDashboard() {
@@ -2843,21 +2982,134 @@ function renderPayrollCenter() {
       </div>
     </article>
   `;
+  const messageThreads = getMessageThreads(messages);
+  if (!selectedMessageThreadId || !messageThreads.some((thread) => thread.id === selectedMessageThreadId)) {
+    selectedMessageThreadId = messageThreads[0]?.id || "";
+  }
+  const activeMessageThread = messageThreads.find((thread) => thread.id === selectedMessageThreadId);
+  const messageParticipants = getMessageParticipants();
   const messageBoardPanel = `
-    <section class="bordro-tab-content two-col">
-      ${crudPanel("Duyuru ve Mesaj Merkezi", "messages", ["date", "type", "sender", "recipient", "subject", "priority", "status"], messages)}
-      <article class="bordro-panel message-summary-panel">
-        <h3>${escapeHtml(trText("Mesaj Özeti"))}</h3>
-        ${compactRows(
-          ["Başlık", "Toplam"],
-          [
-            ["Açık", messages.filter((record) => record.status === "Açık").length],
-            ["Acil", messages.filter((record) => record.priority === "Acil").length],
-            ["Duyuru", messages.filter((record) => record.type === "Duyuru").length],
-            ["Müşteri Mesajı", messages.filter((record) => record.type === "Müşteri Mesajı").length],
-          ],
-        )}
+    <section class="team-chat-shell">
+      <aside class="team-chat-sidebar">
+        <header>
+          <div>
+            <b>${escapeHtml(trText("İç İletişim"))}</b>
+            <h3>${escapeHtml(trText("Konuşmalar"))}</h3>
+          </div>
+          <span>${escapeHtml(messages.length)}</span>
+        </header>
+        <div class="team-thread-list">
+          ${
+            messageThreads.length
+              ? messageThreads
+                  .map(
+                    (thread) => `
+                      <button class="${thread.id === selectedMessageThreadId ? "active" : ""} ${thread.urgent ? "urgent" : ""}" type="button" data-message-thread="${escapeHtml(thread.id)}">
+                        <strong>${escapeHtml(trText(thread.title))}</strong>
+                        <span>${escapeHtml(`${trText(thread.recipient)} · ${thread.latest.sender || "-"}`)}</span>
+                        <small>${escapeHtml(`${trText("Son mesaj")}: ${thread.latest.message || "-"}`)}</small>
+                        ${thread.unread ? `<em>${escapeHtml(thread.unread)}</em>` : ""}
+                      </button>
+                    `,
+                  )
+                  .join("")
+              : `<p>${escapeHtml(trText("Aktif konuşma yok."))}</p>`
+          }
+        </div>
+      </aside>
+      <article class="team-chat-panel">
+        <header class="team-chat-header">
+          <div>
+            <b>${escapeHtml(trText("Teams tarzı hızlı iletişim"))}</b>
+            <h3>${escapeHtml(trText(activeMessageThread?.title || "Yeni Mesaj"))}</h3>
+            <span>${escapeHtml(trText(activeMessageThread?.recipient || "Tüm ekip"))}</span>
+          </div>
+          <div class="panel-tools">
+            ${activeMessageThread && canManageRecords() ? `<button type="button" data-action="message-close" data-thread="${escapeHtml(activeMessageThread.id)}">${escapeHtml(trText("Konuşmayı Kapat"))}</button>` : ""}
+          </div>
+        </header>
+        <div class="team-chat-feed">
+          ${
+            activeMessageThread
+              ? activeMessageThread.items
+                  .map((record) => {
+                    const mine = normalizeText(record.sender) === normalizeText(currentUser?.displayName || currentUser?.email || "");
+                    return `
+                      <div class="chat-bubble ${mine ? "mine" : ""} ${record.priority === "Acil" || record.priority === "Yüksek" ? "important" : ""}">
+                        <small>${escapeHtml(`${record.sender || "-"} · ${record.date || ""} ${record.time || ""}`.trim())}</small>
+                        <p>${escapeHtml(record.message || "-")}</p>
+                        <span>${escapeHtml(trText(record.type || "Mesaj"))} · ${escapeHtml(trText(record.priority || "Normal"))}</span>
+                      </div>
+                    `;
+                  })
+                  .join("")
+              : `<div class="chat-empty">${escapeHtml(trText("Aktif konuşma yok."))}</div>`
+          }
+        </div>
+        <form class="team-chat-composer" id="messageComposer">
+          <div class="composer-grid">
+            <label>
+              ${escapeHtml(trText("Alıcı"))}
+              <select name="recipient">
+                ${messageParticipants
+                  .map((person) => `<option value="${escapeHtml(person)}" ${person === activeMessageThread?.recipient ? "selected" : ""}>${escapeHtml(trText(person))}</option>`)
+                  .join("")}
+              </select>
+            </label>
+            <label>
+              ${escapeHtml(trText("Tür"))}
+              <select name="type">
+                ${["Duyuru", "Personel Mesajı", "Müşteri Mesajı", "İç Not"]
+                  .map((type) => `<option value="${escapeHtml(type)}" ${type === activeMessageThread?.latest?.type ? "selected" : ""}>${escapeHtml(trText(type))}</option>`)
+                  .join("")}
+              </select>
+            </label>
+            <label>
+              ${escapeHtml(trText("Öncelik"))}
+              <select name="priority">
+                ${["Normal", "Yüksek", "Acil"]
+                  .map((priority) => `<option value="${escapeHtml(priority)}">${escapeHtml(trText(priority))}</option>`)
+                  .join("")}
+              </select>
+            </label>
+          </div>
+          <label>
+            ${escapeHtml(trText("Konu"))}
+            <input name="subject" value="${escapeHtml(activeMessageThread?.title || "")}" placeholder="${escapeHtml(trText("Konu yaz"))}" />
+          </label>
+          <label>
+            ${escapeHtml(trText("Mesaj yaz"))}
+            <textarea name="message" rows="4" placeholder="${escapeHtml(trText("Mesaj yaz"))}"></textarea>
+          </label>
+          <div class="composer-actions">
+            <button type="button" data-action="message-new">${escapeHtml(trText("Yeni Mesaj"))}</button>
+            <button type="button" data-action="message-send">${escapeHtml(trText("Mesaj Gönder"))}</button>
+          </div>
+        </form>
       </article>
+      <aside class="team-chat-info">
+        <article>
+          <b>${escapeHtml(trText("Mesaj Özeti"))}</b>
+          ${compactRows(
+            ["Başlık", "Toplam"],
+            [
+              ["Açık", messages.filter((record) => record.status === "Açık").length],
+              ["Acil", messages.filter((record) => record.priority === "Acil").length],
+              ["Duyuru", messages.filter((record) => record.type === "Duyuru").length],
+              ["Müşteri Mesajı", messages.filter((record) => record.type === "Müşteri Mesajı").length],
+            ],
+          )}
+        </article>
+        <article>
+          <b>${escapeHtml(trText("Kişiler"))}</b>
+          <div class="chat-people">
+            ${messageParticipants
+              .slice(0, 10)
+              .map((person) => `<span>${escapeHtml(person)}</span>`)
+              .join("")}
+          </div>
+        </article>
+      </aside>
     </section>
   `;
   const attendanceMatrix = `
@@ -4961,6 +5213,16 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const messageThreadButton = event.target.closest("[data-message-thread]");
+  if (messageThreadButton) {
+    selectedMessageThreadId = messageThreadButton.dataset.messageThread;
+    payrollCenterTab = "messages";
+    activeModuleId = "payrollCenter";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   const aiQuestionButton = event.target.closest("[data-ai-question]");
   if (aiQuestionButton) {
     const question = aiQuestionButton.dataset.aiQuestion || "";
@@ -5003,6 +5265,27 @@ document.addEventListener("click", (event) => {
     if (answerBox) {
       answerBox.innerHTML = `<strong>${escapeHtml(trText("Cevap hazır"))}</strong><p>${escapeHtml(buildAssistantAnswer(question))}</p>`;
     }
+    return;
+  }
+
+  if (action === "message-send") {
+    const form = document.querySelector("#messageComposer");
+    if (form) sendPortalMessage(form);
+    return;
+  }
+
+  if (action === "message-new") {
+    selectedMessageThreadId = "";
+    const form = document.querySelector("#messageComposer");
+    if (form) {
+      form.reset();
+      form.querySelector('[name="subject"]')?.focus();
+    }
+    return;
+  }
+
+  if (action === "message-close") {
+    closeMessageThread(manageButton.dataset.thread || selectedMessageThreadId);
     return;
   }
 

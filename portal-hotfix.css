@@ -1646,6 +1646,280 @@ tbody tr.selected {
   background: linear-gradient(135deg, #ffffff, #fbf5ff);
 }
 
+.team-chat-shell {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 260px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.team-chat-sidebar,
+.team-chat-panel,
+.team-chat-info article {
+  border: 1px solid #eadcfb;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 16px 38px rgba(76, 29, 149, 0.08);
+}
+
+.team-chat-sidebar,
+.team-chat-panel {
+  min-height: 660px;
+  overflow: hidden;
+}
+
+.team-chat-sidebar header,
+.team-chat-header,
+.team-chat-info article {
+  padding: 16px;
+}
+
+.team-chat-sidebar header,
+.team-chat-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1e6ff;
+}
+
+.team-chat-sidebar b,
+.team-chat-header b,
+.team-chat-info b {
+  color: #8b5cf6;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.team-chat-sidebar h3,
+.team-chat-header h3 {
+  margin: 4px 0 0;
+  color: #24133f;
+  font-size: 20px;
+}
+
+.team-chat-sidebar header > span {
+  display: grid;
+  min-width: 34px;
+  min-height: 34px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f5e8ff;
+  color: #7c3aed;
+  font-weight: 950;
+}
+
+.team-thread-list {
+  display: grid;
+  gap: 8px;
+  max-height: 580px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.team-thread-list button {
+  position: relative;
+  display: grid;
+  gap: 5px;
+  padding: 13px 42px 13px 13px;
+  border: 1px solid #f0e3fb;
+  border-radius: 15px;
+  background: #fff;
+  color: #34244e;
+  text-align: left;
+}
+
+.team-thread-list button.active {
+  border-color: rgba(236, 72, 153, 0.42);
+  background: linear-gradient(135deg, #faf5ff, #fdf2f8);
+  box-shadow: inset 4px 0 0 #ec4899;
+}
+
+.team-thread-list button.urgent {
+  box-shadow: inset 4px 0 0 #e11d48;
+}
+
+.team-thread-list strong {
+  color: #24133f;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.team-thread-list span,
+.team-thread-list small {
+  color: #76678e;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.team-thread-list em {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  min-width: 24px;
+  min-height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: #ec4899;
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.team-chat-panel {
+  display: grid;
+  grid-template-rows: auto minmax(260px, 1fr) auto;
+}
+
+.team-chat-header span {
+  display: block;
+  margin-top: 4px;
+  color: #786b91;
+  font-weight: 850;
+}
+
+.team-chat-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 18px;
+  overflow: auto;
+  background:
+    radial-gradient(circle at top left, rgba(236, 72, 153, 0.08), transparent 32%),
+    linear-gradient(180deg, #fff, #fbf8ff);
+}
+
+.chat-bubble {
+  max-width: min(72%, 620px);
+  padding: 12px 14px;
+  border: 1px solid #eadcfb;
+  border-radius: 16px 16px 16px 5px;
+  background: #fff;
+  color: #33224f;
+  box-shadow: 0 10px 24px rgba(76, 29, 149, 0.08);
+}
+
+.chat-bubble.mine {
+  align-self: flex-end;
+  border-color: rgba(236, 72, 153, 0.28);
+  border-radius: 16px 16px 5px 16px;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+}
+
+.chat-bubble.important {
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.12), 0 12px 24px rgba(76, 29, 149, 0.08);
+}
+
+.chat-bubble small,
+.chat-bubble span {
+  display: block;
+  color: inherit;
+  opacity: 0.72;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.chat-bubble p {
+  margin: 7px 0;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.chat-empty {
+  margin: auto;
+  color: #786b91;
+  font-weight: 900;
+}
+
+.team-chat-composer {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid #f1e6ff;
+  background: #fff;
+}
+
+.composer-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.8fr;
+  gap: 10px;
+}
+
+.team-chat-composer label {
+  display: grid;
+  gap: 6px;
+  color: #51446b;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.team-chat-composer input,
+.team-chat-composer select,
+.team-chat-composer textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 11px;
+  border: 1px solid #e7d9fb;
+  border-radius: 11px;
+  background: #fff;
+  color: #24133f;
+  font-weight: 850;
+}
+
+.team-chat-composer textarea {
+  resize: vertical;
+}
+
+.composer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.composer-actions button,
+.team-chat-header .panel-tools button {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid rgba(236, 72, 153, 0.24);
+  border-radius: 10px;
+  background: #fff;
+  color: #7c3aed;
+  font-weight: 950;
+}
+
+.composer-actions button:last-child {
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+}
+
+.team-chat-info {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.chat-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat-people span {
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: #faf5ff;
+  color: #5b21b6;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .workflow-panel header > button {
   min-height: 34px;
   padding: 7px 12px;
@@ -2078,6 +2352,15 @@ tbody tr.selected {
     grid-template-columns: 1fr;
   }
 
+  .team-chat-shell {
+    grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.4fr);
+  }
+
+  .team-chat-info {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .report-visual-grid {
     grid-template-columns: 1fr;
   }
@@ -2228,8 +2511,28 @@ tbody tr.selected {
   .employee-mobile-preview,
   .salary-calculator,
   .assistant-box,
-  .easy-portal-grid {
+  .easy-portal-grid,
+  .team-chat-shell,
+  .composer-grid,
+  .team-chat-info {
     grid-template-columns: 1fr;
+  }
+
+  .team-chat-sidebar,
+  .team-chat-panel {
+    min-height: auto;
+  }
+
+  .team-thread-list {
+    max-height: 320px;
+  }
+
+  .team-chat-feed {
+    max-height: 420px;
+  }
+
+  .chat-bubble {
+    max-width: 92%;
   }
 
   .bordro-tab-grid,
