@@ -1135,6 +1135,27 @@ const translations = {
   "SMS": "SMS",
   "Bordro self-servis": "Payroll self-service",
   "Personel bordrosunu görür, onaylar ve yayın durumunu takip eder.": "Employees view, approve and track payroll publication status.",
+  "Bordro Operasyon Akışı": "Payroll Operations Flow",
+  "Dönem Kapatma Merkezi": "Period Closing Center",
+  "Puantaj Kontrol": "Timesheet Check",
+  "Avans / Kesinti": "Advance / Deduction",
+  "Bordro Hesaplama": "Payroll Calculation",
+  "Onay Akışı": "Approval Flow",
+  "Bordro Operasyon Merkezi": "Payroll Operations Center",
+  "Operasyon Komuta Merkezi": "Operations Command Center",
+  "Bugün Öncelik Verilecek İşler": "Today's Priority Work",
+  "Onay Bekleyen Bordro": "Payroll Awaiting Approval",
+  "Eksik Puantaj / Kontrol": "Missing Timesheet / Check",
+  "Güvenli Paylaşım Bekleyen": "Secure Sharing Pending",
+  "Odoo tarzı puantaj matrisi": "Odoo-style timesheet matrix",
+  "Çalışan Bazlı Günlük Saat ve Durum": "Daily Hours and Status by Employee",
+  "Boş": "Empty",
+  "Tek Personel Dosyası": "Single Employee File",
+  "OTP, zaman damgası ve görüntülenme takibi aynı akışta tutulur.": "OTP, timestamp and view tracking are kept in the same flow.",
+  "Bildirimlerle anında bilgilendirme": "Instant notification with alerts",
+  "Bordro yayınlandığında personel portalında takip edilir.": "When payroll is published, it is tracked in the employee portal.",
+  "Her cihazdan bordro erişimi": "Payroll access from any device",
+  "Çalışan kendi bordro geçmişini ve evrak durumunu görür.": "Employees see their own payroll history and document status.",
   "İK Metrikleri Paneli": "HR Metrics Panel",
   "Çalışan devir oranı, performans, işe alım ve eğitim kırılımları tek ekranda izlenir.": "Employee turnover, performance, recruitment and training breakdowns are tracked in one screen.",
   "Güvenli bordro paylaşımı": "Secure payroll sharing",
@@ -2484,6 +2505,176 @@ function renderPayrollCenter() {
       </div>
     </aside>
   `;
+  const renderStatusPill = (label, type = "neutral") => `<span class="ad-status-pill ${type}">${escapeHtml(trText(label))}</span>`;
+  const payrollWorkflowPanel = `
+    <article class="bordro-panel workflow-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Bordro Operasyon Akışı"))}</b>
+          <h3>${escapeHtml(trText("Dönem Kapatma Merkezi"))}</h3>
+        </div>
+        <button type="button" data-payroll-center-tab="operations">${escapeHtml(trText("Bordro İşlemleri"))}</button>
+      </header>
+      <div class="workflow-steps">
+        ${[
+          ["Puantaj Kontrol", attendance.length ? "Tamamlandı" : "Bekliyor", attendance.length ? "done" : "waiting", "calendar"],
+          ["Avans / Kesinti", totalAdvance || totalDeduction ? "Kontrol Edilecek" : "Tamamlandı", totalAdvance || totalDeduction ? "warning" : "done", "advance"],
+          ["Bordro Hesaplama", payroll.length ? `${payroll.length} kayıt` : "Bekliyor", payroll.length ? "done" : "waiting", "payrollDefinitions"],
+          ["Onay Akışı", approvals.length ? `${approvals.length} bekliyor` : "Tamamlandı", approvals.length ? "danger" : "done", "system"],
+          ["Personele Yayın", `${openedPayroll}/${Math.max(payroll.length, 1)}`, openedPayroll === payroll.length && payroll.length ? "done" : "warning", "secureSharing"],
+        ]
+          .map(
+            ([label, state, tone, tab], index) => `
+              <button class="${tone}" type="button" data-payroll-center-tab="${tab}">
+                <small>${String(index + 1).padStart(2, "0")}</small>
+                <strong>${escapeHtml(trText(label))}</strong>
+                <span>${escapeHtml(trText(state))}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+  const alertPanel = `
+    <article class="bordro-panel command-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Operasyon Komuta Merkezi"))}</b>
+          <h3>${escapeHtml(trText("Bugün Öncelik Verilecek İşler"))}</h3>
+        </div>
+      </header>
+      <div class="command-list">
+        ${[
+          ["Onay Bekleyen Bordro", approvals.filter((item) => item.moduleId === "payroll").length, "danger", "operations"],
+          ["Eksik Puantaj / Kontrol", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "warning", "calendar"],
+          ["Açık Görev", tasks.length, tasks.length ? "danger" : "good", "redBulletin"],
+          ["Güvenli Paylaşım Bekleyen", secureSharingRecords.filter((record) => record.status !== "Tamamlandı").length, "warning", "secureSharing"],
+          ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operations"],
+        ]
+          .map(
+            ([label, count, tone, tab]) => `
+              <button type="button" data-payroll-center-tab="${tab}">
+                ${renderStatusPill(count ? String(count) : "OK", count ? tone : "good")}
+                <span>${escapeHtml(trText(label))}</span>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+  const attendanceMatrix = `
+    <article class="bordro-panel attendance-matrix-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Odoo tarzı puantaj matrisi"))}</b>
+          <h3>${escapeHtml(trText("Çalışan Bazlı Günlük Saat ve Durum"))}</h3>
+        </div>
+        <div class="panel-tools">
+          ${canManageRecords() ? `<button type="button" data-action="add" data-module="attendance">${escapeHtml(trText("Ekle"))}</button>` : ""}
+          <button type="button" data-action="export" data-module="attendance">${escapeHtml(trText("EXCEL"))}</button>
+          <button type="button" data-action="export-pdf" data-module="attendance">${escapeHtml(trText("PDF"))}</button>
+        </div>
+      </header>
+      <div class="attendance-matrix">
+        <div class="attendance-row head">
+          <strong>${escapeHtml(trText("Personel"))}</strong>
+          ${Array.from({ length: 31 }, (_, index) => `<b>${index + 1}</b>`).join("")}
+          <strong>${escapeHtml(trText("Toplam"))}</strong>
+        </div>
+        ${
+          attendance.length
+            ? attendance
+                .map((record) => {
+                  const total = calculateAttendanceTotal(record);
+                  return `
+                    <div class="attendance-row">
+                      <button type="button" data-action="edit" data-module="attendance" data-id="${record.id}">${escapeHtml(record.person || "-")}</button>
+                      ${Array.from({ length: 31 }, (_, index) => {
+                        const day = index + 1;
+                        const state = record[`day${day}`] || "-";
+                        const manual = record[`hour${day}`] || "";
+                        const overtime = record[`overtimeDay${day}`] || "";
+                        const tone =
+                          state === "Geldi"
+                            ? "present"
+                            : state === "Gelmedi"
+                              ? "absent"
+                              : state === "Raporlu"
+                                ? "report"
+                                : state === "Geçici Görev"
+                                  ? "duty"
+                                  : "empty";
+                        return `<span class="${tone}" title="${escapeHtml(`${state}${manual ? ` · ${manual} sa` : ""}${overtime ? ` · ${overtime} mesai` : ""}`)}">${escapeHtml(manual || (state === "Geldi" ? record.dailyHours || "7,5" : state === "-" ? "" : state.slice(0, 1)))}</span>`;
+                      }).join("")}
+                      <strong>${escapeHtml(total)} sa</strong>
+                    </div>
+                  `;
+                })
+                .join("")
+            : `<p class="empty-state">${escapeHtml(trText("Kayıt bulunamadı."))}</p>`
+        }
+      </div>
+      <div class="matrix-legend">
+        ${[
+          ["present", "Geldi"],
+          ["absent", "Gelmedi"],
+          ["report", "Raporlu"],
+          ["duty", "Geçici Görev"],
+          ["empty", "Boş"],
+        ]
+          .map(([className, label]) => `<span><i class="${className}"></i>${escapeHtml(trText(label))}</span>`)
+          .join("")}
+      </div>
+    </article>
+  `;
+  const employee360Panel = `
+    <article class="bordro-panel employee-command-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Personel 360"))}</b>
+          <h3>${escapeHtml(trText("Tek Personel Dosyası"))}</h3>
+        </div>
+      </header>
+      <div class="employee-command-grid">
+        ${personnel
+          .slice(0, 6)
+          .map((person) => {
+            const checklist = getScopedRecords(getModule("documentsChecklist")).find((record) => personMatchesRecord(person, record));
+            const completion = checklist ? getChecklistCompletion(checklist) : { rate: 0 };
+            const personPayroll = payroll.filter((record) => personMatchesRecord(person, record));
+            return `
+              <button type="button" data-payroll-center-tab="definitions">
+                <strong>${escapeHtml(person.name || "-")}</strong>
+                <span>${escapeHtml(`${person.department || "-"} · ${person.role || "-"}`)}</span>
+                <em>${escapeHtml(`${trText("Özlük")}: %${completion.rate} · ${trText("Bordro")}: ${personPayroll.length}`)}</em>
+              </button>
+            `;
+          })
+          .join("")}
+      </div>
+    </article>
+  `;
+  const selfServiceHub = `
+    <section class="employee-mobile-preview">
+      <article>
+        <span data-icon="lock"></span>
+        <strong>${escapeHtml(trText("KVKK uyumlu güvenli bordro paylaşımı"))}</strong>
+        <p>${escapeHtml(trText("OTP, zaman damgası ve görüntülenme takibi aynı akışta tutulur."))}</p>
+      </article>
+      <article>
+        <span data-icon="bell"></span>
+        <strong>${escapeHtml(trText("Bildirimlerle anında bilgilendirme"))}</strong>
+        <p>${escapeHtml(trText("Bordro yayınlandığında personel portalında takip edilir."))}</p>
+      </article>
+      <article>
+        <span data-icon="wallet"></span>
+        <strong>${escapeHtml(trText("Her cihazdan bordro erişimi"))}</strong>
+        <p>${escapeHtml(trText("Çalışan kendi bordro geçmişini ve evrak durumunu görür."))}</p>
+      </article>
+    </section>
+  `;
   const tabContents = {
     home: `
       <section class="bordro-hero">
@@ -2511,6 +2702,7 @@ function renderPayrollCenter() {
           )
           .join("")}
       </section>
+      <section class="bordro-board">${payrollWorkflowPanel}${alertPanel}</section>
       <section class="bordro-board">${calendarPanel}${authorityPanel}</section>
       ${quickActions}
     `,
@@ -2554,6 +2746,7 @@ function renderPayrollCenter() {
       ${quickActions}
     `,
     calendar: `
+      <section class="bordro-tab-content">${attendanceMatrix}</section>
       <section class="bordro-tab-content">${calendarPanel}</section>
       <section class="bordro-tab-content two-col">
         ${crudPanel("Bordro Takvimi", "payrollCalendar", ["date", "event", "period", "responsible", "reminder", "status"], calendarRecords)}
@@ -2568,6 +2761,7 @@ function renderPayrollCenter() {
     `,
     definitions: `
       <section class="bordro-tab-content two-col">
+        ${employee360Panel}
         ${crudPanel("Personel Tanımları", "personnel", ["name", "department", "role", "city", "startDate", "documentStatus", "status"], personnel)}
         ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "manager", "employmentType", "status"], registryRecords)}
         ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
@@ -2589,6 +2783,7 @@ function renderPayrollCenter() {
         </div>
       </section>
       ${selfServiceCards}
+      ${selfServiceHub}
       ${crudPanel("Personel Portal Kayıtları", "users", ["email", "name", "surname", "username", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
     `,
     hrMetrics: `
@@ -2656,6 +2851,7 @@ function renderPayrollCenter() {
       ${quickActions}
     `,
     operations: `
+      <section class="bordro-tab-content">${payrollWorkflowPanel}</section>
       <section class="bordro-tab-content two-col">
         ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "netSalary", "payrollStatus", "accountingApproval", "managementApproval", "publishStatus", "viewStatus"], payroll)}
         ${crudPanel("Fatura ve Tahsilat İşlemleri", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
