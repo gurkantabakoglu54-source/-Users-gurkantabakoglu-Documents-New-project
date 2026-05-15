@@ -813,6 +813,7 @@ const moduleQuickFilters = {
   leaves: { key: "approval", options: ["Tümü", "Bekliyor", "Onaylandı", "Reddedildi"] },
   documentsChecklist: { key: "status", options: ["Tümü", "Tam", "Eksik", "Kontrol Edilecek"] },
   notifications: { key: "status", options: ["Tümü", "Açık", "Tamamlandı"] },
+  messages: { key: "status", options: ["Tümü", "Açık", "Cevaplandı", "Kapandı"] },
 };
 
 const payrollCenterTabs = [
@@ -1719,7 +1720,7 @@ function canAccessModule(module) {
   const type = normalizeUserType(currentUser.type);
   if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
-  if (type === "PERSONEL") return ["panel", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications"].includes(module.id);
+  if (type === "PERSONEL") return ["panel", "payrollCenter", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications", "messages"].includes(module.id);
   if (type === "MUSTERI") return ["panel", "payrollCenter", "projects", "quality", "invoices", "reports", "notifications", "approvals"].includes(module.id);
   return true;
 }
@@ -2260,6 +2261,11 @@ function sendPortalMessage(form) {
   const now = new Date();
   const subject = String(formData.get("subject") || "").trim() || "Genel";
   const existingThread = selectedMessageThreadId && getMessageThreads(module.records).some((thread) => thread.id === selectedMessageThreadId);
+  if (existingThread) {
+    module.records = module.records.map((item) =>
+      getRecordMessageThreadId(item) === selectedMessageThreadId && item.status === "Açık" ? { ...item, status: "Cevaplandı", threadId: selectedMessageThreadId } : item,
+    );
+  }
   const record = {
     id: createId("msg"),
     threadId: existingThread ? selectedMessageThreadId : createId("thread"),
@@ -3380,7 +3386,6 @@ function renderPayrollCenter() {
         </div>
       </section>
       ${selfServiceCards}
-      ${crudPanel("Personel Portal Kayıtları", "users", ["email", "name", "surname", "username", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
     `,
     hrMetrics: `
       <section class="bordro-hero compact-hero">
