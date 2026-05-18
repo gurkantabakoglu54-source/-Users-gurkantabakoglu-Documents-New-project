@@ -886,10 +886,9 @@ const moduleQuickFilters = {
 
 const payrollCenterTabs = [
   ["home", "Anasayfa", "panel"],
-  ["setup", "Kurulum Sihirbazı", "checklist"],
+  ["setup", "Kurulum & Kontrol", "checklist"],
   ["assistant", "Akıllı Asistan", "bot"],
   ["messages", "Mesajlar", "message"],
-  ["growth", "Gelişim Merkezi", "checklist"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
   ["company", "Şirket Yönetimi", "building"],
@@ -1082,6 +1081,34 @@ const translations = {
   "Acil görev": "Urgent task",
   "Takvim uyarısı": "Calendar alert",
   "Okunmamış bordro": "Unread payroll",
+  "Kurulum & Kontrol": "Setup & Control",
+  "Sabah Yönetici Özeti": "Morning Executive Brief",
+  "Bugün önce bunlara bak.": "Start with these today.",
+  "Bugün kritik işlem yok. Sistem sakin görünüyor.": "No critical work today. The system looks calm.",
+  "Sürpriz: Akıllı Tahmin": "Surprise: Smart Forecast",
+  "Bir sonraki dönem için erken sinyal": "Early signal for the next period",
+  "Tahmini net bordro yükü": "Estimated net payroll load",
+  "Mesai Baskısı": "Overtime Pressure",
+  "Artıyor": "Increasing",
+  "Avans Riski": "Advance Risk",
+  "Takip edilmeli": "Needs tracking",
+  "Düşük": "Low",
+  "Evrak Kontrol": "Document Check",
+  "Açık kayıt var": "Open record exists",
+  "Akıllı Risk Radarı": "Smart Risk Radar",
+  "Personel, bordro, avans ve evrak riski tek skorda.": "Personnel, payroll, advance and document risk in one score.",
+  "Raporla": "Report",
+  "Sürpriz: Yönetim Nabzı": "Surprise: Management Pulse",
+  "Bu panelin farkı": "What makes this panel different",
+  "Önce uyarır": "Warns first",
+  "Sadece tablo değil, riskleri sıraya koyar.": "It does not just show tables; it ranks risks.",
+  "Kişi bazlı düşünür": "Thinks person-by-person",
+  "Maaş, avans, evrak, mesai ve görevleri tek kişide birleştirir.": "Combines salary, advance, documents, overtime and tasks per person.",
+  "Karar verir gibi gösterir": "Shows it like a decision desk",
+  "Bugün neye bakacağını otomatik öne çıkarır.": "Automatically highlights what to check today.",
+  "Belge yükü bekliyor": "Document upload pending",
+  "Düşük saat": "Low hours",
+  "Kontrol altında": "Under control",
   "Canlı veri modu": "Live data mode",
   "Supabase bağlı": "Supabase connected",
   "Yerel demo": "Local demo",
@@ -2782,6 +2809,8 @@ function renderPayrollCenter() {
   const bankBesRecords = getScopedRecords(getModule("bankBes"));
   const allPayrollRecords = getScopedRecords(getModule("payroll"));
   const allAttendanceRecords = getScopedRecords(getModule("attendance"));
+  const documentRecords = getScopedRecords(getModule("presentations"));
+  const checklistRecords = getScopedRecords(getModule("documentsChecklist"));
   if (!selectedReportPerson || !personnel.some((record) => record.name === selectedReportPerson)) {
     selectedReportPerson = personnel[0]?.name || payroll[0]?.person || "";
   }
@@ -2929,12 +2958,12 @@ function renderPayrollCenter() {
   const quickActions = `
     <section class="bordro-actions">
       <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
-      <button type="button" data-payroll-center-tab="setup">${escapeHtml(trText("Kurulum Sihirbazı"))}</button>
+      <button type="button" data-payroll-center-tab="setup">${escapeHtml(trText("Kurulum & Kontrol"))}</button>
       <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("İK & Bordro İşlemleri"))}</button>
       <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
       <button type="button" data-payroll-center-tab="payrollDefinitions">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
-      <button type="button" data-payroll-center-tab="growth">${escapeHtml(trText("Gelişim Merkezi"))}</button>
+      <button type="button" data-payroll-center-tab="redBulletin">${escapeHtml(trText("Kırmızı Bülten"))}</button>
     </section>
   `;
   const selfServiceCards = `
@@ -3028,6 +3057,202 @@ function renderPayrollCenter() {
     </aside>
   `;
   const renderStatusPill = (label, type = "neutral") => `<span class="ad-status-pill ${type}">${escapeHtml(trText(label))}</span>`;
+  const getPersonRisk = (person) => {
+    const personPayroll = payroll.filter((record) => personMatchesRecord(person, record));
+    const personAttendance = attendance.filter((record) => personMatchesRecord(person, record));
+    const personTasks = tasks.filter((record) => personMatchesRecord(person, record));
+    const checklist = checklistRecords.find((record) => personMatchesRecord(person, record));
+    const checklistCompletion = checklist ? getChecklistCompletion(checklist) : { rate: hasDocumentForPerson(person, documentRecords) ? 100 : 0 };
+    const personAdvance = personPayroll.reduce((sum, record) => sum + parseMoney(record.advance), 0);
+    const personDeduction = personPayroll.reduce((sum, record) => sum + parseMoney(record.deduction), 0);
+    const personOvertime = personAttendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
+    const personHours = personAttendance.reduce((sum, record) => sum + parseHour(calculateAttendanceTotal(record)), 0);
+    const details = [];
+    let score = 8;
+    if (checklistCompletion.rate < 100) {
+      score += 28;
+      details.push(`${trText("Özlük")}: %${checklistCompletion.rate}`);
+    }
+    if (!hasDocumentForPerson(person, documentRecords)) {
+      score += 16;
+      details.push(trText("Belge yükü bekliyor"));
+    }
+    if (personAdvance > 0) {
+      score += Math.min(18, personAdvance / 2500);
+      details.push(`${trText("Avans")}: ${formatMoney(personAdvance)}`);
+    }
+    if (personDeduction > 0) {
+      score += Math.min(16, personDeduction / 2000);
+      details.push(`${trText("Kesinti")}: ${formatMoney(personDeduction)}`);
+    }
+    if (personOvertime >= 20) {
+      score += 18;
+      details.push(`${trText("Mesai")}: ${personOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`);
+    }
+    if (personHours > 0 && personHours < 120) {
+      score += 12;
+      details.push(`${trText("Düşük saat")}: ${personHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`);
+    }
+    if (personTasks.length) {
+      score += Math.min(16, personTasks.length * 6);
+      details.push(`${trText("Açık görev")}: ${personTasks.length}`);
+    }
+    const finalScore = Math.min(100, Math.round(score));
+    return {
+      person,
+      score: finalScore,
+      tone: finalScore >= 70 ? "danger" : finalScore >= 40 ? "warning" : "good",
+      detail: details.slice(0, 3).join(" · ") || trText("Kontrol altında"),
+      overtime: personOvertime,
+      advance: personAdvance,
+      deduction: personDeduction,
+    };
+  };
+  const personRiskItems = activePersonnel.map(getPersonRisk).sort((a, b) => b.score - a.score);
+  const portalHealthScore = Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(
+        100 -
+          Math.min(32, personRiskItems.filter((item) => item.tone === "danger").length * 8) -
+          Math.min(18, overdueInvoices.length * 5) -
+          Math.min(18, payrollPaymentAlerts.length * 5) -
+          Math.min(16, calendarDueAlerts.length * 4) -
+          Math.min(16, tasks.length * 3),
+      ),
+    ),
+  );
+  const topPriorityItems = [
+    ...personRiskItems.slice(0, 3).map((item) => ({
+      title: item.person.name || "-",
+      detail: item.detail,
+      score: item.score,
+      tone: item.tone,
+      tab: "operationsHub",
+    })),
+    ...payrollPaymentAlerts.slice(0, 2).map((record) => ({
+      title: record.person || trText("Maaş ödeme alarmı"),
+      detail: `${record.period || periodLabel} · ${record.paymentDate || "-"}`,
+      score: 86,
+      tone: "danger",
+      tab: "payrollDefinitions",
+    })),
+    ...overdueInvoices.slice(0, 2).map((record) => ({
+      title: record.company || record.invoiceNo || trText("Geciken tahsilat"),
+      detail: `${formatMoney(parseMoney(record.amount))} · ${record.dueDate || "-"}`,
+      score: 82,
+      tone: "danger",
+      tab: "operationsHub",
+    })),
+  ].sort((a, b) => b.score - a.score).slice(0, 6);
+  const nextPayrollEstimate = totalNet + Math.round((totalNet / Math.max(periodMonths.length, 1)) * 0.04);
+  const executiveBriefPanel = `
+    <section class="executive-brief-grid">
+      <article class="bordro-panel morning-brief">
+        <header>
+          <div>
+            <b>${escapeHtml(trText("Sabah Yönetici Özeti"))}</b>
+            <h3>${escapeHtml(trText("Bugün önce bunlara bak."))}</h3>
+          </div>
+          <strong class="${portalHealthScore >= 75 ? "good" : portalHealthScore >= 50 ? "warning" : "danger"}">${portalHealthScore}</strong>
+        </header>
+        <div class="brief-list">
+          ${
+            topPriorityItems.length
+              ? topPriorityItems
+                  .map(
+                    (item, index) => `
+                      <button class="${item.tone}" type="button" data-payroll-center-tab="${item.tab}">
+                        <small>${String(index + 1).padStart(2, "0")}</small>
+                        <span>
+                          <strong>${escapeHtml(item.title)}</strong>
+                          <em>${escapeHtml(item.detail)}</em>
+                        </span>
+                        <b>${escapeHtml(String(item.score))}</b>
+                      </button>
+                    `,
+                  )
+                  .join("")
+              : `<p class="empty-state">${escapeHtml(trText("Bugün kritik işlem yok. Sistem sakin görünüyor."))}</p>`
+          }
+        </div>
+      </article>
+      <article class="bordro-panel prediction-panel">
+        <header>
+          <div>
+            <b>${escapeHtml(trText("Sürpriz: Akıllı Tahmin"))}</b>
+            <h3>${escapeHtml(trText("Bir sonraki dönem için erken sinyal"))}</h3>
+          </div>
+        </header>
+        <div class="prediction-orbit">
+          <strong>${escapeHtml(formatMoney(nextPayrollEstimate))}</strong>
+          <span>${escapeHtml(trText("Tahmini net bordro yükü"))}</span>
+        </div>
+        ${compactRows(
+          ["Sinyal", "Yorum"],
+          [
+            ["Mesai Baskısı", totalOvertime > 30 ? "Artıyor" : "Normal"],
+            ["Avans Riski", totalAdvance > 0 ? "Takip edilmeli" : "Düşük"],
+            ["Evrak Kontrol", personRiskItems.some((item) => item.detail.includes("Özlük")) ? "Açık kayıt var" : "Tamam"],
+          ],
+        )}
+      </article>
+    </section>
+  `;
+  const riskRadarPanel = `
+    <section class="risk-radar-grid">
+      <article class="bordro-panel risk-radar-card">
+        <header>
+          <div>
+            <b>${escapeHtml(trText("Akıllı Risk Radarı"))}</b>
+            <h3>${escapeHtml(trText("Personel, bordro, avans ve evrak riski tek skorda."))}</h3>
+          </div>
+          <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Raporla"))}</button>
+        </header>
+        <div class="risk-radar-list">
+          ${personRiskItems
+            .slice(0, 5)
+            .map(
+              (item) => `
+                <button class="${item.tone}" type="button" data-payroll-center-tab="operationsHub">
+                  <span style="--risk:${item.score}%"><i></i></span>
+                  <strong>${escapeHtml(item.person.name || "-")}</strong>
+                  <small>${escapeHtml(item.detail)}</small>
+                  <b>${escapeHtml(String(item.score))}</b>
+                </button>
+              `,
+            )
+            .join("")}
+        </div>
+      </article>
+      <article class="bordro-panel differentiator-panel">
+        <header>
+          <div>
+            <b>${escapeHtml(trText("Sürpriz: Yönetim Nabzı"))}</b>
+            <h3>${escapeHtml(trText("Bu panelin farkı"))}</h3>
+          </div>
+        </header>
+        <div class="differentiator-list">
+          ${[
+            ["Önce uyarır", "Sadece tablo değil, riskleri sıraya koyar."],
+            ["Kişi bazlı düşünür", "Maaş, avans, evrak, mesai ve görevleri tek kişide birleştirir."],
+            ["Karar verir gibi gösterir", "Bugün neye bakacağını otomatik öne çıkarır."],
+          ]
+            .map(
+              ([title, text]) => `
+                <div>
+                  <span data-icon="check"></span>
+                  <strong>${escapeHtml(trText(title))}</strong>
+                  <small>${escapeHtml(trText(text))}</small>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+      </article>
+    </section>
+  `;
   const payrollCalculatorPanel = `
     <article class="bordro-panel payroll-calculator-panel">
       <header>
@@ -3087,7 +3312,7 @@ function renderPayrollCenter() {
           <b>${escapeHtml(trText("Bordro Operasyon Akışı"))}</b>
           <h3>${escapeHtml(trText("Dönem Kapatma Merkezi"))}</h3>
         </div>
-        <button type="button" data-payroll-center-tab="operations">${escapeHtml(trText("Bordro İşlemleri"))}</button>
+        <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("Bordro İşlemleri"))}</button>
       </header>
       <div class="workflow-steps">
         ${[
@@ -3666,7 +3891,7 @@ function renderPayrollCenter() {
       </header>
       <div>
         ${[
-          ["Kurulum", "checklist", "setup"],
+          ["Kontrol", "checklist", "setup"],
           ["Asistan", "bot", "assistant"],
           ["Mesajlar", "message", "messages"],
           ["Takvim", "calendar", "calendar"],
@@ -3792,6 +4017,8 @@ function renderPayrollCenter() {
           <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
         </div>
       </section>
+      ${executiveBriefPanel}
+      ${riskRadarPanel}
       ${moduleLauncherPanel}
       ${setupWizardPanel}
       <section class="bordro-kpis">
@@ -3812,7 +4039,6 @@ function renderPayrollCenter() {
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
       <section class="bordro-board">${calendarPanel}${periodSummaryPanel}</section>
       ${easyPortalPanel}
-      ${quickActions}
     `,
     assistant: `
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>

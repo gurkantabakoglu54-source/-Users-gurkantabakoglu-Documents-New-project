@@ -344,6 +344,221 @@
   box-shadow: 0 10px 18px rgba(124, 58, 237, 0.12);
 }
 
+.executive-brief-grid,
+.risk-radar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.morning-brief,
+.risk-radar-card {
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(253, 242, 248, 0.74)),
+    #fff;
+}
+
+.morning-brief header > strong {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  border-radius: 22px;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.morning-brief header > strong.good {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.morning-brief header > strong.warning {
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+}
+
+.morning-brief header > strong.danger {
+  background: linear-gradient(135deg, #e11d48, #7c3aed);
+}
+
+.brief-list,
+.risk-radar-list,
+.differentiator-list {
+  display: grid;
+  gap: 10px;
+}
+
+.brief-list button {
+  display: grid;
+  grid-template-columns: 40px 1fr 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 14px;
+  background: #fff;
+  color: #251044;
+  text-align: left;
+  cursor: pointer;
+}
+
+.brief-list button small {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f5f3ff;
+  color: #7c3aed;
+  font-weight: 950;
+}
+
+.brief-list button em {
+  display: block;
+  margin-top: 4px;
+  color: #6c5f78;
+  font-style: normal;
+}
+
+.brief-list button > b {
+  text-align: right;
+  font-size: 22px;
+}
+
+.brief-list button.danger,
+.risk-radar-list button.danger {
+  border-left: 5px solid #e11d48;
+}
+
+.brief-list button.warning,
+.risk-radar-list button.warning {
+  border-left: 5px solid #ec4899;
+}
+
+.brief-list button.good,
+.risk-radar-list button.good {
+  border-left: 5px solid #16a34a;
+}
+
+.prediction-panel {
+  background:
+    radial-gradient(circle at 80% 10%, rgba(236, 72, 153, 0.16), transparent 34%),
+    linear-gradient(135deg, #2e1065, #831843);
+  color: #fff;
+}
+
+.prediction-panel header b,
+.prediction-panel header h3,
+.prediction-panel .bordro-table td,
+.prediction-panel .bordro-table th {
+  color: #fff;
+}
+
+.prediction-panel .bordro-table th,
+.prediction-panel .bordro-table td {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.prediction-orbit {
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  margin: 12px 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.prediction-orbit strong {
+  display: block;
+  font-size: 32px;
+}
+
+.prediction-orbit span {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 800;
+}
+
+.risk-radar-list button {
+  display: grid;
+  grid-template-columns: 64px 1fr 48px;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 14px;
+  background: #fff;
+  color: #251044;
+  text-align: left;
+  cursor: pointer;
+}
+
+.risk-radar-list button > span {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(#e11d48 var(--risk), #f1e8fb 0);
+}
+
+.risk-radar-list button > span i {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.risk-radar-list button small {
+  grid-column: 2;
+  color: #6c5f78;
+  line-height: 1.35;
+}
+
+.risk-radar-list button > b {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  font-size: 22px;
+  text-align: right;
+}
+
+.differentiator-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 243, 255, 0.94)),
+    #fff;
+}
+
+.differentiator-list div {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 3px 12px;
+  align-items: center;
+  padding: 13px;
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.differentiator-list div span {
+  grid-row: 1 / span 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 14px;
+  background: #f5d0fe;
+  color: #86198f;
+}
+
+.differentiator-list div small {
+  color: #6c5f78;
+  line-height: 1.45;
+}
+
 .side-nav button {
   position: relative;
   overflow: hidden;
@@ -360,7 +575,9 @@
   }
 
   .person-report-kpis,
-  .red-bulletin-grid {
+  .red-bulletin-grid,
+  .executive-brief-grid,
+  .risk-radar-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -369,7 +586,9 @@
   .module-launcher > div,
   .setup-step-grid,
   .person-report-kpis,
-  .red-bulletin-grid {
+  .red-bulletin-grid,
+  .executive-brief-grid,
+  .risk-radar-grid {
     grid-template-columns: 1fr;
   }
 
