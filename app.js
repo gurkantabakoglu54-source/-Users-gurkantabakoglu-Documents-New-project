@@ -512,6 +512,72 @@ const modules = [
     ],
   },
   {
+    id: "experienceTests",
+    title: "Kullanıcı Deneyimi",
+    icon: "eye",
+    breadcrumb: ["Panel", "Gelişim Merkezi", "Kullanıcı Deneyimi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["persona", "Kullanıcı Tipi", "select", ["Admin", "Personel", "Müşteri"]],
+      ["scenario", "Senaryo"],
+      ["screen", "Ekran"],
+      ["finding", "Gözlem"],
+      ["action", "Aksiyon"],
+      ["owner", "Sorumlu"],
+      ["status", "Durumu", "select", ["Açık", "Tamamlandı", "Beklemede"]],
+    ],
+    records: [
+      { id: "ux1", persona: "Admin", scenario: "Bordro ekleme ve yayınlama", screen: "Bordro Tanımları", finding: "Brüt/net hesap çalışıyor, yayın durumu net.", action: "Gerçek veriyle test edilecek", owner: "Gürkan Tabakoğlu", status: "Açık" },
+      { id: "ux2", persona: "Personel", scenario: "Bordro ve mesaj görüntüleme", screen: "Self-servis", finding: "Personel ekranı sade tutuldu.", action: "Personel hesabıyla mobil test", owner: "İK", status: "Beklemede" },
+      { id: "ux3", persona: "Müşteri", scenario: "Proje/fatura/rapor izleme", screen: "Müşteri Portalı", finding: "Müşteri sadece izleme modunda kalmalı.", action: "Müşteri hesabı ile yetki testi", owner: "Operasyon", status: "Beklemede" },
+    ],
+  },
+  {
+    id: "dataTemplates",
+    title: "Veri Şablonları",
+    icon: "checklist",
+    breadcrumb: ["Panel", "Gelişim Merkezi", "Veri Şablonları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["moduleName", "Modül"],
+      ["templateName", "Şablon"],
+      ["requiredFields", "Zorunlu Alanlar"],
+      ["sample", "Örnek"],
+      ["owner", "Sorumlu"],
+      ["status", "Durumu", "select", ["Hazır", "Kontrol Edilecek", "Pasif"]],
+    ],
+    records: [
+      { id: "tpl1", moduleName: "Personeller", templateName: "Personel Kartı", requiredFields: "Ad Soyad, Departman, Görev, E-posta, İşe Giriş, Durum", sample: "Zehra Battal / İK / AKTİF", owner: "İK", status: "Hazır" },
+      { id: "tpl2", moduleName: "Bordro", templateName: "Aylık Bordro", requiredFields: "Personel, Dönem, Brüt Maaş, Net Maaş, Ödeme Tarihi, IBAN", sample: "05.2026 / 42.500 TL / 31.800 TL", owner: "Muhasebe", status: "Hazır" },
+      { id: "tpl3", moduleName: "Puantaj", templateName: "Günlük Saat", requiredFields: "Personel, Dönem, Günlük Durum, Manuel Saat, Mesai", sample: "Geldi / 7,5 saat / 2 saat mesai", owner: "Operasyon", status: "Hazır" },
+      { id: "tpl4", moduleName: "Firmalar", templateName: "Firma ve Sözleşme", requiredFields: "Firma, Yetkili, Şehir, Sözleşme, Fiyat Teklifi", sample: "TOPDAL PLASTİK / Aktif sözleşme", owner: "Satış", status: "Hazır" },
+      { id: "tpl5", moduleName: "Faturalar", templateName: "Fatura/Tahsilat", requiredFields: "Fatura No, Firma, Tutar, Tevkifat, Vade, Durum", sample: "Fatura Beklemede / Tahsil Bekliyor", owner: "Muhasebe", status: "Hazır" },
+    ],
+  },
+  {
+    id: "backupCenter",
+    title: "Yedekleme",
+    icon: "archive",
+    breadcrumb: ["Panel", "Gelişim Merkezi", "Yedekleme"],
+    adminOnly: true,
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["date", "Tarih"],
+      ["type", "Tür"],
+      ["scope", "Kapsam"],
+      ["owner", "Sorumlu"],
+      ["note", "Not"],
+      ["status", "Durumu", "select", ["Hazır", "Planlandı", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "bk1", date: "18.05.2026", type: "Manuel JSON", scope: "Tüm portal kayıtları", owner: "Admin", note: "Gelişim Merkezi üzerinden indirilebilir.", status: "Hazır" },
+      { id: "bk2", date: "Haftalık", type: "Kontrol", scope: "Supabase ve dosya yükleri", owner: "Admin", note: "Canlı kullanımda haftalık kontrol önerilir.", status: "Planlandı" },
+    ],
+  },
+  {
     id: "payrollCalendar",
     title: "Bordro Takvimi",
     icon: "calendar",
@@ -820,6 +886,7 @@ const payrollCenterTabs = [
   ["home", "Anasayfa", "panel"],
   ["assistant", "Akıllı Asistan", "bot"],
   ["messages", "Mesajlar", "message"],
+  ["growth", "Gelişim Merkezi", "checklist"],
   ["menu", "Bordro Merkezi Menü", "grid"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
@@ -839,6 +906,7 @@ const payrollTabColors = {
   home: "#7c3aed",
   assistant: "#ec4899",
   messages: "#d946ef",
+  growth: "#8b5cf6",
   menu: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
@@ -874,6 +942,9 @@ const moduleAccentColors = {
   documentsChecklist: "#a855f7",
   notifications: "#e11d48",
   messages: "#d946ef",
+  experienceTests: "#8b5cf6",
+  dataTemplates: "#ec4899",
+  backupCenter: "#7c3aed",
   security: "#6d28d9",
   settings: "#4c1d95",
   reports: "#9333ea",
@@ -939,6 +1010,52 @@ const translations = {
   "Bildirim Merkezi": "Notification Center",
   "Mesajlar": "Messages",
   "Akıllı Asistan": "Smart Assistant",
+  "Gelişim Merkezi": "Improvement Center",
+  "Kullanıcı Deneyimi": "User Experience",
+  "Veri Şablonları": "Data Templates",
+  "Yedekleme": "Backup",
+  "Kullanıcı Tipi": "User Type",
+  "Senaryo": "Scenario",
+  "Ekran": "Screen",
+  "Gözlem": "Observation",
+  "Aksiyon": "Action",
+  "Şablon": "Template",
+  "Zorunlu Alanlar": "Required Fields",
+  "Örnek": "Example",
+  "Kapsam": "Scope",
+  "Yedek Al": "Download Backup",
+  "Yedek ve Güvenlik": "Backup and Security",
+  "Ürün Kontrol Listesi": "Product Checklist",
+  "Gerçek kullanıcı testi": "Real user test",
+  "Veri giriş şablonları": "Data entry templates",
+  "Akıllı hatırlatmalar": "Smart reminders",
+  "Yapay zeka destekli cevaplar": "AI-assisted answers",
+  "Müşteri/personel portalı": "Customer/employee portal",
+  "Kurumsal raporlama": "Corporate reporting",
+  "Güvenlik ve yedekleme": "Security and backup",
+  "Canlı kullanıma hazırlık durumunu tek ekranda takip et.": "Track live readiness in one screen.",
+  "Portalın büyümesi için takip edeceğimiz 7 ana başlık burada.": "The 7 main growth items for the portal are here.",
+  "Yedek dosyası indirildi.": "Backup file downloaded.",
+  "Hazırlık": "Readiness",
+  "Finale Hazırlık": "Final Readiness",
+  "test": "test",
+  "şablon": "template",
+  "Kullanıcı testi, veri düzeni, bildirim, asistan, portal, rapor ve yedek süreçleri tek yerde.": "User testing, data structure, notifications, assistant, portal, reporting and backup processes in one place.",
+  "Kullanıcı Deneyimi Testleri": "User Experience Tests",
+  "Veri Giriş Şablonları": "Data Entry Templates",
+  "Akıllı Hatırlatma Kuralları": "Smart Reminder Rules",
+  "Yedekleme Takibi": "Backup Tracking",
+  "Güvenlik ve Rol Kontrolü": "Security and Role Check",
+  "Manuel yedek al ve canlı kullanım güvenliğini kontrol et.": "Download a manual backup and check live usage security.",
+  "Canlı veri modu": "Live data mode",
+  "Supabase bağlı": "Supabase connected",
+  "Yerel demo": "Local demo",
+  "Son yedek": "Latest backup",
+  "Aktif ayarlar": "Active settings",
+  "Güvenlik rolleri": "Security roles",
+  "Canlı kullanıma hazır mıyız?": "Are we ready for live use?",
+  "Güvenlik ve yedek durumu ne?": "What is the security and backup status?",
+  "Raporlarda ne eksik?": "What is missing in reports?",
   "Duyuru": "Announcement",
   "Personel Mesajı": "Personnel Message",
   "Müşteri Mesajı": "Customer Message",
@@ -2122,6 +2239,12 @@ function getAssistantSnapshot() {
   const checklist = getScopedRecords(getModule("documentsChecklist"));
   const tasks = getScopedRecords(getModule("tasks")).filter((record) => record.status !== "Tamamlandı");
   const messages = getScopedRecords(getModule("messages")).filter((record) => record.status !== "Kapandı");
+  const reports = getScopedRecords(getModule("reports"));
+  const users = getScopedRecords(getModule("users"));
+  const automationRules = getScopedRecords(getModule("automationRules"));
+  const experienceTests = getScopedRecords(getModule("experienceTests"));
+  const dataTemplates = getScopedRecords(getModule("dataTemplates"));
+  const backupRecords = canManageRecords() ? getScopedRecords(getModule("backupCenter")) : [];
   const pendingPayroll = payroll.filter((record) => record.publishStatus !== "Personele Açıldı");
   const advancePayroll = payroll.filter((record) => parseMoney(record.advance) > 0);
   const missingDocuments = personnel.filter((person) => !hasDocumentForPerson(person, documents));
@@ -2140,6 +2263,12 @@ function getAssistantSnapshot() {
     pendingInvoices,
     tasks,
     messages,
+    reports,
+    users,
+    automationRules,
+    experienceTests,
+    dataTemplates,
+    backupRecords,
     totalHours,
     totalOvertime,
   };
@@ -2192,6 +2321,34 @@ function buildAssistantAnswer(question = "") {
     return snapshot.messages.length
       ? `${snapshot.messages.length} açık mesaj/duyuru var: ${snapshot.messages.map((record) => record.subject || record.type || "-").slice(0, 5).join(", ")}.`
       : "Açık mesaj veya duyuru görünmüyor.";
+  }
+
+  if (normalized.includes("gelisim") || normalized.includes("gelişim") || normalized.includes("hazir") || normalized.includes("hazır")) {
+    const openTests = snapshot.experienceTests.filter((record) => record.status !== "Tamamlandı").length;
+    const readyTemplates = snapshot.dataTemplates.filter((record) => record.status === "Hazır").length;
+    const activeRules = snapshot.automationRules.filter((record) => record.status === "AKTİF").length;
+    return `Canlı kullanım hazırlığı: ${openTests} kullanıcı testi açık, ${readyTemplates} veri şablonu hazır, ${activeRules} aktif hatırlatma kuralı çalışıyor. Gelişim Merkezi sekmesinden hepsini birlikte takip edebilirsin.`;
+  }
+
+  if (normalized.includes("yedek") || normalized.includes("guvenlik") || normalized.includes("güvenlik")) {
+    return snapshot.backupRecords.length
+      ? `Yedekleme tarafında ${snapshot.backupRecords.length} kayıt var. Son kayıt: ${snapshot.backupRecords[0]?.type || "-"} · ${snapshot.backupRecords[0]?.date || "-"}. Admin olarak Gelişim Merkezi içinden manuel yedek indirebilirsin.`
+      : "Yedekleme kaydı görünmüyor. Admin hesabıyla Gelişim Merkezi içinden ilk manuel yedeği almanı öneririm.";
+  }
+
+  if (normalized.includes("rapor")) {
+    const readyReports = snapshot.reports.filter((record) => record.status === "Hazır").length;
+    const draftReports = snapshot.reports.filter((record) => record.status !== "Hazır").length;
+    return `Rapor tarafında ${readyReports} hazır, ${draftReports} taslak/kontrol edilecek kayıt var. Raporlar sekmesindeki grafikler bordro, avans, mesai ve fatura verisini otomatik okuyor.`;
+  }
+
+  if (normalized.includes("kullanici") || normalized.includes("kullanıcı") || normalized.includes("yetki") || normalized.includes("musteri") || normalized.includes("müşteri")) {
+    const roles = snapshot.users.reduce((acc, record) => {
+      const role = record.type || "Tanımsız";
+      acc[role] = (acc[role] || 0) + 1;
+      return acc;
+    }, {});
+    return `Kullanıcı rolleri: ${Object.entries(roles).map(([role, count]) => `${role}: ${count}`).join(", ") || "kayıt yok"}. Admin ekleme/düzenleme/silme yapar; müşteri ve personel izleme odaklı kalır.`;
   }
 
   return `Bu soruyu operasyon özeti olarak okudum: ${snapshot.pendingPayroll.length} bordro, ${snapshot.pendingInvoices.length} fatura, ${snapshot.tasks.length} açık görev ve ${snapshot.messages.length} mesaj takipte. Daha net sonuç için “bordro”, “avans”, “fatura”, “evrak”, “mesai” veya “görev” kelimeleriyle sorabilirsin.`;
@@ -2548,6 +2705,11 @@ function renderPayrollCenter() {
   const calendarRecords = getScopedRecords(getModule("payrollCalendar")).filter((record) => periodMonths.includes(record.period) || recordMatchesMonths(record, periodMonths, ["date"]));
   const legislationRecords = getScopedRecords(getModule("legislation"));
   const automationRecords = getScopedRecords(getModule("automationRules"));
+  const experienceRecords = getScopedRecords(getModule("experienceTests"));
+  const templateRecords = getScopedRecords(getModule("dataTemplates"));
+  const backupRecords = canManageRecords() ? getScopedRecords(getModule("backupCenter")) : [];
+  const securityRecords = canManageRecords() ? getScopedRecords(getModule("security")) : [];
+  const settingsRecords = canManageRecords() ? getScopedRecords(getModule("settings")) : [];
   const registryRecords = getScopedRecords(getModule("employeeRegistry"));
   const performanceRecords = getScopedRecords(getModule("performanceReviews")).filter((record) => !record.period || periodMonths.includes(record.period));
   const recruitmentRecords = getScopedRecords(getModule("recruitment")).filter((record) => record.status !== "Tamamlandı" || recordMatchesMonths(record, periodMonths, ["interviewDate"]));
@@ -2700,6 +2862,7 @@ function renderPayrollCenter() {
       <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
       <button type="button" data-payroll-center-tab="payrollDefinitions">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
+      <button type="button" data-payroll-center-tab="growth">${escapeHtml(trText("Gelişim Merkezi"))}</button>
     </section>
   `;
   const selfServiceCards = `
@@ -2952,7 +3115,7 @@ function renderPayrollCenter() {
         <button type="button" data-action="ai-ask">${escapeHtml(trText("Asistana Sor"))}</button>
       </div>
       <div class="ai-prompt-row">
-        ${["Bu ay kimlerin bordrosu bekliyor?", "Eksik evrak var mı?", "Avans alan personeller kim?", "Fatura bekleyen işler neler?"]
+        ${["Bu ay kimlerin bordrosu bekliyor?", "Eksik evrak var mı?", "Canlı kullanıma hazır mıyız?", "Güvenlik ve yedek durumu ne?", "Raporlarda ne eksik?"]
           .map((question) => `<button type="button" data-ai-question="${escapeHtml(question)}">${escapeHtml(trText(question))}</button>`)
           .join("")}
       </div>
@@ -3265,6 +3428,115 @@ function renderPayrollCenter() {
       </article>
     </section>
   `;
+  const growthItems = [
+    {
+      title: "Gerçek kullanıcı testi",
+      value: experienceRecords.filter((record) => record.status === "Tamamlandı").length,
+      total: Math.max(experienceRecords.length, 1),
+      detail: `${experienceRecords.filter((record) => record.status !== "Tamamlandı").length} açık test`,
+      tab: "growth",
+      tone: experienceRecords.every((record) => record.status === "Tamamlandı") ? "good" : "warning",
+    },
+    {
+      title: "Veri giriş şablonları",
+      value: templateRecords.filter((record) => record.status === "Hazır").length,
+      total: Math.max(templateRecords.length, 1),
+      detail: `${templateRecords.filter((record) => record.status === "Hazır").length} hazır şablon`,
+      tab: "growth",
+      tone: templateRecords.some((record) => record.status !== "Hazır") ? "warning" : "good",
+    },
+    {
+      title: "Akıllı hatırlatmalar",
+      value: automationRecords.filter((record) => record.status === "AKTİF").length,
+      total: Math.max(automationRecords.length, 1),
+      detail: `${automationRecords.filter((record) => record.status === "AKTİF").length} aktif kural`,
+      tab: "legislation",
+      tone: automationRecords.some((record) => record.status !== "AKTİF") ? "warning" : "good",
+    },
+    {
+      title: "Yapay zeka destekli cevaplar",
+      value: smartAlertRows.filter(([, count]) => Number(count) > 0).length,
+      total: Math.max(smartAlertRows.length, 1),
+      detail: "Bordro, fatura, evrak, mesai ve rapor soruları",
+      tab: "assistant",
+      tone: "good",
+    },
+    {
+      title: "Müşteri/personel portalı",
+      value: getScopedRecords(getModule("users")).filter((record) => ["Personel", "Müşteri", "Kullanıcı"].includes(record.type)).length,
+      total: Math.max(getScopedRecords(getModule("users")).length, 1),
+      detail: "Rol bazlı izleme ve admin yönetimi",
+      tab: "system",
+      tone: "good",
+    },
+    {
+      title: "Kurumsal raporlama",
+      value: reports.filter((record) => record.status === "Hazır").length,
+      total: Math.max(reports.length, 1),
+      detail: `${reports.filter((record) => record.status !== "Hazır").length} taslak rapor`,
+      tab: "reports",
+      tone: reports.some((record) => record.status !== "Hazır") ? "warning" : "good",
+    },
+    {
+      title: "Güvenlik ve yedekleme",
+      value: backupRecords.filter((record) => record.status === "Hazır").length + settingsRecords.filter((record) => record.status === "AKTİF").length,
+      total: Math.max(backupRecords.length + settingsRecords.length, 1),
+      detail: "Manuel yedek, rol ve ayar kontrolü",
+      tab: "growth",
+      tone: backupRecords.length ? "good" : "warning",
+    },
+  ];
+  const readinessRate = Math.round(
+    (growthItems.reduce((sum, item) => sum + Math.min(item.value / item.total, 1), 0) / Math.max(growthItems.length, 1)) * 100,
+  );
+  const growthCenterPanel = `
+    <section class="growth-center">
+      <article class="bordro-panel growth-summary-panel">
+        <div>
+          <span>${escapeHtml(trText("Ürün Kontrol Listesi"))}</span>
+          <h3>${escapeHtml(trText("Canlı kullanıma hazırlık durumunu tek ekranda takip et."))}</h3>
+          <p>${escapeHtml(trText("Portalın büyümesi için takip edeceğimiz 7 ana başlık burada."))}</p>
+        </div>
+        <div class="readiness-meter" style="--ready:${readinessRate}%">
+          <strong>%${readinessRate}</strong>
+          <span>${escapeHtml(trText("Hazırlık"))}</span>
+        </div>
+      </article>
+      <div class="growth-card-grid">
+        ${growthItems
+          .map(
+            (item) => `
+              <button class="growth-card ${item.tone}" type="button" data-payroll-center-tab="${item.tab}">
+                <span>${escapeHtml(trText(item.title))}</span>
+                <strong>${escapeHtml(`${item.value}/${item.total}`)}</strong>
+                <small>${escapeHtml(trText(item.detail))}</small>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+  const backupActionPanel = `
+    <article class="bordro-panel backup-action-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Yedek ve Güvenlik"))}</b>
+          <h3>${escapeHtml(trText("Manuel yedek al ve canlı kullanım güvenliğini kontrol et."))}</h3>
+        </div>
+        ${canManageRecords() ? `<button type="button" data-action="backup-export">${escapeHtml(trText("Yedek Al"))}</button>` : ""}
+      </header>
+      ${compactRows(
+        ["Başlık", "Durum"],
+        [
+          ["Son yedek", backupRecords[0]?.date || "-"],
+          ["Aktif ayarlar", settingsRecords.filter((record) => record.status === "AKTİF").length],
+          ["Güvenlik rolleri", securityRecords.length],
+          ["Canlı veri modu", isRemoteMode ? "Supabase bağlı" : "Yerel demo"],
+        ],
+      )}
+    </article>
+  `;
   const tabContents = {
     home: `
       <section class="bordro-hero">
@@ -3306,11 +3578,42 @@ function renderPayrollCenter() {
       ${messageBoardPanel}
       ${quickActions}
     `,
+    growth: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Gelişim Merkezi"))}</span>
+          <h2>${escapeHtml(trText("Kullanıcı testi, veri düzeni, bildirim, asistan, portal, rapor ve yedek süreçleri tek yerde."))}</h2>
+          <p>${escapeHtml(`${trText("Hazırlık")}: %${readinessRate} · ${experienceRecords.length} ${trText("test")} · ${templateRecords.length} ${trText("şablon")}`)}</p>
+        </div>
+        <div class="payroll-progress">
+          <strong>%${readinessRate}</strong>
+          <span>${escapeHtml(trText("Finale Hazırlık"))}</span>
+        </div>
+      </section>
+      ${growthCenterPanel}
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Kullanıcı Deneyimi Testleri", "experienceTests", ["persona", "scenario", "screen", "finding", "action", "owner", "status"], experienceRecords)}
+        ${crudPanel("Veri Giriş Şablonları", "dataTemplates", ["moduleName", "templateName", "requiredFields", "sample", "owner", "status"], templateRecords)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Akıllı Hatırlatma Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], automationRecords)}
+        ${backupActionPanel}
+      </section>
+      ${
+        canManageRecords()
+          ? `<section class="bordro-tab-content two-col">
+              ${crudPanel("Yedekleme Takibi", "backupCenter", ["date", "type", "scope", "owner", "status"], backupRecords)}
+              ${crudPanel("Güvenlik ve Rol Kontrolü", "security", ["role", "scope", "canAdd", "canEdit", "canDelete", "sensitiveAccess"], securityRecords)}
+            </section>`
+          : ""
+      }
+    `,
     menu: `
       <section class="bordro-tab-grid">
         ${[
           ["Akıllı Asistan", "Bordro, avans, fatura, mesai ve evrak sorularını hızlı cevaplar.", "assistant"],
           ["Mesajlar", "Duyuru, personel mesajı ve müşteri mesajları tek yerde.", "messages"],
+          ["Gelişim Merkezi", "Canlı kullanım hazırlığı, veri şablonları, yedek ve güvenlik kontrolü.", "growth"],
           ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
           ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
           ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
@@ -4611,6 +4914,48 @@ function downloadPdfExport(moduleId = activeModuleId) {
   printWindow.document.close();
 }
 
+function downloadPortalBackup() {
+  const payload = {
+    createdAt: new Date().toISOString(),
+    createdBy: getCurrentUserName(),
+    period: getDashboardPeriodLabel(),
+    version: storageKey,
+    records: modules.reduce((acc, module) => {
+      if (!module.dashboard && Array.isArray(module.records)) {
+        acc[module.id] = module.records;
+      }
+      return acc;
+    }, {}),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `arti-destek-yedek-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+
+  const backupModule = getModule("backupCenter");
+  backupModule.records = [
+    {
+      id: createId("backup"),
+      date: new Date().toLocaleString("tr-TR"),
+      type: "Manuel JSON",
+      scope: "Tüm portal kayıtları",
+      owner: getCurrentUserName(),
+      note: "Gelişim Merkezi üzerinden indirildi.",
+      status: "Hazır",
+    },
+    ...backupModule.records,
+  ];
+  addAudit("Yedek", backupModule, backupModule.records[0], "Portal yedeği indirildi.");
+  saveRecords();
+  renderPayrollCenter();
+  renderIcons();
+}
+
 function updatePayrollWorkflow(recordId, action) {
   const module = getModule("payroll");
   const record = module.records.find((item) => item.id === recordId);
@@ -5291,6 +5636,11 @@ document.addEventListener("click", (event) => {
 
   if (action === "message-close") {
     closeMessageThread(manageButton.dataset.thread || selectedMessageThreadId);
+    return;
+  }
+
+  if (action === "backup-export") {
+    if (canManageRecords()) downloadPortalBackup();
     return;
   }
 
