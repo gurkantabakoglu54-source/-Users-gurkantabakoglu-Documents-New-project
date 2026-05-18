@@ -862,6 +862,8 @@ let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
 let selectedMessageThreadId = "";
+let selectedReportPerson = "";
+let pendingCalendarDate = "";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
@@ -884,41 +886,35 @@ const moduleQuickFilters = {
 
 const payrollCenterTabs = [
   ["home", "Anasayfa", "panel"],
+  ["setup", "Kurulum Sihirbazı", "checklist"],
   ["assistant", "Akıllı Asistan", "bot"],
   ["messages", "Mesajlar", "message"],
   ["growth", "Gelişim Merkezi", "checklist"],
-  ["menu", "Bordro Merkezi Menü", "grid"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
   ["company", "Şirket Yönetimi", "building"],
-  ["definitions", "Tanımlar", "checklist"],
+  ["operationsHub", "İK & Bordro İşlemleri", "grid"],
   ["payrollDefinitions", "Bordro Tanımları", "invoice"],
   ["selfService", "Self-servis", "contact"],
-  ["hrMetrics", "İK Metrikleri", "barChart"],
   ["reports", "Raporlar", "chart"],
-  ["operations", "İşlemler", "wallet"],
   ["legislation", "Mevzuat", "shield"],
-  ["advance", "Borç / Avans Yönetimi", "wallet"],
   ["redBulletin", "Kırmızı Bülten", "bell"],
 ];
 
 const payrollTabColors = {
   home: "#7c3aed",
+  setup: "#a855f7",
   assistant: "#ec4899",
   messages: "#d946ef",
   growth: "#8b5cf6",
-  menu: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
   company: "#c026d3",
-  definitions: "#db2777",
+  operationsHub: "#db2777",
   payrollDefinitions: "#be185d",
   selfService: "#ec4899",
-  hrMetrics: "#7c3aed",
   reports: "#9333ea",
-  operations: "#d946ef",
   legislation: "#a21caf",
-  advance: "#be185d",
   redBulletin: "#e11d48",
 };
 
@@ -1047,6 +1043,45 @@ const translations = {
   "Yedekleme Takibi": "Backup Tracking",
   "Güvenlik ve Rol Kontrolü": "Security and Role Check",
   "Manuel yedek al ve canlı kullanım güvenliğini kontrol et.": "Download a manual backup and check live usage security.",
+  "Kurulum Sihirbazı": "Setup Wizard",
+  "Portal canlı kullanıma bu adımlarla hazırlanır.": "The portal becomes ready for live use through these steps.",
+  "İlk kurulumda soldaki menüde kaybolmadan bu kartları takip etmek yeterli.": "For the first setup, follow these cards without getting lost in the side menu.",
+  "Firma bilgileri": "Company information",
+  "Personel kartları": "Employee cards",
+  "Kullanıcı ve yetki": "User and permission",
+  "Puantaj ve takvim": "Timesheet and calendar",
+  "Bordro tanımları": "Payroll definitions",
+  "Rapor ve yedek": "Report and backup",
+  "Başlandı": "Started",
+  "Bekliyor": "Waiting",
+  "Bordro Merkezi Menü": "Payroll Center Menu",
+  "Aradığın işlemi tek tıkla aç.": "Open what you need with one click.",
+  "Kurulum": "Setup",
+  "Asistan": "Assistant",
+  "Takvim": "Calendar",
+  "İK & İşlemler": "HR & Operations",
+  "Bülten": "Bulletin",
+  "İK & Bordro İşlemleri": "HR & Payroll Operations",
+  "Kişiye Özel Bordro Raporu": "Personal Payroll Report",
+  "Maaş, avans, kesinti ve mesai grafiği": "Salary, advance, deduction and overtime chart",
+  "Net Maaş": "Net Salary",
+  "Brüt Maaş": "Gross Salary",
+  "Avans": "Advance",
+  "İcra/Kesinti": "Lien/Deduction",
+  "Mesai": "Overtime",
+  "Kırmızı Bülten ve Duyurular": "Red Bulletin and Announcements",
+  "Maaş, avans, tahsilat, görev ve şirket duyuruları tek ekranda takip edilir.": "Salary, advance, collection, task and company announcements are tracked in one screen.",
+  "aktif uyarı": "active alert",
+  "duyuru": "announcement",
+  "Önemli İş Takibi": "Important Work Tracking",
+  "Duyurular ve Kırmızı Bülten Girişi": "Announcements and Red Bulletin Entry",
+  "Online": "Online",
+  "Offline": "Offline",
+  "Maaş ödeme alarmı": "Salary payment alert",
+  "Geciken tahsilat": "Overdue collection",
+  "Acil görev": "Urgent task",
+  "Takvim uyarısı": "Calendar alert",
+  "Okunmamış bordro": "Unread payroll",
   "Canlı veri modu": "Live data mode",
   "Supabase bağlı": "Supabase connected",
   "Yerel demo": "Local demo",
@@ -2375,6 +2410,36 @@ function getMessageParticipants() {
   return [...new Set(people)];
 }
 
+function getPortalPresencePeople() {
+  const currentName = currentUser?.displayName || currentUser?.email || "Admin";
+  const people = [
+    {
+      name: currentName,
+      role: currentUser?.type || "Admin",
+      scope: currentUser?.companyName || "Portal",
+      online: true,
+    },
+    ...getScopedRecords(getModule("users")).map((record, index) => ({
+      name: `${record.name || ""} ${record.surname || ""}`.trim() || record.email || record.username || "-",
+      role: record.type || "Kullanıcı",
+      scope: record.companyName || "Portal",
+      online: normalizeText(record.status) === "aktif" && index % 2 === 0,
+    })),
+    ...getScopedRecords(getModule("personnel")).map((record, index) => ({
+      name: record.name || "-",
+      role: record.role || "Personel",
+      scope: record.department || "İK",
+      online: normalizeText(record.status) === "aktif" && index % 3 === 0,
+    })),
+  ];
+  const unique = new Map();
+  people.forEach((person) => {
+    const key = normalizeText(person.name);
+    if (key && !unique.has(key)) unique.set(key, person);
+  });
+  return [...unique.values()];
+}
+
 function getRecordMessageThreadId(record) {
   return record.threadId || `thread-${normalizeText(`${record.subject || record.type || "mesaj"}-${record.sender || ""}-${record.recipient || ""}`).replace(/[^a-z0-9]/g, "-") || record.id}`;
 }
@@ -2703,6 +2768,7 @@ function renderPayrollCenter() {
   const messages = getScopedRecords(getModule("messages")).filter((record) => record.status !== "Kapandı");
   const invoices = getScopedRecords(getModule("invoices")).filter((record) => recordMatchesMonths(record, periodMonths, ["dueDate", "collectionDate", "date"]));
   const calendarRecords = getScopedRecords(getModule("payrollCalendar")).filter((record) => periodMonths.includes(record.period) || recordMatchesMonths(record, periodMonths, ["date"]));
+  const allCalendarRecords = getScopedRecords(getModule("payrollCalendar"));
   const legislationRecords = getScopedRecords(getModule("legislation"));
   const automationRecords = getScopedRecords(getModule("automationRules"));
   const experienceRecords = getScopedRecords(getModule("experienceTests"));
@@ -2714,6 +2780,11 @@ function renderPayrollCenter() {
   const performanceRecords = getScopedRecords(getModule("performanceReviews")).filter((record) => !record.period || periodMonths.includes(record.period));
   const recruitmentRecords = getScopedRecords(getModule("recruitment")).filter((record) => record.status !== "Tamamlandı" || recordMatchesMonths(record, periodMonths, ["interviewDate"]));
   const bankBesRecords = getScopedRecords(getModule("bankBes"));
+  const allPayrollRecords = getScopedRecords(getModule("payroll"));
+  const allAttendanceRecords = getScopedRecords(getModule("attendance"));
+  if (!selectedReportPerson || !personnel.some((record) => record.name === selectedReportPerson)) {
+    selectedReportPerson = personnel[0]?.name || payroll[0]?.person || "";
+  }
   const avgPerformance = performanceRecords.length
     ? Math.round(performanceRecords.reduce((sum, record) => sum + Number(record.score || 0), 0) / performanceRecords.length)
     : 0;
@@ -2745,10 +2816,10 @@ function renderPayrollCenter() {
   });
   const processSteps = [
     ["Puantaj Teslim", attendance.length, attendance.length ? "done" : "waiting", "calendar"],
-    ["İK Kontrol", payroll.filter((record) => record.hrApproval === "Onaylandı").length, "done", "operations"],
-    ["Muhasebe", payroll.filter((record) => record.accountingApproval === "Onaylandı").length, "done", "operations"],
-    ["Admin Onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "done", "operations"],
-    ["Personele Yayın", openedPayroll, openedPayroll === payroll.length && payroll.length ? "done" : "waiting", "operations"],
+    ["İK Kontrol", payroll.filter((record) => record.hrApproval === "Onaylandı").length, "done", "operationsHub"],
+    ["Muhasebe", payroll.filter((record) => record.accountingApproval === "Onaylandı").length, "done", "operationsHub"],
+    ["Admin Onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "done", "operationsHub"],
+    ["Personele Yayın", openedPayroll, openedPayroll === payroll.length && payroll.length ? "done" : "waiting", "operationsHub"],
   ];
   const kpis = [
     ["Çalışan", personnel.length, "users"],
@@ -2858,7 +2929,8 @@ function renderPayrollCenter() {
   const quickActions = `
     <section class="bordro-actions">
       <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
-      <button type="button" data-payroll-center-tab="operations">${escapeHtml(trText("Bordro Listesine Git"))}</button>
+      <button type="button" data-payroll-center-tab="setup">${escapeHtml(trText("Kurulum Sihirbazı"))}</button>
+      <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("İK & Bordro İşlemleri"))}</button>
       <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
       <button type="button" data-payroll-center-tab="payrollDefinitions">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
@@ -2905,7 +2977,7 @@ function renderPayrollCenter() {
         ${days
           .map(
             ({ day, weekend, events: dayEvents }) => `
-              <button class="${weekend ? "weekend" : ""} ${dayEvents.length ? "has-event" : ""}" type="button">
+              <button class="${weekend ? "weekend" : ""} ${dayEvents.length ? "has-event" : ""}" type="button" data-calendar-day="${day}">
                 <small>${day}</small>
                 ${dayEvents.map((event) => `<span>${escapeHtml(trText(event))}</span>`).join("")}
               </button>
@@ -3020,10 +3092,10 @@ function renderPayrollCenter() {
       <div class="workflow-steps">
         ${[
           ["Puantaj Kontrol", attendance.length ? "Tamamlandı" : "Bekliyor", attendance.length ? "done" : "waiting", "calendar"],
-          ["Avans / Kesinti", totalAdvance || totalDeduction ? "Kontrol Edilecek" : "Tamamlandı", totalAdvance || totalDeduction ? "warning" : "done", "advance"],
-          ["Bordro Hesaplama", payroll.length ? `${payroll.length} kayıt` : "Bekliyor", payroll.length ? "done" : "waiting", "payrollDefinitions"],
-          ["Admin Onayı", "Otomatik", "done", "operations"],
-          ["Ödeme / Yayın", `${openedPayroll}/${Math.max(payroll.length, 1)}`, openedPayroll === payroll.length && payroll.length ? "done" : "warning", "operations"],
+    ["Avans / Kesinti", totalAdvance || totalDeduction ? "Kontrol Edilecek" : "Tamamlandı", totalAdvance || totalDeduction ? "warning" : "done", "operationsHub"],
+    ["Bordro Hesaplama", payroll.length ? `${payroll.length} kayıt` : "Bekliyor", payroll.length ? "done" : "waiting", "payrollDefinitions"],
+    ["Admin Onayı", "Otomatik", "done", "operationsHub"],
+    ["Ödeme / Yayın", `${openedPayroll}/${Math.max(payroll.length, 1)}`, openedPayroll === payroll.length && payroll.length ? "done" : "warning", "operationsHub"],
         ]
           .map(
             ([label, state, tone, tab], index) => `
@@ -3050,11 +3122,11 @@ function renderPayrollCenter() {
         ${[
           ["Eksik Puantaj / Kontrol", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "warning", "calendar"],
           ["Maaş Ödeme Alarmı", payrollPaymentAlerts.length, "danger", "payrollDefinitions"],
-          ["Avans Kontrol Alarmı", advanceAlerts.length, "danger", "advance"],
+          ["Avans Kontrol Alarmı", advanceAlerts.length, "danger", "operationsHub"],
           ["Özel Gün / Mevzuat Alarmı", calendarDueAlerts.length, "danger", "calendar"],
           ["Açık Görev", tasks.length, tasks.length ? "danger" : "good", "redBulletin"],
-          ["Geciken Tahsilat", overdueInvoices.length, "danger", "operations"],
-          ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operations"],
+          ["Geciken Tahsilat", overdueInvoices.length, "danger", "operationsHub"],
+          ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operationsHub"],
         ]
           .map(
             ([label, count, tone, tab]) => `
@@ -3071,7 +3143,7 @@ function renderPayrollCenter() {
   const smartAlertRows = [
     ["Bordro", payrollPaymentAlerts.length || payroll.filter((record) => record.publishStatus !== "Personele Açıldı").length, "Bordro yayın ve ödeme kontrolü", "payrollDefinitions"],
     ["Puantaj", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "Eksik veya sıfır saatli puantaj kontrolü", "calendar"],
-    ["Fatura", overdueInvoices.length || invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Bekleyen fatura ve tahsilat kontrolü", "operations"],
+    ["Fatura", overdueInvoices.length || invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Bekleyen fatura ve tahsilat kontrolü", "operationsHub"],
     ["Mesaj", messages.length, "Açık duyuru ve mesaj takibi", "messages"],
     ["Görev", tasks.length, "Tamamlanmamış görevler", "redBulletin"],
   ];
@@ -3106,6 +3178,10 @@ function renderPayrollCenter() {
           <b>${escapeHtml(trText("Yapay Zeka Bordro Asistanı"))}</b>
           <h3>${escapeHtml(trText("Sorunu yaz, paneldeki verilerden kısa cevap al."))}</h3>
         </div>
+        <a class="chatgpt-link" href="https://chatgpt.com/" target="_blank" rel="noreferrer">
+          <span data-icon="bot"></span>
+          ChatGPT
+        </a>
       </header>
       <div class="assistant-box">
         <label>
@@ -3137,7 +3213,7 @@ function renderPayrollCenter() {
         ${[
           ["Admin Komuta", "Bordro, uyarı, fatura ve görevleri tek ekranda yönet.", "home"],
           ["Personel Portalı", "Bordro, evrak, izin ve mesajları sade izleme ekranı.", "selfService"],
-          ["Müşteri Portalı", "Proje, fatura, rapor ve müşteri mesajları tek yerde.", "operations"],
+          ["Müşteri Portalı", "Proje, fatura, rapor ve müşteri mesajları tek yerde.", "operationsHub"],
         ]
           .map(
             ([title, text, tab]) => `
@@ -3157,6 +3233,7 @@ function renderPayrollCenter() {
   }
   const activeMessageThread = messageThreads.find((thread) => thread.id === selectedMessageThreadId);
   const messageParticipants = getMessageParticipants();
+  const portalPeople = getPortalPresencePeople();
   const messageBoardPanel = `
     <section class="team-chat-shell">
       <aside class="team-chat-sidebar">
@@ -3272,9 +3349,17 @@ function renderPayrollCenter() {
         <article>
           <b>${escapeHtml(trText("Kişiler"))}</b>
           <div class="chat-people">
-            ${messageParticipants
-              .slice(0, 10)
-              .map((person) => `<span>${escapeHtml(person)}</span>`)
+            ${portalPeople
+              .slice(0, 14)
+              .map(
+                (person) => `
+                  <button type="button" data-message-recipient="${escapeHtml(person.name)}">
+                    <i class="${person.online ? "online" : "offline"}"></i>
+                    <strong>${escapeHtml(person.name)}</strong>
+                    <span>${escapeHtml(`${trText(person.role)} · ${person.online ? trText("Online") : trText("Offline")}`)}</span>
+                  </button>
+                `,
+              )
               .join("")}
           </div>
         </article>
@@ -3537,6 +3622,163 @@ function renderPayrollCenter() {
       )}
     </article>
   `;
+  const setupSteps = [
+    ["Firma bilgileri", companies.length, "company", "Firma, yetkili, sözleşme ve fiyat teklifini hazırla."],
+    ["Personel kartları", personnel.length, "operationsHub", "Personel, sicil, özlük checklist ve işe alım kayıtlarını tamamla."],
+    ["Kullanıcı ve yetki", getScopedRecords(getModule("users")).length, "system", "Admin, personel ve müşteri hesaplarını rolüne göre ayır."],
+    ["Puantaj ve takvim", attendance.length + allCalendarRecords.length, "calendar", "Aylık puantajı, ödeme günlerini ve hatırlatmaları planla."],
+    ["Bordro tanımları", payroll.length, "payrollDefinitions", "Brüt/net, banka, BES, avans ve kesinti kayıtlarını kontrol et."],
+    ["Rapor ve yedek", reports.length + backupRecords.length, "reports", "Kişi bazlı raporları ve düzenli yedeği hazır tut."],
+  ];
+  const setupWizardPanel = `
+    <section class="setup-wizard">
+      <article class="bordro-panel setup-wizard-hero">
+        <div>
+          <span>${escapeHtml(trText("Kurulum Sihirbazı"))}</span>
+          <h3>${escapeHtml(trText("Portal canlı kullanıma bu adımlarla hazırlanır."))}</h3>
+          <p>${escapeHtml(trText("İlk kurulumda soldaki menüde kaybolmadan bu kartları takip etmek yeterli."))}</p>
+        </div>
+        <strong>${escapeHtml(`${setupSteps.filter(([, value]) => Number(value) > 0).length}/${setupSteps.length}`)}</strong>
+      </article>
+      <div class="setup-step-grid">
+        ${setupSteps
+          .map(
+            ([title, value, tab, detail], index) => `
+              <button class="${Number(value) > 0 ? "done" : "waiting"}" type="button" data-payroll-center-tab="${tab}">
+                <small>${String(index + 1).padStart(2, "0")}</small>
+                <strong>${escapeHtml(trText(title))}</strong>
+                <span>${escapeHtml(trText(detail))}</span>
+                <em>${escapeHtml(Number(value) > 0 ? trText("Başlandı") : trText("Bekliyor"))}</em>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+  const moduleLauncherPanel = `
+    <section class="module-launcher">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Bordro Merkezi Menü"))}</b>
+          <h3>${escapeHtml(trText("Aradığın işlemi tek tıkla aç."))}</h3>
+        </div>
+      </header>
+      <div>
+        ${[
+          ["Kurulum", "checklist", "setup"],
+          ["Asistan", "bot", "assistant"],
+          ["Mesajlar", "message", "messages"],
+          ["Takvim", "calendar", "calendar"],
+          ["İK & İşlemler", "grid", "operationsHub"],
+          ["Bordro", "invoice", "payrollDefinitions"],
+          ["Rapor", "chart", "reports"],
+          ["Bülten", "bell", "redBulletin"],
+        ]
+          .map(
+            ([label, icon, tab]) => `
+              <button type="button" data-payroll-center-tab="${tab}">
+                <span data-icon="${icon}"></span>
+                <strong>${escapeHtml(trText(label))}</strong>
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+  const reportPerson = personnel.find((record) => record.name === selectedReportPerson) || { name: selectedReportPerson };
+  const personReportMonths = dashboardRange === "year" ? fixedDashboardMonths : periodMonths;
+  const personReportRows = personReportMonths.map((month) => {
+    const monthPayroll = allPayrollRecords.filter((record) => record.period === month && personMatchesRecord(reportPerson, record));
+    const monthAttendance = allAttendanceRecords.filter((record) => record.period === month && personMatchesRecord(reportPerson, record));
+    const net = monthPayroll.reduce((sum, record) => sum + parseMoney(record.netSalary), 0);
+    const gross = monthPayroll.reduce((sum, record) => sum + parseMoney(record.grossSalary), 0);
+    const advance = monthPayroll.reduce((sum, record) => sum + parseMoney(record.advance), 0);
+    const deduction = monthPayroll.reduce((sum, record) => sum + parseMoney(record.deduction), 0);
+    const overtime = monthAttendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
+    return { month, net, gross, advance, deduction, overtime };
+  });
+  const personReportMax = Math.max(...personReportRows.flatMap((row) => [row.net, row.advance, row.deduction]), 1);
+  const personReportTotals = personReportRows.reduce(
+    (acc, row) => ({
+      net: acc.net + row.net,
+      gross: acc.gross + row.gross,
+      advance: acc.advance + row.advance,
+      deduction: acc.deduction + row.deduction,
+      overtime: acc.overtime + row.overtime,
+    }),
+    { net: 0, gross: 0, advance: 0, deduction: 0, overtime: 0 },
+  );
+  const personReportPanel = `
+    <section class="person-report-panel bordro-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Kişiye Özel Bordro Raporu"))}</b>
+          <h3>${escapeHtml(trText("Maaş, avans, kesinti ve mesai grafiği"))}</h3>
+        </div>
+        <div class="panel-tools">
+          <select id="personReportSelect">
+            ${personnel
+              .map((person) => `<option value="${escapeHtml(person.name)}" ${person.name === selectedReportPerson ? "selected" : ""}>${escapeHtml(person.name)}</option>`)
+              .join("")}
+          </select>
+          <button type="button" data-action="person-report-pdf">${escapeHtml(trText("PDF"))}</button>
+        </div>
+      </header>
+      <div class="person-report-kpis">
+        ${[
+          ["Net Maaş", formatMoney(personReportTotals.net)],
+          ["Brüt Maaş", formatMoney(personReportTotals.gross)],
+          ["Avans", formatMoney(personReportTotals.advance)],
+          ["İcra/Kesinti", formatMoney(personReportTotals.deduction)],
+          ["Mesai", `${personReportTotals.overtime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`],
+        ]
+          .map(([label, value]) => `<article><strong>${escapeHtml(value)}</strong><span>${escapeHtml(trText(label))}</span></article>`)
+          .join("")}
+      </div>
+      <div class="person-report-chart">
+        ${personReportRows
+          .map(
+            (row) => `
+              <div>
+                <span>${escapeHtml(row.month)}</span>
+                <i class="net" style="--h:${Math.max(4, Math.round((row.net / personReportMax) * 100))}%"></i>
+                <i class="advance" style="--h:${Math.max(4, Math.round((row.advance / personReportMax) * 100))}%"></i>
+                <i class="deduction" style="--h:${Math.max(4, Math.round((row.deduction / personReportMax) * 100))}%"></i>
+              </div>
+            `,
+          )
+          .join("")}
+      </div>
+      ${compactRows(
+        ["Ay", "Net Maaş", "Brüt Maaş", "Avans", "İcra/Kesinti", "Mesai"],
+        personReportRows.map((row) => [row.month, formatMoney(row.net), formatMoney(row.gross), formatMoney(row.advance), formatMoney(row.deduction), `${row.overtime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`]),
+      )}
+    </section>
+  `;
+  const redBulletinItems = [
+    ["Maaş ödeme alarmı", payrollPaymentAlerts.length, payrollPaymentAlerts.length ? "danger" : "good", "Bordro ödeme tarihi gelen kayıtları kontrol et."],
+    ["Geciken tahsilat", overdueInvoices.length, overdueInvoices.length ? "danger" : "good", "Vadesi gelen ve ödenmeyen faturaları takip et."],
+    ["Acil görev", tasks.filter((record) => record.priority === "Acil" || record.priority === "Yüksek").length, "danger", "Yüksek öncelikli işler tamamlanmalı."],
+    ["Takvim uyarısı", calendarDueAlerts.length, calendarDueAlerts.length ? "danger" : "good", "Bugün veya geçmiş tarihli planları kapat."],
+    ["Okunmamış bordro", payroll.filter((record) => record.publishStatus === "Personele Açıldı" && record.viewStatus !== "Görüldü").length, "warning", "Personele açılan ama görülmeyen bordrolar."],
+  ];
+  const redBulletinPanel = `
+    <section class="red-bulletin-grid">
+      ${redBulletinItems
+        .map(
+          ([title, value, tone, detail]) => `
+            <article class="${Number(value) > 0 ? tone : "good"}">
+              <strong>${escapeHtml(String(value))}</strong>
+              <span>${escapeHtml(trText(title))}</span>
+              <small>${escapeHtml(trText(detail))}</small>
+            </article>
+          `,
+        )
+        .join("")}
+    </section>
+  `;
   const tabContents = {
     home: `
       <section class="bordro-hero">
@@ -3550,6 +3792,8 @@ function renderPayrollCenter() {
           <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
         </div>
       </section>
+      ${moduleLauncherPanel}
+      ${setupWizardPanel}
       <section class="bordro-kpis">
         ${kpis
           .map(
@@ -3573,6 +3817,14 @@ function renderPayrollCenter() {
     assistant: `
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
       ${easyPortalPanel}
+    `,
+    setup: `
+      ${setupWizardPanel}
+      ${growthCenterPanel}
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
+        ${backupActionPanel}
+      </section>
     `,
     messages: `
       ${messageBoardPanel}
@@ -3617,7 +3869,7 @@ function renderPayrollCenter() {
           ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
           ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
           ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
-          ["İK Metrikleri", "Devir, performans, işe alım ve departman kırılımları.", "hrMetrics"],
+          ["İK Metrikleri", "Devir, performans, işe alım ve departman kırılımları.", "operationsHub"],
           ["Raporlar", "Bordro, avans, mesai, fatura ve maliyet grafikleri.", "reports"],
           ["Banka / BES Takibi", "IBAN, banka ödeme ve BES kayıtları bordro tanımlarında yönetilir.", "payrollDefinitions"],
         ]
@@ -3625,9 +3877,9 @@ function renderPayrollCenter() {
             ([title, text, nav]) => `
               <button type="button" data-payroll-center-tab="${
                 nav === "personnel360"
-                  ? "definitions"
+                  ? "operationsHub"
                   : nav === "payroll"
-                    ? "operations"
+                    ? "operationsHub"
                     : nav === "reports"
                       ? "reports"
                       : nav === "payrollCenter"
@@ -3661,6 +3913,56 @@ function renderPayrollCenter() {
     company: `
       <section class="bordro-tab-content">
         ${crudPanel("Şirket Yönetimi", "companies", ["name", "authorized", "email", "phone", "city", "contractStatus", "contractFile", "offerFile"], companies)}
+      </section>
+    `,
+    operationsHub: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("İK & Bordro İşlemleri"))}</span>
+          <h2>${escapeHtml(trText("Tanımlar, İK metrikleri, bordro işlemleri ve avans tek ekranda toplandı."))}</h2>
+          <p>${escapeHtml(`${activePersonnel.length} ${trText("Mevcut Çalışan")} · ${formatMoney(totalAdvance)} ${trText("Avans")} · ${tasks.length} ${trText("Açık Görev")}`)}</p>
+        </div>
+      </section>
+      <section class="bordro-kpis">
+        ${[
+          ["Mevcut Çalışan", activePersonnel.length, "users"],
+          ["Performans", avgPerformance, "barChart"],
+          ["Açık Pozisyon", recruitmentRecords.filter((record) => record.status === "Açık").length, "checklist"],
+          ["Avans", formatMoney(totalAdvance), "wallet"],
+          ["Kesinti", formatMoney(totalDeduction), "invoice"],
+          ["Açık Görev", tasks.length, "note"],
+        ]
+          .map(
+            ([label, value, icon]) => `
+              <article>
+                <span data-icon="${icon}"></span>
+                <small>${escapeHtml(periodLabel)}</small>
+                <strong>${escapeHtml(value)}</strong>
+                <b>${escapeHtml(trText(label))}</b>
+              </article>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${employee360Panel}
+        ${payrollWorkflowPanel}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Personel Tanımları", "personnel", ["name", "department", "role", "city", "startDate", "documentStatus", "status"], personnel)}
+        ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "netSalary", "advance", "deduction", "payrollStatus", "publishStatus"], payroll)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "manager", "employmentType", "status"], registryRecords)}
+        ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Performans", "performanceReviews", ["person", "period", "target", "score", "reviewer", "result", "status"], performanceRecords)}
+        ${crudPanel("İşe Alım", "recruitment", ["position", "department", "candidate", "stage", "interviewDate", "responsible", "status"], recruitmentRecords)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Borç / Avans Yönetimi", "payroll", ["person", "period", "advance", "deduction", "netSalary", "payrollStatus"], payroll)}
+        ${crudPanel("Fatura ve Tahsilat İşlemleri", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
       </section>
     `,
     definitions: `
@@ -3745,6 +4047,7 @@ function renderPayrollCenter() {
       </section>
     `,
     reports: `
+      ${personReportPanel}
       ${reportChartsPanel}
       <section class="bordro-tab-content two-col">
         ${crudPanel("Raporlar", "reports", ["title", "period", "type", "owner", "status"], reports)}
@@ -3782,12 +4085,20 @@ function renderPayrollCenter() {
       </section>
     `,
     redBulletin: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Kırmızı Bülten ve Duyurular"))}</span>
+          <h2>${escapeHtml(trText("Maaş, avans, tahsilat, görev ve şirket duyuruları tek ekranda takip edilir."))}</h2>
+          <p>${escapeHtml(`${redBulletinItems.filter(([, value]) => Number(value) > 0).length} ${trText("aktif uyarı")} · ${getScopedRecords(getModule("notifications")).length} ${trText("duyuru")}`)}</p>
+        </div>
+      </section>
+      ${redBulletinPanel}
       <section class="bordro-tab-content two-col">
         <article class="bordro-panel">
-          <h3>${escapeHtml(trText("Kırmızı Bülten"))}</h3>
-          ${compactRows(["Uyarı", "Adet", "Durumu"], [["Admin otomatik onayı", payroll.filter((record) => record.managementApproval === "Onaylandı").length, "Tamam"], ["Açık görev", tasks.length, tasks.length ? "Açık" : "Tamam"], ["Kesilmeyen fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Kontrol"]])}
+          <h3>${escapeHtml(trText("Önemli İş Takibi"))}</h3>
+          ${compactRows(["Uyarı", "Adet", "Durumu"], [["Maaş ödeme alarmı", payrollPaymentAlerts.length, payrollPaymentAlerts.length ? "Kontrol" : "Tamam"], ["Açık görev", tasks.length, tasks.length ? "Açık" : "Tamam"], ["Kesilmeyen fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Kontrol"], ["Takvim uyarısı", calendarDueAlerts.length, calendarDueAlerts.length ? "Kontrol" : "Tamam"]])}
         </article>
-        ${crudPanel("Bildirim ve Kırmızı Bülten Girişi", "notifications", ["date", "type", "moduleName", "description", "priority", "status"], getScopedRecords(getModule("notifications")))}
+        ${crudPanel("Duyurular ve Kırmızı Bülten Girişi", "notifications", ["date", "type", "moduleName", "description", "priority", "status"], getScopedRecords(getModule("notifications")))}
       </section>
     `,
   };
@@ -4914,6 +5225,88 @@ function downloadPdfExport(moduleId = activeModuleId) {
   printWindow.document.close();
 }
 
+function getPersonReportExportRows() {
+  const selectedName = selectedReportPerson || getScopedRecords(getModule("personnel"))[0]?.name || "";
+  const person = { name: selectedName };
+  const months = dashboardRange === "year" ? fixedDashboardMonths : getDashboardPeriodMonths();
+  const payrollRecords = getScopedRecords(getModule("payroll"));
+  const attendanceRecords = getScopedRecords(getModule("attendance"));
+  return [
+    ["Ay", "Net Maaş", "Brüt Maaş", "Avans", "İcra/Kesinti", "Mesai"],
+    ...months.map((month) => {
+      const monthPayroll = payrollRecords.filter((record) => record.period === month && personMatchesRecord(person, record));
+      const monthAttendance = attendanceRecords.filter((record) => record.period === month && personMatchesRecord(person, record));
+      const net = monthPayroll.reduce((sum, record) => sum + parseMoney(record.netSalary), 0);
+      const gross = monthPayroll.reduce((sum, record) => sum + parseMoney(record.grossSalary), 0);
+      const advance = monthPayroll.reduce((sum, record) => sum + parseMoney(record.advance), 0);
+      const deduction = monthPayroll.reduce((sum, record) => sum + parseMoney(record.deduction), 0);
+      const overtime = monthAttendance.reduce((sum, record) => sum + parseHour(record.overtimeHours) + getAttendanceDayOvertime(record), 0);
+      return [
+        month,
+        formatMoney(net),
+        formatMoney(gross),
+        formatMoney(advance),
+        formatMoney(deduction),
+        `${overtime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`,
+      ];
+    }),
+  ];
+}
+
+function downloadPersonReportPdf() {
+  const rows = getPersonReportExportRows();
+  const personName = selectedReportPerson || "Personel";
+  const logoUrl = new URL("assets/arti-destek-logo.png", window.location.href).href;
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+
+  printWindow.document.write(`
+    <!doctype html>
+    <html lang="tr">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${escapeHtml(personName)} Bordro Raporu</title>
+        <style>
+          body { margin: 24px; color: #291044; font-family: Arial, sans-serif; }
+          header { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; border-bottom: 3px solid #7c3aed; padding-bottom: 14px; }
+          img { width: 140px; height: auto; }
+          h1 { margin: 0; color: #2e1065; font-size: 24px; }
+          small { color: #7c668e; }
+          table { width: 100%; border-collapse: collapse; font-size: 12px; }
+          th { background: #7c3aed; color: #fff; }
+          th, td { border: 1px solid #eadcf8; padding: 8px; text-align: left; vertical-align: top; }
+          tr:nth-child(even) td { background: #fbf7ff; }
+          @media print { body { margin: 10mm; } }
+        </style>
+      </head>
+      <body>
+        <header>
+          <img src="${logoUrl}" alt="Artı Destek" />
+          <div>
+            <h1>${escapeHtml(personName)} - ${escapeHtml(trText("Kişiye Özel Bordro Raporu"))}</h1>
+            <small>${escapeHtml(getDashboardPeriodLabel())} · ${new Date().toLocaleString("tr-TR")}</small>
+          </div>
+        </header>
+        <table>
+          <thead>
+            <tr>${rows[0].map((cell) => `<th>${escapeHtml(cell)}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${rows
+              .slice(1)
+              .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`)
+              .join("")}
+          </tbody>
+        </table>
+        <script>
+          window.addEventListener("load", () => window.print());
+        </script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
 function downloadPortalBackup() {
   const payload = {
     createdAt: new Date().toISOString(),
@@ -5278,6 +5671,17 @@ function openDialog(recordId = "", moduleId = activeModuleId) {
   const module = getModule(moduleId);
   if (!module.columns?.length) return;
   const record = module.records.find((item) => item.id === recordId);
+  const defaultValues =
+    !record && module.id === "payrollCalendar"
+      ? {
+          date: pendingCalendarDate,
+          event: "Not",
+          period: dashboardMonth,
+          responsible: getCurrentUserName(),
+          reminder: "Aynı gün",
+          status: "Planlandı",
+        }
+      : {};
   document.querySelector("#moduleIdInput").value = module.id;
   document.querySelector("#recordIdInput").value = record?.id ?? "";
   document.querySelector("#dialogTitle").textContent = record ? `${trText(module.title)} ${trText("Düzenle")}` : `${trText(module.title)} ${trText("Ekle")}`;
@@ -5290,7 +5694,7 @@ function openDialog(recordId = "", moduleId = activeModuleId) {
 
   document.querySelector("#formGrid").innerHTML = module.columns
     .map(([key, label, type, options = []], index) => {
-      const value = record?.[key] ?? "";
+      const value = record?.[key] ?? defaultValues[key] ?? "";
       const required = !isOptionalField(module, key);
       const isLong = index === module.columns.length - 1 || ["problem", "description", "bankIban", "address", "note"].includes(key);
       if (type === "file") {
@@ -5573,6 +5977,22 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const messageRecipientButton = event.target.closest("[data-message-recipient]");
+  if (messageRecipientButton) {
+    selectedMessageThreadId = "";
+    payrollCenterTab = "messages";
+    activeModuleId = "payrollCenter";
+    renderPayrollCenter();
+    renderIcons();
+    const form = document.querySelector("#messageComposer");
+    if (form) {
+      const recipientInput = form.querySelector('[name="recipient"]');
+      if (recipientInput) recipientInput.value = messageRecipientButton.dataset.messageRecipient || "";
+      form.querySelector('[name="subject"]')?.focus();
+    }
+    return;
+  }
+
   const aiQuestionButton = event.target.closest("[data-ai-question]");
   if (aiQuestionButton) {
     const question = aiQuestionButton.dataset.aiQuestion || "";
@@ -5586,6 +6006,18 @@ document.addEventListener("click", (event) => {
   }
 
   if (event.target.id === "dashboardMonthSelect" || event.target.id === "dashboardRangeSelect") {
+    return;
+  }
+
+  const calendarDayButton = event.target.closest("[data-calendar-day]");
+  if (calendarDayButton) {
+    const date = getDateFromDashboardDay(Number(calendarDayButton.dataset.calendarDay || "1"));
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    pendingCalendarDate = `${yyyy}-${mm}-${dd}`;
+    openDialog("", "payrollCalendar");
+    renderIcons();
     return;
   }
 
@@ -5641,6 +6073,11 @@ document.addEventListener("click", (event) => {
 
   if (action === "backup-export") {
     if (canManageRecords()) downloadPortalBackup();
+    return;
+  }
+
+  if (action === "person-report-pdf") {
+    downloadPersonReportPdf();
     return;
   }
 
@@ -5745,6 +6182,13 @@ document.addEventListener("input", (event) => {
     } else {
       renderDashboard();
     }
+    renderIcons();
+    return;
+  }
+
+  if (event.target.id === "personReportSelect") {
+    selectedReportPerson = event.target.value;
+    renderPayrollCenter();
     renderIcons();
     return;
   }
