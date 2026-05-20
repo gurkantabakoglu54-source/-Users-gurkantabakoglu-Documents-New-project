@@ -30,6 +30,19 @@ create table if not exists public.portal_records (
 create index if not exists portal_records_module_idx on public.portal_records(module_id);
 create index if not exists portal_records_company_idx on public.portal_records(company_name);
 
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'portal_records'
+  ) then
+    alter publication supabase_realtime add table public.portal_records;
+  end if;
+end $$;
+
 create or replace function public.touch_updated_at()
 returns trigger
 language plpgsql
@@ -110,6 +123,37 @@ for all
 to authenticated
 using (public.current_profile_role() = 'Admin')
 with check (public.current_profile_role() = 'Admin');
+
+drop policy if exists "records_message_insert" on public.portal_records;
+create policy "records_message_insert"
+on public.portal_records
+for insert
+to authenticated
+with check (
+  module_id in ('messages', 'notifications')
+  and (
+    public.current_profile_role() in ('Admin', 'Kullanıcı')
+    or (
+      public.current_profile_role() = 'Müşteri'
+      and company_name is not null
+      and company_name = public.current_profile_company()
+    )
+  )
+);
+
+drop policy if exists "records_message_update_own" on public.portal_records;
+create policy "records_message_update_own"
+on public.portal_records
+for update
+to authenticated
+using (
+  module_id in ('messages', 'notifications')
+  and created_by = auth.uid()
+)
+with check (
+  module_id in ('messages', 'notifications')
+  and updated_by = auth.uid()
+);
 
 insert into storage.buckets (id, name, public)
 values ('portal-files', 'portal-files', false)

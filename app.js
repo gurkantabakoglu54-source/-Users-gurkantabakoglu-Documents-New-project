@@ -868,6 +868,9 @@ let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
 let remoteReady = false;
 let remoteSaveQueue = Promise.resolve();
+let realtimeChannel = null;
+let realtimeReloadTimer = null;
+let lastLocalRemoteSaveAt = 0;
 const quickFilters = {};
 
 const moduleQuickFilters = {
@@ -1133,6 +1136,11 @@ const translations = {
   "Mesaj Gönder": "Send Message",
   "Konuşmayı Kapat": "Close Conversation",
   "Mesaj Özeti": "Message Summary",
+  "E-posta bildirimi hazırla": "Prepare email notification",
+  "E-posta Kuyruğu": "Email Queue",
+  "E-posta Bildirimi": "Email Notification",
+  "Canlı senkron açık": "Live sync active",
+  "Yerel mod": "Local mode",
   "Tüm ekip": "All team",
   "İK Ekibi": "HR Team",
   "Operasyon": "Operations",
@@ -1666,6 +1674,57 @@ async function loadRecords() {
   remoteReady = true;
 }
 
+function renderCurrentScreenAfterRemoteSync() {
+  if (!currentUser) return;
+  if (activeModuleId === "payrollCenter") {
+    renderSideNav();
+    renderPayrollCenter();
+  } else {
+    renderSideNav();
+    renderModule(getModule(activeModuleId));
+  }
+  renderIcons();
+}
+
+function scheduleRealtimeReload() {
+  if (!isRemoteMode || !currentUser) return;
+  if (Date.now() - lastLocalRemoteSaveAt < 1800) return;
+  window.clearTimeout(realtimeReloadTimer);
+  realtimeReloadTimer = window.setTimeout(async () => {
+    try {
+      await loadRecords();
+      renderCurrentScreenAfterRemoteSync();
+    } catch (error) {
+      console.error("Canlı mesaj/veri yenileme hatası:", error);
+    }
+  }, 550);
+}
+
+function startRealtimeSync() {
+  if (!isRemoteMode || !supabaseClient || realtimeChannel) return;
+  realtimeChannel = supabaseClient
+    .channel("arti-destek-portal-records")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "portal_records",
+      },
+      scheduleRealtimeReload,
+    )
+    .subscribe();
+}
+
+function stopRealtimeSync() {
+  window.clearTimeout(realtimeReloadTimer);
+  realtimeReloadTimer = null;
+  if (realtimeChannel && supabaseClient) {
+    supabaseClient.removeChannel(realtimeChannel);
+  }
+  realtimeChannel = null;
+}
+
 function hydrateRecord(module, record) {
   if (module.id === "users") {
     const baseName = String(record.email ?? record.name ?? "user")
@@ -1833,6 +1892,7 @@ function saveRecords() {
 
   if (!isRemoteMode || !remoteReady || !canManageRecords()) return;
 
+  lastLocalRemoteSaveAt = Date.now();
   remoteSaveQueue = remoteSaveQueue
     .then(() => saveRecordsToSupabase())
     .catch((error) => {
@@ -1844,6 +1904,7 @@ function getRecordCompanyName(module, record) {
   if (module.id === "companies") return record.name || "";
   if (["projects", "invoices"].includes(module.id)) return record.company || "";
   if (module.id === "users") return record.company || record.companyName || "";
+  if (["messages", "notifications"].includes(module.id)) return record.companyName || "";
   return record.companyName || "";
 }
 
@@ -1857,6 +1918,8 @@ async function saveRecordsToSupabase() {
         record_id: String(record.id),
         data: record,
         company_name: getRecordCompanyName(module, record) || null,
+        created_by: currentUser?.id || null,
+        updated_by: currentUser?.id || null,
       })),
     );
 
@@ -1870,6 +1933,22 @@ async function saveRecordsToSupabase() {
     const { error: insertError } = await supabaseClient.from("portal_records").insert(rows.slice(index, index + chunkSize));
     if (insertError) throw insertError;
   }
+}
+
+async function upsertRemotePortalRecord(module, record) {
+  if (!isRemoteMode || !remoteReady || !currentUser) return;
+  const { error } = await supabaseClient.from("portal_records").upsert(
+    {
+      module_id: module.id,
+      record_id: String(record.id),
+      data: record,
+      company_name: getRecordCompanyName(module, record) || currentUser.companyName || null,
+      created_by: currentUser.id || null,
+      updated_by: currentUser.id || null,
+    },
+    { onConflict: "module_id,record_id" },
+  );
+  if (error) console.error("Canlı kayıt gönderilemedi:", error);
 }
 
 function createId(prefix) {
@@ -1900,7 +1979,7 @@ function canAccessModule(module) {
   if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
   if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
   if (type === "PERSONEL") return ["panel", "payrollCenter", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications", "messages"].includes(module.id);
-  if (type === "MUSTERI") return ["panel", "payrollCenter", "projects", "quality", "invoices", "reports", "notifications", "approvals"].includes(module.id);
+  if (type === "MUSTERI") return ["panel", "payrollCenter", "projects", "quality", "invoices", "reports", "notifications", "approvals", "messages"].includes(module.id);
   return true;
 }
 
@@ -2467,6 +2546,93 @@ function getPortalPresencePeople() {
   return [...unique.values()];
 }
 
+function getRecipientEmails(recipient) {
+  const normalizedRecipient = normalizeText(recipient);
+  const users = getScopedRecords(getModule("users"));
+  const companies = getScopedRecords(getModule("companies"));
+  if (!normalizedRecipient || normalizedRecipient === normalizeText("Tüm ekip")) {
+    return [...new Set(users.map((record) => record.email).filter(Boolean))];
+  }
+  if (normalizedRecipient === normalizeText("İK Ekibi")) {
+    return [...new Set(users.filter((record) => ["Admin", "Kullanıcı"].includes(record.type)).map((record) => record.email).filter(Boolean))];
+  }
+  if (normalizedRecipient === normalizeText("Muhasebe")) {
+    return [...new Set(users.filter((record) => normalizeText(record.name).includes("muhasebe") || normalizeText(record.email).includes("muhasebe")).map((record) => record.email).filter(Boolean))];
+  }
+
+  const matchedUsers = users
+    .filter((record) => {
+      const fullName = `${record.name || ""} ${record.surname || ""}`.trim();
+      return [fullName, record.email, record.username, record.companyName].map(normalizeText).some((value) => value && (value === normalizedRecipient || value.includes(normalizedRecipient) || normalizedRecipient.includes(value)));
+    })
+    .map((record) => record.email)
+    .filter(Boolean);
+
+  const matchedCompanies = companies
+    .filter((record) => [record.name, record.authorized].map(normalizeText).some((value) => value && (value === normalizedRecipient || value.includes(normalizedRecipient) || normalizedRecipient.includes(value))))
+    .map((record) => record.email)
+    .filter(Boolean);
+
+  return [...new Set([...matchedUsers, ...matchedCompanies])];
+}
+
+function getRecipientCompanyName(recipient) {
+  const normalizedRecipient = normalizeText(recipient);
+  if (!normalizedRecipient) return currentUser?.companyName || "";
+  const userMatch = getScopedRecords(getModule("users")).find((record) => {
+    const fullName = `${record.name || ""} ${record.surname || ""}`.trim();
+    return [fullName, record.email, record.username, record.companyName].map(normalizeText).some((value) => value && (value === normalizedRecipient || value.includes(normalizedRecipient) || normalizedRecipient.includes(value)));
+  });
+  if (userMatch?.companyName) return userMatch.companyName;
+  const companyMatch = getScopedRecords(getModule("companies")).find((record) => [record.name, record.authorized].map(normalizeText).some((value) => value && (value === normalizedRecipient || value.includes(normalizedRecipient) || normalizedRecipient.includes(value))));
+  return companyMatch?.name || currentUser?.companyName || "";
+}
+
+function createEmailNotificationForMessage(messageRecord, emails) {
+  const module = getModule("notifications");
+  const description = emails.length
+    ? `${messageRecord.recipient} için e-posta taslağı hazırlandı: ${emails.join(", ")}`
+    : `${messageRecord.recipient} için e-posta adresi bulunamadı, kullanıcı kartını kontrol et.`;
+  const notificationRecord = {
+    id: createId("mail"),
+    date: messageRecord.date,
+    type: "E-posta Bildirimi",
+    moduleName: "Mesajlar",
+    companyName: messageRecord.companyName || currentUser?.companyName || "",
+    description,
+    priority: messageRecord.priority || "Normal",
+    status: emails.length ? "Açık" : "Kontrol Edilecek",
+  };
+  module.records = [notificationRecord, ...module.records];
+  return notificationRecord;
+}
+
+function openEmailDraftForMessage(messageRecord, emails) {
+  if (!emails.length) return;
+  const subject = encodeURIComponent(`[Artı Destek] ${messageRecord.subject || "Yeni mesaj"}`);
+  const body = encodeURIComponent(
+    [
+      `Merhaba,`,
+      "",
+      `Artı Destek portalında size yeni bir mesaj gönderildi.`,
+      "",
+      `Gönderen: ${messageRecord.sender || "-"}`,
+      `Alıcı: ${messageRecord.recipient || "-"}`,
+      `Öncelik: ${messageRecord.priority || "Normal"}`,
+      "",
+      messageRecord.message || "",
+      "",
+      "Portala giriş yaparak konuşmayı takip edebilirsiniz.",
+    ].join("\n"),
+  );
+  const link = document.createElement("a");
+  link.href = `mailto:${emails.join(",")}?subject=${subject}&body=${body}`;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 function getRecordMessageThreadId(record) {
   return record.threadId || `thread-${normalizeText(`${record.subject || record.type || "mesaj"}-${record.sender || ""}-${record.recipient || ""}`).replace(/[^a-z0-9]/g, "-") || record.id}`;
 }
@@ -2524,6 +2690,7 @@ function sendPortalMessage(form) {
     type: String(formData.get("type") || "Personel Mesajı"),
     sender: currentUser?.displayName || currentUser?.email || "Admin",
     recipient: String(formData.get("recipient") || "Tüm ekip"),
+    companyName: getRecipientCompanyName(String(formData.get("recipient") || "")),
     subject,
     message,
     priority: String(formData.get("priority") || "Normal"),
@@ -2532,8 +2699,18 @@ function sendPortalMessage(form) {
 
   module.records = [record, ...module.records];
   selectedMessageThreadId = record.threadId;
+  let emailNotificationRecord = null;
+  if (formData.get("emailNotify") === "on") {
+    const emails = getRecipientEmails(record.recipient);
+    emailNotificationRecord = createEmailNotificationForMessage(record, emails);
+    openEmailDraftForMessage(record, emails);
+  }
   addAudit("Mesaj", module, record, `${record.recipient} alıcısına mesaj gönderildi.`);
   saveRecords();
+  if (isRemoteMode && !canManageRecords()) {
+    upsertRemotePortalRecord(module, record);
+    if (emailNotificationRecord) upsertRemotePortalRecord(getModule("notifications"), emailNotificationRecord);
+  }
   renderPayrollCenter();
   renderSideNav();
   renderIcons();
@@ -3466,6 +3643,7 @@ function renderPayrollCenter() {
           <div>
             <b>${escapeHtml(trText("İç İletişim"))}</b>
             <h3>${escapeHtml(trText("Konuşmalar"))}</h3>
+            <small class="live-sync-badge ${isRemoteMode ? "online" : ""}">${escapeHtml(trText(isRemoteMode ? "Canlı senkron açık" : "Yerel mod"))}</small>
           </div>
           <span>${escapeHtml(messages.length)}</span>
         </header>
@@ -3552,6 +3730,10 @@ function renderPayrollCenter() {
             ${escapeHtml(trText("Mesaj yaz"))}
             <textarea name="message" rows="4" placeholder="${escapeHtml(trText("Mesaj yaz"))}"></textarea>
           </label>
+          <label class="inline-check email-notify-check">
+            <input name="emailNotify" type="checkbox" checked />
+            <span>${escapeHtml(trText("E-posta bildirimi hazırla"))}</span>
+          </label>
           <div class="composer-actions">
             <button type="button" data-action="message-new">${escapeHtml(trText("Yeni Mesaj"))}</button>
             <button type="button" data-action="message-send">${escapeHtml(trText("Mesaj Gönder"))}</button>
@@ -3568,6 +3750,7 @@ function renderPayrollCenter() {
               ["Acil", messages.filter((record) => record.priority === "Acil").length],
               ["Duyuru", messages.filter((record) => record.type === "Duyuru").length],
               ["Müşteri Mesajı", messages.filter((record) => record.type === "Müşteri Mesajı").length],
+              ["E-posta Kuyruğu", getScopedRecords(getModule("notifications")).filter((record) => record.type === "E-posta Bildirimi" && record.status !== "Tamamlandı").length],
             ],
           )}
         </article>
@@ -5843,6 +6026,7 @@ function showApp(user) {
   document.querySelector("#appShell").hidden = false;
   renderSideNav();
   renderModule(getModule(activeModuleId));
+  startRealtimeSync();
 }
 
 async function initSession() {
@@ -6462,6 +6646,7 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
 
 document.querySelector("#logoutButton").addEventListener("click", async () => {
   localStorage.removeItem(sessionKey);
+  stopRealtimeSync();
   if (isRemoteMode) await supabaseClient.auth.signOut();
   currentUser = null;
   showLogin();

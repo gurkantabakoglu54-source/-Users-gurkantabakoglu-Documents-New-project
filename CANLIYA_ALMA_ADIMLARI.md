@@ -55,6 +55,8 @@ Canlı kullanımda:
 - Admin için `Arşiv` ve `İşlem Kayıtları` bölümleri vardır.
 - Silinen kayıtlar arşive alınır; ekleme, düzenleme, silme ve bordro akışı işlem kayıtlarına düşer.
 - Ana panelde aktif proje, bekleyen fatura, çalışma saati, mesai, eksik özlük ve açık görev özetleri görünür.
+- Mesajlar ekranı Supabase Realtime ile canlı senkron çalışır. Bunun için `supabase-schema.sql` dosyasının güncel hali SQL Editor içinde tekrar çalıştırılmalıdır.
+- Mesaj gönderirken `E-posta bildirimi hazırla` seçiliyse sistem alıcıya göre e-posta taslağı açar ve bildirimi kuyruğa ekler. Tam otomatik e-posta gönderimi için sonraki aşamada Resend, SendGrid veya Supabase Edge Function kurulabilir.
 
 ## 6. Yeni Kullanıcı Açma
 
