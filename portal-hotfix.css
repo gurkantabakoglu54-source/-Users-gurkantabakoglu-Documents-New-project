@@ -265,6 +265,136 @@
   color: #059669;
 }
 
+.notification-command-panel,
+.email-automation-panel,
+.privacy-hero-panel,
+.customer-hero-panel,
+.self-service-hub > .bordro-panel {
+  background:
+    radial-gradient(circle at top right, rgba(236, 72, 153, 0.08), transparent 34%),
+    linear-gradient(180deg, #fff, #fffafe);
+}
+
+.notification-metrics,
+.privacy-kpis,
+.self-service-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.notification-metrics article,
+.privacy-kpis article,
+.self-service-mini-grid button {
+  min-height: 86px;
+  padding: 14px;
+  border: 1px solid #eadcfb;
+  border-radius: 16px;
+  background: #fff;
+  color: #251044;
+  text-align: left;
+  box-shadow: 0 12px 26px rgba(76, 29, 149, 0.06);
+}
+
+.notification-metrics strong,
+.privacy-kpis strong,
+.self-service-mini-grid strong {
+  display: block;
+  color: #7c3aed;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.notification-metrics .danger strong,
+.notification-list .urgent span {
+  color: #e11d48;
+}
+
+.notification-metrics .warning strong {
+  color: #d97706;
+}
+
+.notification-metrics .good strong {
+  color: #059669;
+}
+
+.notification-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.notification-list > div {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #f0e3ff;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.notification-list > div.read {
+  opacity: 0.68;
+}
+
+.notification-list span {
+  width: max-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #fdf2f8;
+  color: #be185d;
+  font-weight: 950;
+  font-size: 11px;
+}
+
+.notification-list small {
+  grid-column: 2;
+  color: #7c668e;
+  font-weight: 800;
+}
+
+.notification-list button {
+  grid-row: span 2;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.customer-portal-grid,
+.privacy-center-grid,
+.self-service-hub {
+  display: grid;
+  gap: 16px;
+}
+
+.customer-hero-panel p,
+.privacy-hero-panel p {
+  margin: 8px 0 0;
+  color: #6c5f78;
+}
+
+.self-service-mini-grid button {
+  display: grid;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.self-service-mini-grid button span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 13px;
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
 .person-report-panel {
   margin-bottom: 16px;
 }
