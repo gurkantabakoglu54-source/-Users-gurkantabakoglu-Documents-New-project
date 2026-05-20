@@ -81,3 +81,12 @@ set email = excluded.email,
 ```
 
 `role` alanı `Admin`, `Müşteri` veya `Kullanıcı` olabilir. Müşteri için `company_name` alanını firma adıyla aynı yaz.
+
+## 7. Canlı Test ve Kullanım Kılavuzu
+
+Canlıya geçmeden önce şu iki dosya takip edilmeli:
+
+- `CANLI_TEST_PLANI.md`: Pilot test senaryoları ve kabul kriterleri.
+- `KULLANIM_KILAVUZU.md`: Admin, kullanıcı ve müşteri için günlük kullanım adımları.
+
+Öneri: İlk canlı kullanımda 5 iş günü boyunca `CANLI_TEST_PLANI.md` dosyasındaki senaryolar tek tek denenmeli, hatalar aynı dosyadaki hata kayıt formatıyla not alınmalı.
