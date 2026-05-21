@@ -1,11 +1,11 @@
 :root {
   --green: #8b5cf6;
   --green-dark: #6d28d9;
-  --cyan: #ec4899;
-  --orange: #d946ef;
+  --cyan: #f97316;
+  --orange: #fb923c;
   --red: #e11d48;
   --purple: #6d28d9;
-  --pink: #ec4899;
+  --pink: #f97316;
   --blue: #7c3aed;
   --navy: #211044;
   --navy-soft: #3b1b73;
@@ -17,8 +17,8 @@
   --line: #e5eaf0;
   --table-head: #4c1d95;
   --link: #7e22ce;
-  --soft-orange: #ec4899;
-  --soft-orange-light: #fdf2f8;
+  --soft-orange: #f97316;
+  --soft-orange-light: #fff7ed;
   --success: #16834f;
   --danger: #c0342b;
 }
@@ -1061,8 +1061,8 @@ td a {
 :root {
   --green: #8b5cf6;
   --green-dark: #6d28d9;
-  --cyan: #ec4899;
-  --orange: #d946ef;
+  --cyan: #f97316;
+  --orange: #fb923c;
   --red: #b94136;
   --purple: #6d28d9;
   --pink: #a8663a;
@@ -1076,8 +1076,8 @@ td a {
   --line: #dfe6ee;
   --table-head: #4c1d95;
   --link: #006d77;
-  --soft-orange: #ec4899;
-  --soft-orange-light: #fdf2f8;
+  --soft-orange: #f97316;
+  --soft-orange-light: #fff7ed;
   --success: #16805a;
   --danger: #c8453b;
 }

@@ -931,18 +931,18 @@ const payrollCenterTabs = [
 const payrollTabColors = {
   home: "#7c3aed",
   setup: "#a855f7",
-  assistant: "#ec4899",
-  messages: "#d946ef",
+  assistant: "#f97316",
+  messages: "#fb923c",
   growth: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
-  company: "#c026d3",
-  operationsHub: "#db2777",
-  payrollDefinitions: "#be185d",
-  selfService: "#ec4899",
+  company: "#f59e0b",
+  operationsHub: "#ea580c",
+  payrollDefinitions: "#c2410c",
+  selfService: "#f97316",
   customerPortal: "#8b5cf6",
   reports: "#9333ea",
-  legislation: "#a21caf",
+  legislation: "#ca8a04",
   privacy: "#9333ea",
   redBulletin: "#e11d48",
 };
@@ -950,40 +950,40 @@ const payrollTabColors = {
 const moduleAccentColors = {
   panel: "#7c3aed",
   payrollCenter: "#8b5cf6",
-  companies: "#c026d3",
-  projects: "#ec4899",
+  companies: "#f59e0b",
+  projects: "#f97316",
   users: "#7c3aed",
-  personnel: "#db2777",
+  personnel: "#ea580c",
   personnel360: "#a855f7",
   presentations: "#8b5cf6",
-  attendance: "#c026d3",
-  leaves: "#db2777",
+  attendance: "#f59e0b",
+  leaves: "#ea580c",
   trainings: "#9333ea",
-  assets: "#be185d",
+  assets: "#c2410c",
   tasks: "#ef4444",
-  invoices: "#ec4899",
+  invoices: "#f97316",
   approvals: "#8b5cf6",
   quality: "#9333ea",
   documentsChecklist: "#a855f7",
   notifications: "#e11d48",
-  messages: "#d946ef",
+  messages: "#fb923c",
   experienceTests: "#8b5cf6",
-  dataTemplates: "#ec4899",
+  dataTemplates: "#f97316",
   backupCenter: "#7c3aed",
   security: "#6d28d9",
   settings: "#4c1d95",
   reports: "#9333ea",
-  archive: "#9d174d",
+  archive: "#c2410c",
   audit: "#7c3aed",
-  payroll: "#be185d",
+  payroll: "#c2410c",
   employeeRegistry: "#8b5cf6",
   performanceReviews: "#7c3aed",
-  recruitment: "#d946ef",
-  bankBes: "#c026d3",
+  recruitment: "#fb923c",
+  bankBes: "#f59e0b",
   integrations: "#8b5cf6",
-  legislation: "#a21caf",
+  legislation: "#ca8a04",
   privacyCenter: "#9333ea",
-  automationRules: "#ec4899",
+  automationRules: "#f97316",
   payrollCalendar: "#a855f7",
 };
 
@@ -2200,12 +2200,23 @@ function renderSideNav() {
       )
       .join("")}
   `;
+  updateTopNotificationChip();
 }
 
 function closeMobileSidebar() {
   if (window.innerWidth <= 760) {
     document.body.classList.remove("sidebar-collapsed");
   }
+}
+
+function updateTopNotificationChip() {
+  const chip = document.querySelector("#topNotificationChip");
+  if (!chip) return;
+  const notifications = getScopedRecords(getModule("notifications"));
+  const unreadCount = notifications.filter((record) => record.readStatus !== "Okundu" && record.status !== "Tamamlandı").length;
+  const urgentCount = notifications.filter((record) => record.priority === "Acil" && record.status !== "Tamamlandı").length;
+  chip.classList.toggle("urgent", urgentCount > 0);
+  chip.innerHTML = `<span data-icon="bell"></span><b>${escapeHtml(String(unreadCount))}</b>`;
 }
 
 function renderBreadcrumb(module) {
@@ -2925,9 +2936,10 @@ function renderDashboard() {
     { id: "settings", value: getRecordCount("settings"), label: "Kurumsal Ayarlar", icon: "settings", color: "dark-green" },
     { id: "payroll", value: getRecordCount("payroll"), label: "Bordro", icon: "invoice", color: "dark-green" },
   ];
+  const calmDashboardCards = ["payrollCenter", "personnel", "payroll", "notifications", "messages", "reports"];
   const visibleCards = cards.filter((card) => {
     const module = getModule(card.id);
-    return canAccessModule(module) && !module.dashboardHidden;
+    return calmDashboardCards.includes(card.id) && canAccessModule(module) && !module.dashboardHidden;
   });
   const monthlyBreakdown = periodMonths.map((month) => {
     const monthProjects = getScopedRecords(getModule("projects")).filter((record) => recordMatchesMonths(record, [month], ["date", "startDate", "endDate"]));
@@ -4150,10 +4162,10 @@ function renderPayrollCenter() {
   `;
   const reportBarData = [
     ["Net Bordro", totalNet, "#7c3aed", formatMoney(totalNet)],
-    ["Avans", totalAdvance, "#ec4899", formatMoney(totalAdvance)],
+    ["Avans", totalAdvance, "#f97316", formatMoney(totalAdvance)],
     ["Kesinti", totalDeduction, "#e11d48", formatMoney(totalDeduction)],
     ["Mesai", totalOvertime, "#a855f7", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`],
-    ["Fatura", invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0), "#c026d3", formatMoney(invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0))],
+    ["Fatura", invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0), "#f59e0b", formatMoney(invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0))],
   ];
   const reportMax = Math.max(...reportBarData.map(([, value]) => Number(value) || 0), 1);
   const issuedInvoices = invoices.filter((record) => record.status === "Fatura Kesildi").length;
@@ -4486,11 +4498,9 @@ function renderPayrollCenter() {
         </div>
       </section>
       ${executiveBriefPanel}
-      ${riskRadarPanel}
-      ${moduleLauncherPanel}
-      ${setupWizardPanel}
-      <section class="bordro-kpis">
+      <section class="bordro-kpis calm-kpis">
         ${kpis
+          .slice(0, 6)
           .map(
             ([label, value, icon]) => `
               <article>
@@ -4503,10 +4513,9 @@ function renderPayrollCenter() {
           )
           .join("")}
       </section>
-      <section class="bordro-board">${payrollWorkflowPanel}${alertPanel}</section>
-      <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
       <section class="bordro-board">${notificationCenterPanel}${emailAutomationPanel}</section>
-      <section class="bordro-board">${calendarPanel}${periodSummaryPanel}</section>
+      <section class="bordro-board">${payrollWorkflowPanel}${calendarPanel}</section>
+      <section class="bordro-board">${alertPanel}${moduleLauncherPanel}</section>
       ${easyPortalPanel}
     `,
     assistant: `
@@ -5968,7 +5977,7 @@ function downloadPayrollSlipPdf() {
           .item { padding: 12px; border-radius: 12px; background: #fbf7ff; border: 1px solid #f0e3ff; }
           .item b { display: block; color: #6b21a8; font-size: 12px; margin-bottom: 5px; }
           .item strong { color: #251044; font-size: 16px; }
-          .note { margin-top: 14px; padding: 12px; border-left: 4px solid #ec4899; background: #fdf2f8; color: #5b315e; }
+          .note { margin-top: 14px; padding: 12px; border-left: 4px solid #f97316; background: #fff7ed; color: #5b315e; }
           @media print { body { background: #fff; } .page { padding: 10mm; } .slip { box-shadow: none; } }
         </style>
       </head>
