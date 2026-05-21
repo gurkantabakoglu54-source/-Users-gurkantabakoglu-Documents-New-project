@@ -931,18 +931,18 @@ const payrollCenterTabs = [
 const payrollTabColors = {
   home: "#7c3aed",
   setup: "#a855f7",
-  assistant: "#f97316",
-  messages: "#fb923c",
+  assistant: "#ec4899",
+  messages: "#d946ef",
   growth: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
-  company: "#f59e0b",
-  operationsHub: "#ea580c",
-  payrollDefinitions: "#c2410c",
-  selfService: "#f97316",
+  company: "#c026d3",
+  operationsHub: "#db2777",
+  payrollDefinitions: "#be185d",
+  selfService: "#ec4899",
   customerPortal: "#8b5cf6",
   reports: "#9333ea",
-  legislation: "#ca8a04",
+  legislation: "#a21caf",
   privacy: "#9333ea",
   redBulletin: "#e11d48",
 };
@@ -950,40 +950,40 @@ const payrollTabColors = {
 const moduleAccentColors = {
   panel: "#7c3aed",
   payrollCenter: "#8b5cf6",
-  companies: "#f59e0b",
-  projects: "#f97316",
+  companies: "#c026d3",
+  projects: "#ec4899",
   users: "#7c3aed",
-  personnel: "#ea580c",
+  personnel: "#db2777",
   personnel360: "#a855f7",
   presentations: "#8b5cf6",
-  attendance: "#f59e0b",
-  leaves: "#ea580c",
+  attendance: "#c026d3",
+  leaves: "#db2777",
   trainings: "#9333ea",
-  assets: "#c2410c",
+  assets: "#be185d",
   tasks: "#ef4444",
-  invoices: "#f97316",
+  invoices: "#ec4899",
   approvals: "#8b5cf6",
   quality: "#9333ea",
   documentsChecklist: "#a855f7",
   notifications: "#e11d48",
-  messages: "#fb923c",
+  messages: "#d946ef",
   experienceTests: "#8b5cf6",
-  dataTemplates: "#f97316",
+  dataTemplates: "#ec4899",
   backupCenter: "#7c3aed",
   security: "#6d28d9",
   settings: "#4c1d95",
   reports: "#9333ea",
-  archive: "#c2410c",
+  archive: "#be185d",
   audit: "#7c3aed",
-  payroll: "#c2410c",
+  payroll: "#be185d",
   employeeRegistry: "#8b5cf6",
   performanceReviews: "#7c3aed",
-  recruitment: "#fb923c",
-  bankBes: "#f59e0b",
+  recruitment: "#d946ef",
+  bankBes: "#c026d3",
   integrations: "#8b5cf6",
-  legislation: "#ca8a04",
+  legislation: "#a21caf",
   privacyCenter: "#9333ea",
-  automationRules: "#f97316",
+  automationRules: "#ec4899",
   payrollCalendar: "#a855f7",
 };
 
@@ -4162,10 +4162,10 @@ function renderPayrollCenter() {
   `;
   const reportBarData = [
     ["Net Bordro", totalNet, "#7c3aed", formatMoney(totalNet)],
-    ["Avans", totalAdvance, "#f97316", formatMoney(totalAdvance)],
+    ["Avans", totalAdvance, "#ec4899", formatMoney(totalAdvance)],
     ["Kesinti", totalDeduction, "#e11d48", formatMoney(totalDeduction)],
     ["Mesai", totalOvertime, "#a855f7", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`],
-    ["Fatura", invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0), "#f59e0b", formatMoney(invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0))],
+    ["Fatura", invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0), "#c026d3", formatMoney(invoices.reduce((sum, record) => sum + parseMoney(record.amount), 0))],
   ];
   const reportMax = Math.max(...reportBarData.map(([, value]) => Number(value) || 0), 1);
   const issuedInvoices = invoices.filter((record) => record.status === "Fatura Kesildi").length;
@@ -5977,7 +5977,7 @@ function downloadPayrollSlipPdf() {
           .item { padding: 12px; border-radius: 12px; background: #fbf7ff; border: 1px solid #f0e3ff; }
           .item b { display: block; color: #6b21a8; font-size: 12px; margin-bottom: 5px; }
           .item strong { color: #251044; font-size: 16px; }
-          .note { margin-top: 14px; padding: 12px; border-left: 4px solid #f97316; background: #fff7ed; color: #5b315e; }
+          .note { margin-top: 14px; padding: 12px; border-left: 4px solid #ec4899; background: #fdf2f8; color: #5b315e; }
           @media print { body { background: #fff; } .page { padding: 10mm; } .slip { box-shadow: none; } }
         </style>
       </head>
