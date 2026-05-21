@@ -186,7 +186,7 @@ const modules = [
       ["phone", "Telefon"],
       ["username", "Kullanıcı Adı"],
       ["companyName", "Bağlı Firma"],
-      ["type", "Türü", "select", ["Admin", "Müşteri", "Kullanıcı"]],
+      ["type", "Türü", "select", ["Admin", "Yönetici", "Personel", "Müşteri", "Kullanıcı"]],
       ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
     ],
     records: [
@@ -2018,12 +2018,16 @@ function normalizeUserType(type) {
   return normalizeText(type).toUpperCase();
 }
 
+function isAdminRole(type) {
+  return ["SUPER ADMIN", "ADMIN", "YONETICI"].includes(normalizeUserType(type));
+}
+
 function canAccessModule(module) {
   if (!currentUser) return true;
 
   const type = normalizeUserType(currentUser.type);
-  if (module.adminOnly && !(type === "SUPER ADMIN" || type === "ADMIN")) return false;
-  if (type === "SUPER ADMIN" || type === "ADMIN" || type === "KULLANICI") return true;
+  if (module.adminOnly && !isAdminRole(type)) return false;
+  if (isAdminRole(type) || type === "KULLANICI") return true;
   if (type === "PERSONEL") return ["panel", "payrollCenter", "personnel360", "tasks", "payroll", "presentations", "documentsChecklist", "reports", "attendance", "leaves", "trainings", "assets", "notifications", "messages"].includes(module.id);
   if (type === "MUSTERI") return ["panel", "payrollCenter", "projects", "quality", "invoices", "reports", "notifications", "approvals", "messages"].includes(module.id);
   return true;
@@ -2031,8 +2035,7 @@ function canAccessModule(module) {
 
 function canManageRecords() {
   if (!currentUser) return true;
-  const type = normalizeUserType(currentUser.type);
-  return type === "SUPER ADMIN" || type === "ADMIN";
+  return isAdminRole(currentUser.type);
 }
 
 function isCustomerUser() {
@@ -2199,6 +2202,12 @@ function renderSideNav() {
   `;
 }
 
+function closeMobileSidebar() {
+  if (window.innerWidth <= 760) {
+    document.body.classList.remove("sidebar-collapsed");
+  }
+}
+
 function renderBreadcrumb(module) {
   document.querySelector("#breadcrumb").innerHTML = module.breadcrumb
     .map((item) => `<li>${escapeHtml(trText(item))}</li>`)
@@ -2264,6 +2273,54 @@ function hasDocumentForPerson(person, documents) {
     const samePerson = documentPerson && (documentPerson === personName || documentPerson.includes(personName) || personName.includes(documentPerson));
     return samePerson && hasUploadedFile(documentRecord.file);
   });
+}
+
+function getPersonDocuments(personName) {
+  const normalizedName = normalizeText(personName);
+  if (!normalizedName) return [];
+  return getScopedRecords(getModule("presentations")).filter((record) => normalizeText(record.person) === normalizedName);
+}
+
+function hasCompleteDocumentsForPerson(personName) {
+  const normalizedName = normalizeText(personName);
+  if (!normalizedName) return false;
+  const checklist = getScopedRecords(getModule("documentsChecklist")).find((record) => normalizeText(record.person) === normalizedName);
+  if (checklist?.status === "Tam") return true;
+  return getPersonDocuments(personName).some((record) => record.status !== "PASİF" && hasUploadedFile(record.file));
+}
+
+function syncDocumentChecklistFromUpload(documentRecord) {
+  if (!documentRecord?.person || !hasUploadedFile(documentRecord.file)) return;
+
+  const checklistModule = getModule("documentsChecklist");
+  const personnelModule = getModule("personnel");
+  const normalizedName = normalizeText(documentRecord.person);
+  let checklist = checklistModule.records.find((record) => normalizeText(record.person) === normalizedName);
+
+  if (!checklist) {
+    checklist = {
+      id: createId("dc"),
+      person: documentRecord.person,
+      identity: "Tam",
+      sgk: "Tam",
+      contract: "Tam",
+      kvkk: "Tam",
+      health: "Tam",
+      iban: "Tam",
+      criminalRecord: "Tam",
+      status: "Tam",
+    };
+    checklistModule.records = [checklist, ...checklistModule.records];
+  } else {
+    ["identity", "sgk", "contract", "kvkk", "health", "iban", "criminalRecord"].forEach((key) => {
+      checklist[key] = "Tam";
+    });
+    checklist.status = "Tam";
+  }
+
+  personnelModule.records = personnelModule.records.map((record) =>
+    normalizeText(record.name) === normalizedName ? { ...record, documentStatus: "Tam" } : record,
+  );
 }
 
 function getProjectQuality(record) {
@@ -4181,7 +4238,7 @@ function renderPayrollCenter() {
     },
     {
       title: "Müşteri/personel portalı",
-      value: getScopedRecords(getModule("users")).filter((record) => ["Personel", "Müşteri", "Kullanıcı"].includes(record.type)).length,
+      value: getScopedRecords(getModule("users")).filter((record) => ["PERSONEL", "MUSTERI", "KULLANICI"].includes(normalizeUserType(record.type))).length,
       total: Math.max(getScopedRecords(getModule("users")).length, 1),
       detail: "Rol bazlı izleme ve admin yönetimi",
       tab: "system",
@@ -4255,10 +4312,11 @@ function renderPayrollCenter() {
       )}
     </article>
   `;
+  const documentsReady = personnel.length > 0 && personnel.every((record) => hasCompleteDocumentsForPerson(record.name));
   const setupSteps = [
     ["Firma bilgileri", companies.length > 0 && companies.some((record) => record.contractStatus === "Aktif" || record.contractFile || record.offerFile), "company", "Firma, yetkili, sözleşme ve fiyat teklifini hazırla.", `${companies.length} firma`],
-    ["Personel kartları", personnel.length > 0 && checklistRecords.every((record) => record.status === "Tam"), "operationsHub", "Personel, sicil, özlük checklist ve işe alım kayıtlarını tamamla.", `${personnel.length} personel`],
-    ["Kullanıcı ve yetki", getScopedRecords(getModule("users")).some((record) => ["Admin", "Kullanıcı", "Müşteri"].includes(record.type)), "system", "Admin, personel ve müşteri hesaplarını rolüne göre ayır.", `${getScopedRecords(getModule("users")).length} kullanıcı`],
+    ["Personel kartları", documentsReady, "operationsHub", "Personel, sicil, özlük checklist ve işe alım kayıtlarını tamamla.", `${personnel.length} personel`],
+    ["Kullanıcı ve yetki", getScopedRecords(getModule("users")).some((record) => ["ADMIN", "YONETICI", "KULLANICI", "MUSTERI", "PERSONEL"].includes(normalizeUserType(record.type))), "system", "Admin, personel ve müşteri hesaplarını rolüne göre ayır.", `${getScopedRecords(getModule("users")).length} kullanıcı`],
     ["Puantaj ve takvim", attendance.length > 0 && allCalendarRecords.length > 0, "calendar", "Aylık puantajı, ödeme günlerini ve hatırlatmaları planla.", `${attendance.length} puantaj`],
     ["Bordro tanımları", payroll.length > 0 && bankBesRecords.length > 0, "payrollDefinitions", "Brüt/net, banka, BES, avans ve kesinti kayıtlarını kontrol et.", `${payroll.length} bordro`],
     ["Rapor ve yedek", reports.some((record) => record.status === "Hazır") && (backupRecords.length > 0 || !canManageRecords()), "reports", "Kişi bazlı raporları ve düzenli yedeği hazır tut.", `${reports.length} rapor`],
@@ -6664,6 +6722,10 @@ async function upsertRecord(event) {
     record.code = previousRecord?.code || generateProjectCode(record.location);
   }
 
+  if (module.id === "presentations") {
+    syncDocumentChecklistFromUpload(record);
+  }
+
   module.records = recordId
     ? module.records.map((item) => (item.id === recordId ? record : item))
     : [record, ...module.records];
@@ -6691,6 +6753,7 @@ document.addEventListener("click", (event) => {
   const navButton = event.target.closest("[data-nav]");
   if (navButton) {
     switchModule(navButton.dataset.nav);
+    closeMobileSidebar();
     return;
   }
 
@@ -6726,6 +6789,7 @@ document.addEventListener("click", (event) => {
     renderSideNav();
     renderPayrollCenter();
     renderIcons();
+    closeMobileSidebar();
     return;
   }
 
