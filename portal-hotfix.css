@@ -3781,6 +3781,134 @@ body.sidebar-collapsed .content {
   letter-spacing: 0;
 }
 
+.tax-projection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tax-projection span {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid rgba(124, 58, 237, 0.14);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff, #faf5ff);
+}
+
+.tax-projection b {
+  color: #4c1d95;
+  font-size: 11px;
+}
+
+.tax-projection em {
+  color: #be185d;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.legal-link-grid,
+.bank-export-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.legal-link-grid a,
+.bank-export-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  border: 1px solid rgba(124, 58, 237, 0.16);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff, #f5f3ff);
+  color: #4c1d95;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.bank-export-actions button {
+  cursor: pointer;
+}
+
+.bulk-upload-box {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 136px;
+  padding: 18px;
+  border: 1px dashed rgba(124, 58, 237, 0.34);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(219, 39, 119, 0.08), transparent 46%),
+    linear-gradient(145deg, #fff, #faf5ff);
+  color: #4c1d95;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bulk-upload-box svg {
+  width: 34px;
+  height: 34px;
+}
+
+.bulk-upload-box strong {
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.bulk-upload-box small {
+  max-width: 560px;
+  color: #64748b;
+  font-weight: 750;
+}
+
+.bulk-upload-box input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bulk-upload-box:has(input:disabled) {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.accident-check-panel.needs-check {
+  border-color: rgba(225, 29, 72, 0.25);
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.08), 0 18px 42px rgba(76, 29, 149, 0.08);
+}
+
+.accident-check-panel.needs-check header h3 {
+  color: #be123c;
+}
+
+.accident-check-panel.is-done header h3 {
+  color: #15803d;
+}
+
+.trial-warning-panel .empty-state,
+.accident-check-panel .empty-state {
+  margin-top: 10px;
+}
+
+.person-alert-strip {
+  margin-top: -4px;
+}
+
+.person-section.danger {
+  border-color: rgba(225, 29, 72, 0.22);
+  background: linear-gradient(145deg, #fff, #fff1f2);
+}
+
 @media (max-width: 760px) {
   .side-nav button {
     min-height: 58px;

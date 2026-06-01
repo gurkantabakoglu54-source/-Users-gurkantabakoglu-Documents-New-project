@@ -28,6 +28,9 @@ const icons = {
   menu: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
   note: '<path d="M4 4h16v14H8l-4 4Z"/>',
   archive: '<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1Z"/><path d="M10 12h4"/>',
+  external: '<path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>',
+  upload:
+    '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
   panel:
     '<path d="M12 3a9 9 0 0 0-9 9h4a5 5 0 0 1 10 0h4a9 9 0 0 0-9-9Z"/><path d="m12 12 4-4"/>',
   plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
@@ -210,17 +213,20 @@ const modules = [
       ["city", "Şehir"],
       ["email", "E-posta"],
       ["phone", "Telefon"],
+      ["companyName", "Firma"],
       ["startDate", "İşe Giriş"],
+      ["trialEndDate", "Deneme Bitişi", "date"],
+      ["grossSalary", "Brüt Ücret"],
       ["exitDate", "Çıkış Tarihi"],
       ["emergency", "Acil Durum"],
       ["documentStatus", "Özlük Durumu", "select", ["Tam", "Eksik", "Kontrol Edilecek"]],
       ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
     ],
     records: [
-      { id: "ps1", name: "Zehra Battal", department: "İnsan Kaynakları", role: "İK Uzmanı", city: "Sakarya", phone: "(264)502 92 10", startDate: "01/03/2024", emergency: "Kazım Battal - (264)502 92 10", status: "AKTİF" },
-      { id: "ps2", name: "Faruk Türker", department: "Operasyon", role: "Operasyon Ve Kalite Müdürü", city: "Kocaeli", phone: "(506)604 27 04", startDate: "15/01/2023", emergency: "Servet Kün - (542)377 02 54", status: "AKTİF" },
-      { id: "ps3", name: "Murat Oğuz", department: "Yönetim", role: "Kurucu Ortak", city: "Sakarya", phone: "(264)502 92 10", startDate: "01/01/2022", emergency: "Zehra Battal - (264)502 92 10", status: "AKTİF" },
-      { id: "ps4", name: "Gürkan Tabakoğlu", department: "Yönetim", role: "Kurucu Ortak", city: "Sakarya", phone: "(264)502 92 10", startDate: "01/01/2022", emergency: "Murat Oğuz - (264)502 92 10", status: "AKTİF" },
+      { id: "ps1", name: "Zehra Battal", department: "İnsan Kaynakları", role: "İK Uzmanı", city: "Sakarya", phone: "(264)502 92 10", companyName: "Artı Destek", startDate: "01/03/2024", trialEndDate: "2024-04-30", grossSalary: "42.500 TL", emergency: "Kazım Battal - (264)502 92 10", status: "AKTİF" },
+      { id: "ps2", name: "Faruk Türker", department: "Operasyon", role: "Operasyon Ve Kalite Müdürü", city: "Kocaeli", phone: "(506)604 27 04", companyName: "TOPDAL PLASTİK", startDate: "15/01/2023", trialEndDate: "2023-03-16", grossSalary: "58.000 TL", emergency: "Servet Kün - (542)377 02 54", status: "AKTİF" },
+      { id: "ps3", name: "Murat Oğuz", department: "Yönetim", role: "Kurucu Ortak", city: "Sakarya", phone: "(264)502 92 10", companyName: "Artı Destek", startDate: "01/01/2022", trialEndDate: "2022-03-02", grossSalary: "65.000 TL", emergency: "Zehra Battal - (264)502 92 10", status: "AKTİF" },
+      { id: "ps4", name: "Gürkan Tabakoğlu", department: "Yönetim", role: "Kurucu Ortak", city: "Sakarya", phone: "(264)502 92 10", companyName: "Artı Destek", startDate: "01/01/2022", trialEndDate: "2022-03-02", grossSalary: "65.000 TL", emergency: "Murat Oğuz - (264)502 92 10", status: "AKTİF" },
     ],
   },
   {
@@ -597,6 +603,9 @@ const modules = [
       { id: "pc1", date: "2026-05-05", event: "Maaş Ödeme", period: "05.2026", responsible: "Muhasebe", reminder: "1 gün önce", status: "Planlandı" },
       { id: "pc2", date: "2026-05-10", event: "Puantaj Teslim", period: "05.2026", responsible: "İK", reminder: "3 gün önce", status: "Devam Ediyor" },
       { id: "pc3", date: "2026-05-28", event: "Bordro Kapanış", period: "05.2026", responsible: "Yönetici", reminder: "1 hafta önce", status: "Planlandı" },
+      { id: "pc4", date: "2026-05-26", event: "Muhtasar Beyanname Son Gün", period: "05.2026", responsible: "Muhasebe", reminder: "1 hafta önce", status: "Planlandı" },
+      { id: "pc5", date: "2026-05-26", event: "SGK Bildirge Son Gün", period: "05.2026", responsible: "İK", reminder: "3 gün önce", status: "Planlandı" },
+      { id: "pc6", date: "2026-05-25", event: "Günlük İş Kazası Kontrolü", period: "05.2026", responsible: "İK", reminder: "Aynı gün", status: "Planlandı" },
     ],
   },
   {
@@ -704,11 +713,13 @@ const modules = [
       ["manager", "Yönetici"],
       ["employmentType", "Çalışma Tipi", "select", ["Tam Zamanlı", "Yarı Zamanlı", "Geçici Görev", "Dış Kaynak"]],
       ["seniorityDate", "Kıdem Tarihi", "date"],
+      ["incentiveStatus", "Teşvik Kontrolü", "select", ["Kontrol Edilecek", "Uygun Görünüyor", "Uygun Değil", "SGK/İŞKUR Kontrol Edildi"]],
+      ["incentiveNote", "Teşvik Notu"],
       ["status", "Durumu", "select", ["AKTİF", "PASİF", "Kontrol Edilecek"]],
     ],
     records: [
-      { id: "reg1", registryNo: "AD-SC-0001", person: "Zehra Battal", identityNo: "11111111110", department: "İnsan Kaynakları", manager: "Murat Oğuz", employmentType: "Tam Zamanlı", seniorityDate: "2024-01-15", status: "AKTİF" },
-      { id: "reg2", registryNo: "AD-SC-0002", person: "Faruk Türker", identityNo: "11111111112", department: "Operasyon", manager: "Gürkan Tabakoğlu", employmentType: "Tam Zamanlı", seniorityDate: "2023-09-01", status: "AKTİF" },
+      { id: "reg1", registryNo: "AD-SC-0001", person: "Zehra Battal", identityNo: "11111111110", department: "İnsan Kaynakları", manager: "Murat Oğuz", employmentType: "Tam Zamanlı", seniorityDate: "2024-01-15", incentiveStatus: "Kontrol Edilecek", incentiveNote: "SGK/İŞKUR ekranından doğrulanacak.", status: "AKTİF" },
+      { id: "reg2", registryNo: "AD-SC-0002", person: "Faruk Türker", identityNo: "11111111112", department: "Operasyon", manager: "Gürkan Tabakoğlu", employmentType: "Tam Zamanlı", seniorityDate: "2023-09-01", incentiveStatus: "Kontrol Edilecek", incentiveNote: "TC ile resmi teşvik kontrolü yapılacak.", status: "AKTİF" },
     ],
   },
   {
@@ -771,6 +782,48 @@ const modules = [
     records: [
       { id: "bb1", person: "Zehra Battal", bankName: "Garanti BBVA", iban: "TR00 0000 0000 0000 0000 0000 01", besStatus: "Var", besRate: "%3", paymentStatus: "Ödendi", status: "AKTİF" },
       { id: "bb2", person: "Faruk Türker", bankName: "İş Bankası", iban: "TR00 0000 0000 0000 0000 0000 02", besStatus: "Yok", besRate: "-", paymentStatus: "Ödendi", status: "AKTİF" },
+    ],
+  },
+  {
+    id: "matbuForms",
+    title: "Matbu Formlar",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Matbu Formlar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["formName", "Form Adı"],
+      ["category", "Kategori", "select", ["İşe Gelmeme Bildirimi", "Uyarı / İhtar", "Savunma Talebi", "Deneme Süresi", "İşten Ayrılış", "Diğer"]],
+      ["person", "Personel"],
+      ["formDate", "Tarih", "date"],
+      ["templateText", "Form Metni"],
+      ["file", "Ek Dosya", "files"],
+      ["status", "Durumu", "select", ["Hazır", "İmzalandı", "Arşivlendi", "Taslak"]],
+    ],
+    records: [
+      { id: "mf1", formName: "İşe Gelmeme Bildirimi", category: "İşe Gelmeme Bildirimi", person: "", formDate: "2026-05-25", templateText: "Personelin izinsiz/devamsız olduğu güne ilişkin tutanak formu.", file: "", status: "Hazır" },
+      { id: "mf2", formName: "Savunma Talebi", category: "Savunma Talebi", person: "", formDate: "2026-05-25", templateText: "Personelden olay hakkında yazılı savunma talep edilmesi formu.", file: "", status: "Hazır" },
+      { id: "mf3", formName: "Uyarı / İhtar Formu", category: "Uyarı / İhtar", person: "", formDate: "2026-05-25", templateText: "Performans, devamsızlık veya disiplin konusu için uyarı/ihtar formu.", file: "", status: "Hazır" },
+    ],
+  },
+  {
+    id: "accidentChecks",
+    title: "Günlük Kontroller",
+    icon: "shield",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Günlük Kontroller"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["date", "Tarih", "date"],
+      ["workplace", "İşyeri / Firma"],
+      ["checkedBy", "Kontrol Eden"],
+      ["accidentStatus", "İş Kazası Bildirimi", "select", ["Kontrol Edildi", "Bildirim Gerekli", "Bekliyor"]],
+      ["sgkStatus", "SGK Bildirge", "select", ["Takvimde", "Verildi", "Bekliyor", "Gecikti"]],
+      ["note", "Not"],
+      ["status", "Durumu", "select", ["Tamamlandı", "Açık", "Kontrol Edilecek"]],
+    ],
+    records: [
+      { id: "ac1", date: "2026-05-25", workplace: "Artı Destek", checkedBy: "İK", accidentStatus: "Bekliyor", sgkStatus: "Takvimde", note: "Günlük iş kazası bildirimi kontrolü yapılacak.", status: "Açık" },
     ],
   },
   {
@@ -843,10 +896,13 @@ const modules = [
       ["period", "Dönem"],
       ["grossSalary", "Brüt Maaş"],
       ["netSalary", "Net Maaş"],
+      ["cumulativeTaxBase", "Birikmiş Vergi Matrahı"],
+      ["incomeTaxAmount", "Gelir Vergisi"],
       ["bonus", "Ek Ödeme"],
       ["advance", "Avans"],
       ["overtime", "Fazla Mesai"],
       ["deduction", "Kesinti"],
+      ["netPayable", "Ödenecek Net"],
       ["paymentDate", "Ödeme Tarihi"],
       ["bankIban", "Banka / IBAN"],
       ["payrollStatus", "Bordro Durumu", "select", ["Hazırlandı", "Onay Bekliyor", "Onaylandı", "Personele Açıldı"]],
@@ -859,8 +915,8 @@ const modules = [
       ["note", "Not"],
     ],
     records: [
-      { id: "bd1", person: "Zehra Battal", period: "05.2026", grossSalary: "42.500 TL", netSalary: "31.800 TL", bonus: "2.000 TL", advance: "0 TL", overtime: "850 TL", deduction: "0 TL", paymentDate: "05.05.2026", bankIban: "TR00 0000 0000 0000 0000 0000 01", payrollStatus: "Onay Bekliyor", hrApproval: "Onaylandı", accountingApproval: "Bekliyor", managementApproval: "Bekliyor", publishStatus: "Kapalı", viewStatus: "Görülmedi", file: "", note: "Mayıs bordrosu kontrol bekliyor" },
-      { id: "bd2", person: "Faruk Türker", period: "05.2026", grossSalary: "58.000 TL", netSalary: "43.250 TL", bonus: "3.500 TL", advance: "1.000 TL", overtime: "1.200 TL", deduction: "500 TL", paymentDate: "05.05.2026", bankIban: "TR00 0000 0000 0000 0000 0000 02", payrollStatus: "Personele Açıldı", hrApproval: "Onaylandı", accountingApproval: "Onaylandı", managementApproval: "Onaylandı", publishStatus: "Personele Açıldı", viewStatus: "Görüldü", file: "", note: "Personele yayınlandı" },
+      { id: "bd1", person: "Zehra Battal", period: "05.2026", grossSalary: "42.500 TL", netSalary: "31.800 TL", cumulativeTaxBase: "128.000 TL", incomeTaxAmount: "4.980 TL", bonus: "2.000 TL", advance: "0 TL", overtime: "850 TL", deduction: "0 TL", netPayable: "31.800 TL", paymentDate: "05.05.2026", bankIban: "TR00 0000 0000 0000 0000 0000 01", payrollStatus: "Onay Bekliyor", hrApproval: "Onaylandı", accountingApproval: "Bekliyor", managementApproval: "Bekliyor", publishStatus: "Kapalı", viewStatus: "Görülmedi", file: "", note: "Mayıs bordrosu kontrol bekliyor" },
+      { id: "bd2", person: "Faruk Türker", period: "05.2026", grossSalary: "58.000 TL", netSalary: "43.250 TL", cumulativeTaxBase: "185.000 TL", incomeTaxAmount: "7.210 TL", bonus: "3.500 TL", advance: "1.000 TL", overtime: "1.200 TL", deduction: "500 TL", netPayable: "41.750 TL", paymentDate: "05.05.2026", bankIban: "TR00 0000 0000 0000 0000 0000 02", payrollStatus: "Personele Açıldı", hrApproval: "Onaylandı", accountingApproval: "Onaylandı", managementApproval: "Onaylandı", publishStatus: "Personele Açıldı", viewStatus: "Görüldü", file: "", note: "Personele yayınlandı" },
     ],
   },
 ];
@@ -917,6 +973,8 @@ const payrollCenterTabs = [
   ["messages", "Mesajlar", "message"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
+  ["forms", "Matbu Formlar", "invoice"],
+  ["compliance", "Günlük Kontroller", "shield"],
   ["company", "Şirket Yönetimi", "building"],
   ["operationsHub", "İK & Bordro İşlemleri", "grid"],
   ["payrollDefinitions", "Bordro Tanımları", "invoice"],
@@ -936,6 +994,8 @@ const payrollTabColors = {
   growth: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
+  forms: "#be185d",
+  compliance: "#9333ea",
   company: "#c026d3",
   operationsHub: "#db2777",
   payrollDefinitions: "#be185d",
@@ -980,6 +1040,8 @@ const moduleAccentColors = {
   performanceReviews: "#7c3aed",
   recruitment: "#d946ef",
   bankBes: "#c026d3",
+  matbuForms: "#be185d",
+  accidentChecks: "#9333ea",
   integrations: "#8b5cf6",
   legislation: "#a21caf",
   privacyCenter: "#9333ea",
@@ -3109,6 +3171,14 @@ function renderPayrollCenter() {
   const performanceRecords = getScopedRecords(getModule("performanceReviews")).filter((record) => !record.period || periodMonths.includes(record.period));
   const recruitmentRecords = getScopedRecords(getModule("recruitment")).filter((record) => record.status !== "Tamamlandı" || recordMatchesMonths(record, periodMonths, ["interviewDate"]));
   const bankBesRecords = getScopedRecords(getModule("bankBes"));
+  const formRecords = getScopedRecords(getModule("matbuForms"));
+  const accidentRecords = getScopedRecords(getModule("accidentChecks")).filter((record) => recordMatchesMonths(record, periodMonths, ["date"]));
+  const todayIso = toIsoDate(new Date());
+  const todayAccidentCheck = getScopedRecords(getModule("accidentChecks")).find((record) => toInputDate(record.date) === todayIso && record.accidentStatus === "Kontrol Edildi");
+  const trialAlerts = personnel
+    .map((person) => ({ person, employment: getPersonEmploymentInsights(person) }))
+    .filter((item) => item.employment.trialRemaining >= 0 && item.employment.trialRemaining <= 7);
+  const companyRatingRows = getCompanyPersonnelRatings(companies[0]?.name || "");
   const allPayrollRecords = getScopedRecords(getModule("payroll"));
   const allAttendanceRecords = getScopedRecords(getModule("attendance"));
   const documentRecords = getScopedRecords(getModule("presentations"));
@@ -3268,6 +3338,8 @@ function renderPayrollCenter() {
       <button type="button" data-payroll-center-tab="setup">${escapeHtml(trText("Kurulum & Kontrol"))}</button>
       <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("İK & Bordro İşlemleri"))}</button>
       <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
+      <button type="button" data-payroll-center-tab="forms">${escapeHtml(trText("Matbu Formlar"))}</button>
+      <button type="button" data-payroll-center-tab="compliance">${escapeHtml(trText("Günlük Kontrol"))}</button>
       <button type="button" data-payroll-center-tab="payrollDefinitions">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
       <button type="button" data-payroll-center-tab="redBulletin">${escapeHtml(trText("Kırmızı Bülten"))}</button>
@@ -3645,11 +3717,11 @@ function renderPayrollCenter() {
       <div class="salary-calculator" id="salaryCalculator">
         <label>${escapeHtml(trText("Brüt Ücret"))}<input id="calcGrossSalary" inputmode="decimal" placeholder="50.000 TL" /></label>
         <label>${escapeHtml(trText("Net Ücret"))}<input id="calcNetSalary" inputmode="decimal" placeholder="37.000 TL" /></label>
-        <label>${escapeHtml(trText("Gelir Vergisi"))}<input id="calcIncomeTaxRate" inputmode="decimal" value="15" /></label>
+        <label>${escapeHtml(trText("Birikmiş Vergi Matrahı"))}<input id="calcCumulativeTaxBase" inputmode="decimal" placeholder="128.000 TL" /></label>
         <label>${escapeHtml(trText("Damga Vergisi"))}<input id="calcStampTaxRate" inputmode="decimal" value="0,759" /></label>
         <div class="salary-result" id="salaryCalcResult">
           <strong>${escapeHtml(trText("Hesaplama bekliyor"))}</strong>
-          <span>${escapeHtml(trText("Brüt veya net alanına tutar yazınca diğer alan otomatik hesaplanır."))}</span>
+          <span>${escapeHtml(trText("Brüt veya net alanına tutar yazınca diğer alan otomatik hesaplanır; 12 aylık gelir vergisi projeksiyonu da kontrol edilir."))}</span>
         </div>
       </div>
       <p class="calculator-note">${escapeHtml(trText("Not: Hesaplama yaklaşık bordro projeksiyonudur; mevzuat oranları dönemsel olarak kontrol edilmelidir."))}</p>
@@ -3683,6 +3755,111 @@ function renderPayrollCenter() {
           )
           .join("")}
       </div>
+    </article>
+  `;
+  const payrollExportPanel = `
+    <article class="bordro-panel bank-export-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Banka Ödeme Dosyası"))}</b>
+          <h3>${escapeHtml(trText("Garanti BBVA maaş ödeme Excel çıktısı"))}</h3>
+        </div>
+      </header>
+      ${compactRows(
+        ["Dönem", "Kayıt", "Net Ödenecek"],
+        [[periodLabel, payroll.length, formatMoney(payroll.reduce((sum, record) => sum + (parseMoney(record.netPayable) || Math.max(0, parseMoney(record.netSalary) - parseMoney(record.advance) - parseMoney(record.deduction))), 0))]],
+      )}
+      <div class="bank-export-actions">
+        <button type="button" data-action="garanti-export">${escapeHtml(trText("Garanti Maaş Dosyasını İndir"))}</button>
+        <button type="button" data-action="attendance-template">${escapeHtml(trText("Puantaj Excel Şablonu İndir"))}</button>
+      </div>
+      <p class="calculator-note">${escapeHtml(trText("Puantaj şablonuna birden fazla personel satırı girip sisteme kayıt açmak için aynı kolon yapısı kullanılır."))}</p>
+    </article>
+  `;
+  const attendanceImportPanel = `
+    <article class="bordro-panel attendance-import-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Toplu Puantaj Yükleme"))}</b>
+          <h3>${escapeHtml(trText("Excel şablonundan çoklu puantaj aktarımı"))}</h3>
+        </div>
+      </header>
+      <label class="bulk-upload-box" for="attendanceBulkFile">
+        <span data-icon="upload"></span>
+        <strong>${escapeHtml(trText("Puantaj dosyası seç"))}</strong>
+        <small>${escapeHtml(trText("Şablonu Excel'de doldurup CSV olarak kaydedin; personeller tek seferde içe aktarılır."))}</small>
+        <input id="attendanceBulkFile" type="file" accept=".csv,.txt" ${canManageRecords() ? "" : "disabled"} />
+      </label>
+      <p class="calculator-note">${escapeHtml(trText("Kolonlar: Personel, Dönem, Günlük Saat, 1-31 gün durumları, manuel saatler ve mesailer."))}</p>
+    </article>
+  `;
+  const legalOpsPanel = `
+    <article class="bordro-panel legal-ops-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("SGK / Teşvik Kontrolü"))}</b>
+          <h3>${escapeHtml(trText("İşe giriş ve teşvik ön kontrol ekranı"))}</h3>
+        </div>
+      </header>
+      <div class="legal-link-grid">
+        <a href="https://www.sgk.gov.tr/" target="_blank" rel="noreferrer"><span data-icon="external"></span><strong>${escapeHtml(trText("SGK işe giriş ekranına git"))}</strong></a>
+        <a href="https://www.iskur.gov.tr/" target="_blank" rel="noreferrer"><span data-icon="external"></span><strong>${escapeHtml(trText("İŞKUR teşvik kontrolüne git"))}</strong></a>
+        <a href="https://www.turkiye.gov.tr/sosyal-guvenlik-kurumu" target="_blank" rel="noreferrer"><span data-icon="external"></span><strong>${escapeHtml(trText("e-Devlet SGK hizmetleri"))}</strong></a>
+      </div>
+      ${compactRows(
+        ["Personel", "T.C. Kimlik", "Teşvik Kontrolü", "Not"],
+        registryRecords.map((record) => [record.person, maskIdentity(record.identityNo), record.incentiveStatus || "Kontrol Edilecek", record.incentiveNote || "-"]),
+      )}
+      <p class="calculator-note">${escapeHtml(trText("TC kimlik ile otomatik teşvik sorgusu resmi SGK/İŞKUR entegrasyonu gerektirir; burada kayıt, link ve kontrol sonucu birlikte tutulur."))}</p>
+    </article>
+  `;
+  const companyRatingPanel = `
+    <article class="bordro-panel company-rating-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Firma Bazlı Personel Reytingi"))}</b>
+          <h3>${escapeHtml(companies[0]?.name || trText("Firma seçimi"))}</h3>
+        </div>
+      </header>
+      ${compactRows(
+        ["Personel", "Performans", "Devamsızlık", "Rapor", "Reyting"],
+        companyRatingRows.length
+          ? companyRatingRows.map((row) => [row.person.name, row.avgScore, row.absent, row.report, `${row.rating}/100`])
+          : getCompanyPersonnelRatings("").map((row) => [row.person.name, row.avgScore, row.absent, row.report, `${row.rating}/100`]),
+      )}
+    </article>
+  `;
+  const trialWarningPanel = `
+    <article class="bordro-panel trial-warning-panel">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Deneme Süresi Uyarıları"))}</b>
+          <h3>${escapeHtml(trText("Bitişe 1 hafta kalan personeller"))}</h3>
+        </div>
+      </header>
+      ${
+        trialAlerts.length
+          ? compactRows(
+              ["Personel", "Deneme Bitişi", "Kalan", "Uyarı"],
+              trialAlerts.map((item) => [item.person.name, formatDate(toIsoDate(item.employment.trialEnd)), item.employment.trialRemaining, "İK kontrol etmeli"]),
+            )
+          : `<p class="empty-state">${escapeHtml(trText("Bu hafta deneme süresi biten personel görünmüyor."))}</p>`
+      }
+    </article>
+  `;
+  const accidentCheckPanel = `
+    <article class="bordro-panel accident-check-panel ${todayAccidentCheck ? "is-done" : "needs-check"}">
+      <header>
+        <div>
+          <b>${escapeHtml(trText("Günlük İş Kazası Kontrolü"))}</b>
+          <h3>${escapeHtml(todayAccidentCheck ? trText("Bugün kontrol edildi") : trText("Bugün kontrol bekliyor"))}</h3>
+        </div>
+        <button type="button" data-action="daily-accident-check">${escapeHtml(trText(todayAccidentCheck ? "Kontrol Edildi" : "Bugünü Kontrol Edildi İşaretle"))}</button>
+      </header>
+      ${compactRows(
+        ["Tarih", "İşyeri", "İş Kazası", "Durum"],
+        accidentRecords.map((record) => [formatDate(record.date), record.workplace, record.accidentStatus, record.status]),
+      )}
     </article>
   `;
   const privacyPanel = `
@@ -3751,6 +3928,8 @@ function renderPayrollCenter() {
           ["Maaş Ödeme Alarmı", payrollPaymentAlerts.length, "danger", "payrollDefinitions"],
           ["Avans Kontrol Alarmı", advanceAlerts.length, "danger", "operationsHub"],
           ["Özel Gün / Mevzuat Alarmı", calendarDueAlerts.length, "danger", "calendar"],
+          ["Deneme Süresi Uyarısı", trialAlerts.length, "danger", "operationsHub"],
+          ["İş Kazası Günlük Kontrol", todayAccidentCheck && todayAccidentCheck.status === "Tamamlandı" ? 0 : 1, "danger", "compliance"],
           ["Açık Görev", tasks.length, tasks.length ? "danger" : "good", "redBulletin"],
           ["Geciken Tahsilat", overdueInvoices.length, "danger", "operationsHub"],
           ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operationsHub"],
@@ -4467,6 +4646,8 @@ function renderPayrollCenter() {
     ["Geciken tahsilat", overdueInvoices.length, overdueInvoices.length ? "danger" : "good", "Vadesi gelen ve ödenmeyen faturaları takip et."],
     ["Acil görev", tasks.filter((record) => record.priority === "Acil" || record.priority === "Yüksek").length, "danger", "Yüksek öncelikli işler tamamlanmalı."],
     ["Takvim uyarısı", calendarDueAlerts.length, calendarDueAlerts.length ? "danger" : "good", "Bugün veya geçmiş tarihli planları kapat."],
+    ["Deneme süresi", trialAlerts.length, trialAlerts.length ? "danger" : "good", "Deneme süresi bitimine 1 hafta kalan personeller."],
+    ["İş kazası kontrolü", todayAccidentCheck && todayAccidentCheck.status === "Tamamlandı" ? 0 : 1, todayAccidentCheck && todayAccidentCheck.status === "Tamamlandı" ? "good" : "danger", "Günlük iş kazası bildirimi kontrolünü kapat."],
     ["Okunmamış bordro", payroll.filter((record) => record.publishStatus === "Personele Açıldı" && record.viewStatus !== "Görüldü").length, "warning", "Personele açılan ama görülmeyen bordrolar."],
   ];
   const redBulletinPanel = `
@@ -4515,6 +4696,7 @@ function renderPayrollCenter() {
       </section>
       <section class="bordro-board">${notificationCenterPanel}${emailAutomationPanel}</section>
       <section class="bordro-board">${payrollWorkflowPanel}${calendarPanel}</section>
+      <section class="bordro-board">${accidentCheckPanel}${trialWarningPanel}</section>
       <section class="bordro-board">${alertPanel}${moduleLauncherPanel}</section>
       ${easyPortalPanel}
     `,
@@ -4608,11 +4790,42 @@ function renderPayrollCenter() {
     `,
     calendar: `
       <section class="bordro-tab-content">${attendanceMatrix}</section>
+      <section class="bordro-tab-content">${attendanceImportPanel}</section>
       <section class="bordro-tab-content">${calendarPanel}</section>
       <section class="bordro-tab-content two-col">
+        ${accidentCheckPanel}
         ${crudPanel("Bordro Takvimi", "payrollCalendar", ["date", "event", "period", "responsible", "reminder", "status"], calendarRecords)}
         ${crudPanel("Aylık Puantaj Girişi", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
         ${crudPanel("İzin ve Tatil Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], getScopedRecords(getModule("leaves")))}
+      </section>
+    `,
+    forms: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Matbu Formlar"))}</span>
+          <h2>${escapeHtml(trText("İşe gelmeme, ihtar, savunma ve deneme süreci formları tek merkezde."))}</h2>
+          <p>${escapeHtml(`${formRecords.length} ${trText("hazır form")} · ${formRecords.filter((record) => record.status === "İmzalandı").length} ${trText("imzalı")}`)}</p>
+        </div>
+      </section>
+      <section class="bordro-tab-content">
+        ${crudPanel("Matbu Form Arşivi", "matbuForms", ["formName", "category", "person", "formDate", "status"], formRecords)}
+      </section>
+    `,
+    compliance: `
+      <section class="bordro-hero compact-hero">
+        <div>
+          <span>${escapeHtml(trText("Günlük Kontroller"))}</span>
+          <h2>${escapeHtml(trText("İş kazası, SGK bildirge ve yasal son gün kontrolleri günlük izlenir."))}</h2>
+          <p>${escapeHtml(todayAccidentCheck ? trText("Bugün iş kazası kontrolü kapatıldı.") : trText("Bugün iş kazası kontrolü bekliyor."))}</p>
+        </div>
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${accidentCheckPanel}
+        ${legalOpsPanel}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Günlük Kontrol Kayıtları", "accidentChecks", ["date", "workplace", "checkedBy", "accidentStatus", "sgkStatus", "status"], accidentRecords)}
+        ${crudPanel("Bordro Takvimi", "payrollCalendar", ["date", "event", "period", "responsible", "reminder", "status"], calendarRecords)}
       </section>
     `,
     company: `
@@ -4654,11 +4867,19 @@ function renderPayrollCenter() {
         ${payrollWorkflowPanel}
       </section>
       <section class="bordro-tab-content two-col">
-        ${crudPanel("Personel Tanımları", "personnel", ["name", "department", "role", "city", "startDate", "documentStatus", "status"], personnel)}
-        ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "netSalary", "advance", "deduction", "payrollStatus", "publishStatus"], payroll)}
+        ${trialWarningPanel}
+        ${companyRatingPanel}
       </section>
       <section class="bordro-tab-content two-col">
-        ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "manager", "employmentType", "status"], registryRecords)}
+        ${crudPanel("Personel Tanımları", "personnel", ["name", "companyName", "department", "role", "startDate", "trialEndDate", "grossSalary", "status"], personnel)}
+        ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "grossSalary", "netSalary", "cumulativeTaxBase", "incomeTaxAmount", "advance", "netPayable", "payrollStatus"], payroll)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${legalOpsPanel}
+        ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "employmentType", "incentiveStatus", "status"], registryRecords)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${payrollExportPanel}
         ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
       </section>
       <section class="bordro-tab-content two-col">
@@ -4682,9 +4903,10 @@ function renderPayrollCenter() {
     payrollDefinitions: `
       <section class="bordro-tab-content">${payrollCalculatorPanel}</section>
       <section class="bordro-tab-content two-col">
-        ${crudPanel("Bordro Tanımları ve Kayıtları", "payroll", ["person", "period", "grossSalary", "netSalary", "advance", "overtime", "deduction", "payrollStatus", "publishStatus"], payroll)}
+        ${crudPanel("Bordro Tanımları ve Kayıtları", "payroll", ["person", "period", "grossSalary", "netSalary", "cumulativeTaxBase", "incomeTaxAmount", "advance", "deduction", "netPayable", "payrollStatus"], payroll)}
         ${crudPanel("Banka / BES", "bankBes", ["person", "bankName", "iban", "besStatus", "besRate", "paymentStatus", "status"], bankBesRecords)}
       </section>
+      <section class="bordro-tab-content">${payrollExportPanel}</section>
       ${quickActions}
     `,
     selfService: `
@@ -4784,6 +5006,7 @@ function renderPayrollCenter() {
       <section class="bordro-tab-content two-col">
         ${crudPanel("Mevzuat ve Yasal Parametreler", "legislation", ["title", "period", "value", "source", "validUntil", "status"], legislationRecords)}
         ${legislationLinksPanel}
+        ${legalOpsPanel}
         ${crudPanel("Otomasyon Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], automationRecords)}
       </section>
     `,
@@ -4880,6 +5103,8 @@ function renderPersonnel360() {
   const openTasks = related.tasks.filter((record) => record.status !== "Tamamlandı").length;
   const pendingLeaves = related.leaves.filter((record) => record.approval === "Bekliyor").length;
   const latestPayroll = related.payroll[0];
+  const employment = getPersonEmploymentInsights(person);
+  const advanceTotal = getPersonAdvanceTotal(person);
 
   document.querySelector("#pageContent").innerHTML = `
     <section class="person-360">
@@ -4909,6 +5134,10 @@ function renderPersonnel360() {
           ["Bordro", latestPayroll?.payrollStatus || "Yok", latestPayroll?.payrollStatus === "Personele Açıldı" ? "good" : "bad"],
           ["Toplam Çalışma", `${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "neutral"],
           ["Mesai", `${totalOvertime.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} sa`, "neutral"],
+          ["Deneme Süresi", employment.trialState, employment.trialTone],
+          ["Kıdem Tazminatı", formatMoney(employment.severance), employment.severance ? "neutral" : "warning"],
+          ["İhbar Tazminatı", formatMoney(employment.notice), "neutral"],
+          ["Toplam Avans", formatMoney(advanceTotal), advanceTotal ? "warning" : "good"],
           ["Açık Görev", openTasks, openTasks ? "bad" : "good"],
           ["İzin", pendingLeaves ? `${pendingLeaves} bekliyor` : `${related.leaves.length} kayıt`, pendingLeaves ? "bad" : "good"],
         ]
@@ -4921,6 +5150,17 @@ function renderPersonnel360() {
             `,
           )
           .join("")}
+      </div>
+      <div class="person-sections person-alert-strip">
+        <section class="person-section ${employment.trialTone === "danger" ? "danger" : ""}">
+          <header><h3>${escapeHtml(trText("Deneme / Kıdem Özeti"))}</h3></header>
+          <div class="person-line">
+            <span><small>${escapeHtml(trText("Deneme Bitişi"))}</small><b>${escapeHtml(formatDate(toIsoDate(employment.trialEnd)) || "-")}</b></span>
+            <span><small>${escapeHtml(trText("Kıdem Süresi"))}</small><b>${escapeHtml(`${employment.serviceYears.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} yıl`)}</b></span>
+            <span><small>${escapeHtml(trText("İhbar Süresi"))}</small><b>${escapeHtml(`${employment.noticeWeeks} hafta`)}</b></span>
+            <span><small>${escapeHtml(trText("Brüt Referans"))}</small><b>${escapeHtml(formatMoney(employment.gross))}</b></span>
+          </div>
+        </section>
       </div>
       <div class="person-sections">
         ${renderPersonSection("Özlük Belgeleri", "presentations", related.documents, ["type", "date", "owner", "status"])}
@@ -5193,7 +5433,37 @@ const defaultPayrollTaxRates = {
   unemploymentEmployee: 0.01,
   incomeTax: 0.15,
   stampTax: 0.00759,
+  progressiveTax: true,
 };
+
+const incomeTaxBrackets = [
+  { limit: 158000, rate: 0.15 },
+  { limit: 330000, rate: 0.2 },
+  { limit: 1200000, rate: 0.27 },
+  { limit: 4300000, rate: 0.35 },
+  { limit: Infinity, rate: 0.4 },
+];
+
+function calculateProgressiveIncomeTax(monthBase, cumulativeBefore = 0) {
+  const base = Math.max(0, Number(monthBase) || 0);
+  let remaining = base;
+  let previousLimit = 0;
+  let tax = 0;
+  let activeRate = incomeTaxBrackets[0].rate;
+  for (const bracket of incomeTaxBrackets) {
+    const bracketStart = previousLimit;
+    const bracketEnd = bracket.limit;
+    previousLimit = bracketEnd;
+    if (cumulativeBefore >= bracketEnd) continue;
+    const available = Math.max(0, Math.min(bracketEnd, cumulativeBefore + remaining) - Math.max(bracketStart, cumulativeBefore));
+    if (!available) continue;
+    tax += available * bracket.rate;
+    activeRate = bracket.rate;
+    remaining -= available;
+    if (remaining <= 0) break;
+  }
+  return { tax, activeRate, cumulativeAfter: cumulativeBefore + base };
+}
 
 function grossToNet(grossAmount, customRates = {}) {
   const rates = { ...defaultPayrollTaxRates, ...customRates };
@@ -5201,10 +5471,11 @@ function grossToNet(grossAmount, customRates = {}) {
   const sgk = gross * rates.sgkEmployee;
   const unemployment = gross * rates.unemploymentEmployee;
   const incomeTaxBase = Math.max(0, gross - sgk - unemployment);
-  const incomeTax = incomeTaxBase * rates.incomeTax;
+  const progressiveTax = calculateProgressiveIncomeTax(incomeTaxBase, rates.cumulativeTaxBase || 0);
+  const incomeTax = rates.progressiveTax === false && rates.incomeTax ? incomeTaxBase * rates.incomeTax : progressiveTax.tax;
   const stampTax = gross * rates.stampTax;
   const net = Math.max(0, gross - sgk - unemployment - incomeTax - stampTax);
-  return { gross, net, sgk, unemployment, incomeTaxBase, incomeTax, stampTax };
+  return { gross, net, sgk, unemployment, incomeTaxBase, incomeTax, stampTax, taxRate: progressiveTax.activeRate, cumulativeAfter: progressiveTax.cumulativeAfter };
 }
 
 function netToGross(netAmount, customRates = {}) {
@@ -5225,18 +5496,42 @@ function formatPayrollAmount(value) {
   return `${Math.round(Number(value) || 0).toLocaleString("tr-TR")} TL`;
 }
 
+function maskIdentity(value) {
+  const digits = String(value ?? "").replace(/\D/g, "");
+  if (digits.length < 4) return digits || "-";
+  return `${digits.slice(0, 3)}******${digits.slice(-2)}`;
+}
+
 function calculatePayrollRecordAmounts(record, changedField = "") {
   const gross = parseMoney(record.grossSalary);
   const net = parseMoney(record.netSalary);
+  const cumulativeTaxBase = parseMoney(record.cumulativeTaxBase);
   if (changedField === "netSalary" || (!gross && net)) {
-    const result = netToGross(net);
-    return { ...record, grossSalary: formatPayrollAmount(result.gross), netSalary: formatPayrollAmount(net) };
+    const result = netToGross(net, { cumulativeTaxBase });
+    const netPayable = Math.max(0, net + parseMoney(record.bonus) + parseMoney(record.overtime) - parseMoney(record.advance) - parseMoney(record.deduction));
+    return {
+      ...record,
+      grossSalary: formatPayrollAmount(result.gross),
+      netSalary: formatPayrollAmount(net),
+      cumulativeTaxBase: formatPayrollAmount(cumulativeTaxBase),
+      incomeTaxAmount: formatPayrollAmount(result.incomeTax),
+      netPayable: formatPayrollAmount(netPayable),
+    };
   }
   if (changedField === "grossSalary" || (gross && !net)) {
-    const result = grossToNet(gross);
-    return { ...record, grossSalary: formatPayrollAmount(gross), netSalary: formatPayrollAmount(result.net) };
+    const result = grossToNet(gross, { cumulativeTaxBase });
+    const netPayable = Math.max(0, result.net + parseMoney(record.bonus) + parseMoney(record.overtime) - parseMoney(record.advance) - parseMoney(record.deduction));
+    return {
+      ...record,
+      grossSalary: formatPayrollAmount(gross),
+      netSalary: formatPayrollAmount(result.net),
+      cumulativeTaxBase: formatPayrollAmount(cumulativeTaxBase),
+      incomeTaxAmount: formatPayrollAmount(result.incomeTax),
+      netPayable: formatPayrollAmount(netPayable),
+    };
   }
-  return record;
+  const netPayable = Math.max(0, net + parseMoney(record.bonus) + parseMoney(record.overtime) - parseMoney(record.advance) - parseMoney(record.deduction));
+  return { ...record, cumulativeTaxBase: formatPayrollAmount(cumulativeTaxBase), netPayable: formatPayrollAmount(netPayable) };
 }
 
 function toInputDate(value) {
@@ -5260,6 +5555,83 @@ function dateFromAny(value) {
   const [year, month, day] = iso.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function daysBetween(start, end = new Date()) {
+  if (!start) return 0;
+  return Math.ceil((end.getTime() - start.getTime()) / 86400000);
+}
+
+function toIsoDate(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getPersonMonthlyGross(person) {
+  const latestPayroll = getScopedRecords(getModule("payroll"))
+    .filter((record) => personMatchesRecord(person, record))
+    .sort((a, b) => String(b.period || "").localeCompare(String(a.period || "")))[0];
+  return parseMoney(latestPayroll?.grossSalary) || parseMoney(person.grossSalary);
+}
+
+function getPersonEmploymentInsights(person) {
+  const start = dateFromAny(person.startDate);
+  const today = new Date();
+  const trialEnd = dateFromAny(person.trialEndDate) || (start ? addDays(start, 60) : null);
+  const gross = getPersonMonthlyGross(person);
+  const serviceDays = Math.max(0, daysBetween(start, today));
+  const serviceYears = serviceDays / 365;
+  const weeklyGross = gross / 4.333;
+  const noticeWeeks = serviceDays < 180 ? 2 : serviceDays < 540 ? 4 : serviceDays < 1080 ? 6 : 8;
+  const severance = serviceYears >= 1 ? gross * serviceYears : 0;
+  const notice = weeklyGross * noticeWeeks;
+  const trialRemaining = trialEnd ? daysBetween(today, trialEnd) : 0;
+  return {
+    start,
+    trialEnd,
+    trialRemaining,
+    trialState: !trialEnd ? "Belirsiz" : trialRemaining > 7 ? `${trialRemaining} gün kaldı` : trialRemaining >= 0 ? "1 hafta içinde bitiyor" : "Deneme süresi bitti",
+    trialTone: trialRemaining >= 0 && trialRemaining <= 7 ? "danger" : trialRemaining > 7 ? "warning" : "good",
+    serviceYears,
+    serviceDays,
+    gross,
+    severance,
+    notice,
+    noticeWeeks,
+  };
+}
+
+function countAttendanceStatus(record, status) {
+  return dayColumns.reduce((sum, [key]) => sum + (normalizeText(record?.[key]) === normalizeText(status) ? 1 : 0), 0);
+}
+
+function getPersonAdvanceTotal(person) {
+  return getScopedRecords(getModule("payroll"))
+    .filter((record) => personMatchesRecord(person, record))
+    .reduce((sum, record) => sum + parseMoney(record.advance), 0);
+}
+
+function getCompanyPersonnelRatings(companyName = "") {
+  const personnel = getScopedRecords(getModule("personnel")).filter((person) => !companyName || normalizeText(person.companyName) === normalizeText(companyName));
+  const attendance = getScopedRecords(getModule("attendance"));
+  const performance = getScopedRecords(getModule("performanceReviews"));
+  return personnel
+    .map((person) => {
+      const personAttendance = attendance.filter((record) => personMatchesRecord(person, record));
+      const absent = personAttendance.reduce((sum, record) => sum + countAttendanceStatus(record, "Gelmedi"), 0);
+      const report = personAttendance.reduce((sum, record) => sum + countAttendanceStatus(record, "Raporlu"), 0);
+      const scoreRecords = performance.filter((record) => personMatchesRecord(person, record));
+      const avgScore = scoreRecords.length ? scoreRecords.reduce((sum, record) => sum + Number(record.score || 0), 0) / scoreRecords.length : 80;
+      const rating = Math.max(0, Math.min(100, Math.round(avgScore - absent * 4 - report * 2)));
+      return { person, absent, report, avgScore: Math.round(avgScore), rating, tone: rating >= 85 ? "good" : rating >= 65 ? "warning" : "danger" };
+    })
+    .sort((a, b) => b.rating - a.rating);
 }
 
 function isDueOrOverdue(value) {
@@ -5886,6 +6258,198 @@ function downloadExport(moduleId = activeModuleId) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+function downloadHtmlExcel(filename, title, headers, rows) {
+  const html = `
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <style>
+          body { font-family: Arial, sans-serif; }
+          table { border-collapse: collapse; font-size: 10pt; }
+          th { background: #4c1d95; color: #fff; font-weight: 700; }
+          th, td { border: 1px solid #b7c1d1; padding: 6px 8px; mso-number-format:"\\@"; }
+          .title { background: #f5f3ff; color: #4c1d95; font-size: 14pt; font-weight: 700; }
+        </style>
+      </head>
+      <body>
+        <table>
+          <tr><td class="title" colspan="${headers.length}">${escapeHtml(title)}</td></tr>
+          <tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr>
+          ${rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(String(cell ?? ""))}</td>`).join("")}</tr>`).join("")}
+        </table>
+      </body>
+    </html>
+  `;
+  const blob = new Blob(["\uFEFF", html], { type: "application/vnd.ms-excel;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function findBankIbanForPerson(personName) {
+  const payrollRecord = getScopedRecords(getModule("payroll")).find((record) => normalizeText(record.person) === normalizeText(personName) && record.bankIban);
+  const bankRecord = getScopedRecords(getModule("bankBes")).find((record) => normalizeText(record.person) === normalizeText(personName));
+  return payrollRecord?.bankIban || bankRecord?.iban || "";
+}
+
+function downloadGarantiPayrollExcel() {
+  const periodMonths = getDashboardPeriodMonths();
+  const payrollRows = getScopedRecords(getModule("payroll")).filter((record) => periodMonths.includes(record.period));
+  const rows = payrollRows.map((record, index) => {
+    const payable = parseMoney(record.netPayable) || Math.max(0, parseMoney(record.netSalary) - parseMoney(record.advance) - parseMoney(record.deduction));
+    return [
+      index + 1,
+      record.person || "",
+      findBankIbanForPerson(record.person) || record.bankIban || "",
+      formatPayrollAmount(payable),
+      "TRY",
+      record.paymentDate || "",
+      `${record.period || getDashboardPeriodLabel()} maaş ödemesi`,
+    ];
+  });
+  downloadHtmlExcel(
+    `Garanti-BBVA-Maas-Odeme-${getDashboardPeriodLabel().replaceAll(" ", "")}.xls`,
+    "Garanti BBVA Maaş Ödeme Dosyası",
+    ["Sıra", "Ad Soyad", "IBAN", "Tutar", "Para Birimi", "Ödeme Tarihi", "Açıklama"],
+    rows,
+  );
+}
+
+function downloadAttendanceTemplate() {
+  const headers = ["Personel", "Dönem", "Günlük Saat", ...Array.from({ length: 31 }, (_, index) => `${index + 1}. Gün`), ...Array.from({ length: 31 }, (_, index) => `${index + 1}. Gün Manuel Saat`), ...Array.from({ length: 31 }, (_, index) => `${index + 1}. Gün Mesai`), "Durumu"];
+  const rows = getScopedRecords(getModule("personnel")).map((person) => [
+    person.name || "",
+    dashboardMonth,
+    "7,5",
+    ...Array.from({ length: 31 }, () => "Geldi"),
+    ...Array.from({ length: 31 }, () => ""),
+    ...Array.from({ length: 31 }, () => ""),
+    "AKTİF",
+  ]);
+  downloadHtmlExcel(`Puantaj-Toplu-Yukleme-Sablonu-${dashboardMonth}.xls`, "Puantaj Toplu Yükleme Şablonu", headers, rows);
+}
+
+function parseDelimitedLine(line, delimiter) {
+  const cells = [];
+  let current = "";
+  let inQuotes = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    const next = line[index + 1];
+    if (char === '"' && next === '"') {
+      current += '"';
+      index += 1;
+      continue;
+    }
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (char === delimiter && !inQuotes) {
+      cells.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  cells.push(current.trim());
+  return cells;
+}
+
+function parseDelimitedRows(text) {
+  const cleanText = String(text || "").replace(/^\uFEFF/, "").trim();
+  if (!cleanText) return [];
+  const firstLine = cleanText.split(/\r?\n/)[0] || "";
+  const delimiter = firstLine.includes(";") ? ";" : firstLine.includes("\t") ? "\t" : ",";
+  return cleanText
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => parseDelimitedLine(line, delimiter));
+}
+
+async function importAttendanceBulkFile(file) {
+  if (!canManageRecords() || !file) return;
+  const text = await file.text();
+  if (/^\s*</.test(text)) {
+    alert("Bu dosya Excel HTML formatında görünüyor. Lütfen şablonu Excel'de CSV olarak kaydedip tekrar yükleyin.");
+    return;
+  }
+  const rows = parseDelimitedRows(text);
+  if (rows.length < 2) {
+    alert("Puantaj dosyasında aktarılacak satır bulunamadı.");
+    return;
+  }
+  const module = getModule("attendance");
+  const headers = rows[0].map((cell) => normalizeText(cell));
+  const personIndex = Math.max(headers.indexOf("personel"), headers.indexOf("adsoyad"), 0);
+  const periodIndex = headers.indexOf("donem") >= 0 ? headers.indexOf("donem") : 1;
+  const dailyIndex = headers.indexOf("gunluksaat") >= 0 ? headers.indexOf("gunluksaat") : 2;
+  let imported = 0;
+  rows.slice(1).forEach((row) => {
+    const person = row[personIndex]?.trim();
+    if (!person) return;
+    const period = row[periodIndex]?.trim() || dashboardMonth;
+    const dailyHours = row[dailyIndex]?.trim() || "7,5";
+    const record = {
+      id: createId("att"),
+      person,
+      period,
+      dailyHours,
+      status: row[96]?.trim() || "AKTİF",
+    };
+    for (let day = 1; day <= 31; day += 1) {
+      record[`day${day}`] = row[2 + day]?.trim() || "-";
+      record[`manualDay${day}`] = row[33 + day]?.trim() || "";
+      record[`overtimeDay${day}`] = row[64 + day]?.trim() || "";
+    }
+    record.totalHours = calculateAttendanceTotal(record);
+    record.overtimeHours = Array.from({ length: 31 }, (_, index) => parseMoney(record[`overtimeDay${index + 1}`])).reduce((sum, value) => sum + value, 0).toLocaleString("tr-TR", { maximumFractionDigits: 2 });
+    const existingIndex = module.records.findIndex((item) => normalizeText(item.person) === normalizeText(person) && String(item.period || "") === period);
+    if (existingIndex >= 0) {
+      module.records[existingIndex] = { ...module.records[existingIndex], ...record, id: module.records[existingIndex].id };
+    } else {
+      module.records.unshift(record);
+    }
+    imported += 1;
+  });
+  addAudit("Toplu Puantaj", module, { id: createId("bulk"), count: imported }, `${imported} puantaj satırı içe aktarıldı.`);
+  saveRecords();
+  renderPayrollCenter();
+  renderSideNav();
+  renderIcons();
+  alert(`${imported} puantaj satırı içe aktarıldı.`);
+}
+
+function markDailyAccidentCheck() {
+  if (!canManageRecords()) return;
+  const module = getModule("accidentChecks");
+  const todayIso = toIsoDate(new Date());
+  const existing = module.records.find((record) => toInputDate(record.date) === todayIso);
+  const record = existing || {
+    id: createId("ac"),
+    date: todayIso,
+    workplace: "Artı Destek",
+    checkedBy: getCurrentUserName(),
+    sgkStatus: "Takvimde",
+    note: "",
+  };
+  record.checkedBy = getCurrentUserName();
+  record.accidentStatus = "Kontrol Edildi";
+  record.status = "Tamamlandı";
+  record.note = record.note || "Günlük iş kazası bildirimi kontrol edildi.";
+  module.records = existing ? module.records.map((item) => (item.id === existing.id ? record : item)) : [record, ...module.records];
+  addAudit("Günlük Kontrol", module, record, "İş kazası bildirimi bugün için kapatıldı.");
+  saveRecords();
+  renderPayrollCenter();
+  renderSideNav();
+  renderIcons();
 }
 
 function downloadPdfExport(moduleId = activeModuleId) {
@@ -6620,7 +7184,8 @@ function closeDialog() {
 
 function getSalaryCalculatorRates() {
   return {
-    incomeTax: parsePercent(document.querySelector("#calcIncomeTaxRate")?.value, defaultPayrollTaxRates.incomeTax),
+    progressiveTax: true,
+    cumulativeTaxBase: parseMoney(document.querySelector("#calcCumulativeTaxBase")?.value),
     stampTax: parsePercent(document.querySelector("#calcStampTaxRate")?.value, defaultPayrollTaxRates.stampTax),
   };
 }
@@ -6628,10 +7193,34 @@ function getSalaryCalculatorRates() {
 function renderSalaryCalculation(result, modeLabel) {
   const resultBox = document.querySelector("#salaryCalcResult");
   if (!resultBox) return;
+  const monthlyRows = buildAnnualPayrollProjection(result.gross, parseMoney(document.querySelector("#calcCumulativeTaxBase")?.value));
   resultBox.innerHTML = `
     <strong>${escapeHtml(`${trText(modeLabel)}: ${formatPayrollAmount(modeLabel === "Net Ücret" ? result.net : result.gross)}`)}</strong>
     <span>${escapeHtml(`${trText("SGK")}: ${formatPayrollAmount(result.sgk)} · ${trText("İşsizlik")}: ${formatPayrollAmount(result.unemployment)} · ${trText("Gelir Vergisi")}: ${formatPayrollAmount(result.incomeTax)} · ${trText("Damga Vergisi")}: ${formatPayrollAmount(result.stampTax)}`)}</span>
+    <small>${escapeHtml(`${trText("Birikmiş Matrah")}: ${formatPayrollAmount(parseMoney(document.querySelector("#calcCumulativeTaxBase")?.value))} · ${trText("Aktif Vergi Oranı")}: %${Math.round((result.taxRate || 0) * 100)}`)}</small>
+    <div class="tax-projection">
+      ${monthlyRows
+        .map(
+          (row) => `
+            <span>
+              <b>${escapeHtml(row.month)}</b>
+              <em>${escapeHtml(formatPayrollAmount(row.incomeTax))}</em>
+            </span>
+          `,
+        )
+        .join("")}
+    </div>
   `;
+}
+
+function buildAnnualPayrollProjection(monthlyGross, cumulativeStart = 0) {
+  let cumulative = Math.max(0, Number(cumulativeStart) || 0);
+  const gross = Math.max(0, Number(monthlyGross) || 0);
+  return fixedDashboardMonths.map((month) => {
+    const result = grossToNet(gross, { cumulativeTaxBase: cumulative });
+    cumulative = result.cumulativeAfter;
+    return { month, incomeTax: result.incomeTax, taxRate: result.taxRate, net: result.net, cumulative };
+  });
 }
 
 function updateSalaryCalculator(source) {
@@ -6655,15 +7244,19 @@ function syncPayrollSalaryDialog(target) {
   if (document.querySelector("#moduleIdInput")?.value !== "payroll") return;
   const grossInput = form.querySelector('[name="grossSalary"]');
   const netInput = form.querySelector('[name="netSalary"]');
+  const cumulativeInput = form.querySelector('[name="cumulativeTaxBase"]');
   if (!grossInput || !netInput) return;
+  const rates = { cumulativeTaxBase: parseMoney(cumulativeInput?.value) };
   if (target === netInput) {
-    const result = netToGross(parseMoney(netInput.value));
+    const result = netToGross(parseMoney(netInput.value), rates);
     grossInput.value = result.gross ? formatPayrollAmount(result.gross) : "";
+    form.querySelector('[name="incomeTaxAmount"]') && (form.querySelector('[name="incomeTaxAmount"]').value = formatPayrollAmount(result.incomeTax));
     return;
   }
-  if (target === grossInput) {
-    const result = grossToNet(parseMoney(grossInput.value));
+  if (target === grossInput || target === cumulativeInput) {
+    const result = grossToNet(parseMoney(grossInput.value), rates);
     netInput.value = result.net ? formatPayrollAmount(result.net) : "";
+    form.querySelector('[name="incomeTaxAmount"]') && (form.querySelector('[name="incomeTaxAmount"]').value = formatPayrollAmount(result.incomeTax));
   }
 }
 
@@ -6916,6 +7509,21 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (action === "garanti-export") {
+    downloadGarantiPayrollExcel();
+    return;
+  }
+
+  if (action === "attendance-template") {
+    downloadAttendanceTemplate();
+    return;
+  }
+
+  if (action === "daily-accident-check") {
+    markDailyAccidentCheck();
+    return;
+  }
+
   const module = getModule(manageButton.dataset.module || activeModuleId);
   const recordId = manageButton.dataset.id || selectedRecordId;
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete", "notification-read"];
@@ -6993,12 +7601,12 @@ document.addEventListener("input", (event) => {
     return;
   }
 
-  if (event.target.id === "calcIncomeTaxRate" || event.target.id === "calcStampTaxRate") {
+  if (event.target.id === "calcCumulativeTaxBase" || event.target.id === "calcStampTaxRate") {
     updateSalaryCalculator(document.querySelector("#calcNetSalary")?.value ? "net" : "gross");
     return;
   }
 
-  if (event.target.name === "grossSalary" || event.target.name === "netSalary") {
+  if (event.target.name === "grossSalary" || event.target.name === "netSalary" || event.target.name === "cumulativeTaxBase") {
     syncPayrollSalaryDialog(event.target);
     return;
   }
@@ -7037,6 +7645,13 @@ document.addEventListener("input", (event) => {
   renderDataPage(getModule());
   renderIcons();
   document.querySelector("#filterInput")?.focus();
+});
+
+document.addEventListener("change", (event) => {
+  if (event.target?.id === "attendanceBulkFile") {
+    importAttendanceBulkFile(event.target.files?.[0]);
+    event.target.value = "";
+  }
 });
 
 document.querySelector("#sidebarToggle").addEventListener("click", () => {
