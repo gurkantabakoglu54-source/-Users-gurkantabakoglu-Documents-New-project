@@ -970,41 +970,31 @@ const moduleQuickFilters = {
 const payrollCenterTabs = [
   ["home", "Anasayfa", "panel"],
   ["setup", "Kurulum & Kontrol", "checklist"],
-  ["assistant", "Akıllı Asistan", "bot"],
-  ["messages", "Mesajlar", "message"],
+  ["assistant", "Asistan & Mesajlar", "bot"],
   ["system", "Sistem Yönetimi", "settings"],
   ["calendar", "Takvim Yönetimi", "calendar"],
   ["forms", "Matbu Formlar", "invoice"],
-  ["compliance", "Günlük Kontroller", "shield"],
   ["company", "Şirket Yönetimi", "building"],
   ["operationsHub", "İK & Bordro İşlemleri", "grid"],
-  ["payrollDefinitions", "Bordro Tanımları", "invoice"],
   ["selfService", "Self-servis", "contact"],
-  ["customerPortal", "Müşteri Portalı", "building"],
   ["reports", "Raporlar", "chart"],
   ["legislation", "Mevzuat", "shield"],
-  ["privacy", "KVKK", "shield"],
-  ["redBulletin", "Kırmızı Bülten", "bell"],
+  ["redBulletin", "KVKK & Kırmızı Bülten", "bell"],
 ];
 
 const payrollTabColors = {
   home: "#7c3aed",
   setup: "#a855f7",
   assistant: "#ec4899",
-  messages: "#d946ef",
   growth: "#8b5cf6",
   system: "#6d28d9",
   calendar: "#a855f7",
   forms: "#be185d",
-  compliance: "#9333ea",
   company: "#c026d3",
   operationsHub: "#db2777",
-  payrollDefinitions: "#be185d",
   selfService: "#ec4899",
-  customerPortal: "#8b5cf6",
   reports: "#9333ea",
   legislation: "#a21caf",
-  privacy: "#9333ea",
   redBulletin: "#e11d48",
 };
 
@@ -2284,8 +2274,8 @@ function switchLanguage(language) {
 function renderSideNav() {
   activeModuleId = "payrollCenter";
   const visibleTabs = payrollCenterTabs.filter(([id]) => {
-    if (isCustomerUser()) return ["customerPortal", "messages", "reports", "legislation"].includes(id);
-    if (isPersonnelUser()) return ["selfService", "messages", "calendar", "redBulletin"].includes(id);
+    if (isCustomerUser()) return ["company", "assistant", "reports", "legislation"].includes(id);
+    if (isPersonnelUser()) return ["selfService", "assistant", "calendar", "redBulletin"].includes(id);
     return true;
   });
   document.querySelector("#sideNav").innerHTML = `
@@ -3377,12 +3367,12 @@ function renderPayrollCenter() {
       <h3>${escapeHtml(trText("Hızlı İşlemler"))}</h3>
       <button type="button" data-payroll-center-tab="setup">${escapeHtml(trText("Kurulum & Kontrol"))}</button>
       <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("İK & Bordro İşlemleri"))}</button>
-      <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Puantajı Aç"))}</button>
+      <button type="button" data-payroll-center-tab="calendar">${escapeHtml(trText("Takvimi Aç"))}</button>
       <button type="button" data-payroll-center-tab="forms">${escapeHtml(trText("Matbu Formlar"))}</button>
-      <button type="button" data-payroll-center-tab="compliance">${escapeHtml(trText("Günlük Kontrol"))}</button>
-      <button type="button" data-payroll-center-tab="payrollDefinitions">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
+      <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("Günlük Kontrol"))}</button>
+      <button type="button" data-payroll-center-tab="operationsHub">${escapeHtml(trText("Bordro Hesaplayıcı"))}</button>
       <button type="button" data-payroll-center-tab="reports">${escapeHtml(trText("Rapor Hazırla"))}</button>
-      <button type="button" data-payroll-center-tab="redBulletin">${escapeHtml(trText("Kırmızı Bülten"))}</button>
+      <button type="button" data-payroll-center-tab="redBulletin">${escapeHtml(trText("KVKK & Bülten"))}</button>
     </section>
   `;
   const selfServicePayroll = isPersonnelUser()
@@ -3434,7 +3424,7 @@ function renderPayrollCenter() {
           ]
             .map(
               ([label, value, icon]) => `
-                <button type="button" data-payroll-center-tab="${label === "Mesajlar" ? "messages" : label === "Bordro" ? "payrollDefinitions" : "operationsHub"}">
+                <button type="button" data-payroll-center-tab="${label === "Mesajlar" ? "assistant" : label === "Bordro" ? "operationsHub" : "operationsHub"}">
                   <span data-icon="${icon}"></span>
                   <strong>${escapeHtml(String(value))}</strong>
                   <small>${escapeHtml(trText(label))}</small>
@@ -3462,7 +3452,7 @@ function renderPayrollCenter() {
             ["Projeler", getScopedRecords(getModule("projects")).length, "folder", "operationsHub"],
             ["Faturalar", getScopedRecords(getModule("invoices")).length, "invoice", "operationsHub"],
             ["Raporlar", reports.length, "chart", "reports"],
-            ["Mesajlar", messages.length, "message", "messages"],
+            ["Mesajlar", messages.length, "message", "assistant"],
           ]
             .map(
               ([label, value, icon, tab]) => `
@@ -3628,7 +3618,7 @@ function renderPayrollCenter() {
       detail: `${record.period || periodLabel} · ${record.paymentDate || "-"}`,
       score: 86,
       tone: "danger",
-      tab: "payrollDefinitions",
+      tab: "operationsHub",
     })),
     ...overdueInvoices.slice(0, 2).map((record) => ({
       title: record.company || record.invoiceNo || trText("Geciken tahsilat"),
@@ -3942,9 +3932,9 @@ function renderPayrollCenter() {
       </header>
       <div class="workflow-steps">
         ${[
-          ["Puantaj Kontrol", attendance.length ? "Tamamlandı" : "Bekliyor", attendance.length ? "done" : "waiting", "calendar"],
+          ["Puantaj Kontrol", attendance.length ? "Tamamlandı" : "Bekliyor", attendance.length ? "done" : "waiting", "operationsHub"],
     ["Avans / Kesinti", totalAdvance || totalDeduction ? "Kontrol Edilecek" : "Tamamlandı", totalAdvance || totalDeduction ? "warning" : "done", "operationsHub"],
-    ["Bordro Hesaplama", payroll.length ? `${payroll.length} kayıt` : "Bekliyor", payroll.length ? "done" : "waiting", "payrollDefinitions"],
+    ["Bordro Hesaplama", payroll.length ? `${payroll.length} kayıt` : "Bekliyor", payroll.length ? "done" : "waiting", "operationsHub"],
     ["Admin Onayı", "Otomatik", "done", "operationsHub"],
     ["Ödeme / Yayın", `${openedPayroll}/${Math.max(payroll.length, 1)}`, openedPayroll === payroll.length && payroll.length ? "done" : "warning", "operationsHub"],
         ]
@@ -3971,12 +3961,12 @@ function renderPayrollCenter() {
       </header>
       <div class="command-list">
         ${[
-          ["Eksik Puantaj / Kontrol", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "warning", "calendar"],
-          ["Maaş Ödeme Alarmı", payrollPaymentAlerts.length, "danger", "payrollDefinitions"],
+          ["Eksik Puantaj / Kontrol", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "warning", "operationsHub"],
+          ["Maaş Ödeme Alarmı", payrollPaymentAlerts.length, "danger", "operationsHub"],
           ["Avans Kontrol Alarmı", advanceAlerts.length, "danger", "operationsHub"],
           ["Özel Gün / Mevzuat Alarmı", calendarDueAlerts.length, "danger", "calendar"],
           ["Deneme Süresi Uyarısı", trialAlerts.length, "danger", "operationsHub"],
-          ["İş Kazası Günlük Kontrol", todayAccidentCheck && todayAccidentCheck.status === "Tamamlandı" ? 0 : 1, "danger", "compliance"],
+          ["İş Kazası Günlük Kontrol", todayAccidentCheck && todayAccidentCheck.status === "Tamamlandı" ? 0 : 1, "danger", "operationsHub"],
           ["Açık Görev", tasks.length, tasks.length ? "danger" : "good", "redBulletin"],
           ["Geciken Tahsilat", overdueInvoices.length, "danger", "operationsHub"],
           ["Kesilmeyen Fatura", invoices.filter((record) => record.status !== "Fatura Kesildi").length, "warning", "operationsHub"],
@@ -4062,10 +4052,10 @@ function renderPayrollCenter() {
     </article>
   `;
   const smartAlertRows = [
-    ["Bordro", payrollPaymentAlerts.length || payroll.filter((record) => record.publishStatus !== "Personele Açıldı").length, "Bordro yayın ve ödeme kontrolü", "payrollDefinitions"],
-    ["Puantaj", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "Eksik veya sıfır saatli puantaj kontrolü", "calendar"],
+    ["Bordro", payrollPaymentAlerts.length || payroll.filter((record) => record.publishStatus !== "Personele Açıldı").length, "Bordro yayın ve ödeme kontrolü", "operationsHub"],
+    ["Puantaj", attendance.filter((record) => calculateAttendanceTotal(record) === "0").length, "Eksik veya sıfır saatli puantaj kontrolü", "operationsHub"],
     ["Fatura", overdueInvoices.length || invoices.filter((record) => record.status !== "Fatura Kesildi").length, "Bekleyen fatura ve tahsilat kontrolü", "operationsHub"],
-    ["Mesaj", messages.length, "Açık duyuru ve mesaj takibi", "messages"],
+    ["Mesaj", messages.length, "Açık duyuru ve mesaj takibi", "assistant"],
     ["Bildirim", unreadNotifications.length + urgentNotifications.length, "Okunmamış ve acil bildirim kontrolü", "redBulletin"],
     ["Görev", tasks.length, "Tamamlanmamış görevler", "redBulletin"],
   ];
@@ -4135,7 +4125,7 @@ function renderPayrollCenter() {
         ${[
           ["Admin Komuta", "Bordro, uyarı, fatura ve görevleri tek ekranda yönet.", "home"],
           ["Personel Portalı", "Bordro, evrak, izin ve mesajları sade izleme ekranı.", "selfService"],
-          ["Müşteri Portalı", "Proje, fatura, rapor ve müşteri mesajları tek yerde.", "customerPortal"],
+          ["Müşteri Portalı", "Proje, fatura, rapor ve müşteri mesajları tek yerde.", "company"],
         ]
           .map(
             ([title, text, tab]) => `
@@ -4554,9 +4544,9 @@ function renderPayrollCenter() {
   const setupSteps = [
     ["Firma bilgileri", companies.length > 0 && companies.some((record) => record.contractStatus === "Aktif" || record.contractFile || record.offerFile), "company", "Firma, yetkili, sözleşme ve fiyat teklifini hazırla.", `${companies.length} firma`],
     ["Personel kartları", documentsReady, "operationsHub", "Personel, sicil, özlük checklist ve işe alım kayıtlarını tamamla.", `${personnel.length} personel`],
-    ["Kullanıcı ve yetki", getScopedRecords(getModule("users")).some((record) => ["ADMIN", "YONETICI", "KULLANICI", "MUSTERI", "PERSONEL"].includes(normalizeUserType(record.type))), "system", "Admin, personel ve müşteri hesaplarını rolüne göre ayır.", `${getScopedRecords(getModule("users")).length} kullanıcı`],
+    ["Kullanıcı ve yetki", getScopedRecords(getModule("users")).some((record) => ["ADMIN", "YONETICI", "KULLANICI", "MUSTERI", "PERSONEL"].includes(normalizeUserType(record.type))), "company", "Admin, personel ve müşteri hesaplarını rolüne göre ayır.", `${getScopedRecords(getModule("users")).length} kullanıcı`],
     ["Puantaj ve takvim", attendance.length > 0 && allCalendarRecords.length > 0, "calendar", "Aylık puantajı, ödeme günlerini ve hatırlatmaları planla.", `${attendance.length} puantaj`],
-    ["Bordro tanımları", payroll.length > 0 && bankBesRecords.length > 0, "payrollDefinitions", "Brüt/net, banka, BES, avans ve kesinti kayıtlarını kontrol et.", `${payroll.length} bordro`],
+    ["Bordro tanımları", payroll.length > 0 && bankBesRecords.length > 0, "operationsHub", "Brüt/net, banka, BES, avans ve kesinti kayıtlarını kontrol et.", `${payroll.length} bordro`],
     ["Rapor ve yedek", reports.some((record) => record.status === "Hazır") && (backupRecords.length > 0 || !canManageRecords()), "reports", "Kişi bazlı raporları ve düzenli yedeği hazır tut.", `${reports.length} rapor`],
   ];
   const setupWizardPanel = `
@@ -4596,13 +4586,12 @@ function renderPayrollCenter() {
       <div>
         ${[
           ["Kontrol", "checklist", "setup"],
-          ["Asistan", "bot", "assistant"],
-          ["Mesajlar", "message", "messages"],
+          ["Asistan & Mesaj", "bot", "assistant"],
           ["Takvim", "calendar", "calendar"],
           ["İK & İşlemler", "grid", "operationsHub"],
-          ["Bordro", "invoice", "payrollDefinitions"],
-          ["Müşteri", "building", "customerPortal"],
-          ["KVKK", "shield", "privacy"],
+          ["Bordro", "invoice", "operationsHub"],
+          ["Müşteri", "building", "company"],
+          ["KVKK", "shield", "redBulletin"],
           ["Rapor", "chart", "reports"],
           ["Bülten", "bell", "redBulletin"],
         ]
@@ -4749,6 +4738,7 @@ function renderPayrollCenter() {
     `,
     assistant: `
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
+      ${messageBoardPanel}
       <section class="bordro-board">${notificationCenterPanel}${emailAutomationPanel}</section>
       ${easyPortalPanel}
     `,
@@ -4756,7 +4746,6 @@ function renderPayrollCenter() {
       ${setupWizardPanel}
       ${growthCenterPanel}
       <section class="bordro-tab-content two-col">
-        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
         ${backupActionPanel}
       </section>
     `,
@@ -4798,14 +4787,14 @@ function renderPayrollCenter() {
       <section class="bordro-tab-grid">
         ${[
           ["Akıllı Asistan", "Bordro, avans, fatura, mesai ve evrak sorularını hızlı cevaplar.", "assistant"],
-          ["Mesajlar", "Duyuru, personel mesajı ve müşteri mesajları tek yerde.", "messages"],
+          ["Mesajlar", "Duyuru, personel mesajı ve müşteri mesajları tek yerde.", "assistant"],
           ["Gelişim Merkezi", "Canlı kullanım hazırlığı, veri şablonları, yedek ve güvenlik kontrolü.", "growth"],
           ["Personel Yönetimi", "Personel kartları, özlük, izin, zimmet ve eğitim kayıtları.", "personnel360"],
           ["Bordro İşlemleri", "Bordro listesi, onay durumu, personele yayın ve görüntülenme takibi.", "payroll"],
           ["Takvim Yönetimi", "Puantaj teslim, maaş ödeme, SGK ve kapanış tarihleri.", "payrollCenter"],
           ["İK Metrikleri", "Devir, performans, işe alım ve departman kırılımları.", "operationsHub"],
           ["Raporlar", "Bordro, avans, mesai, fatura ve maliyet grafikleri.", "reports"],
-          ["Banka / BES Takibi", "IBAN, banka ödeme ve BES kayıtları bordro tanımlarında yönetilir.", "payrollDefinitions"],
+          ["Banka / BES Takibi", "IBAN, banka ödeme ve BES kayıtları İK & Bordro ekranında yönetilir.", "operationsHub"],
         ]
           .map(
             ([title, text, nav]) => `
@@ -4830,20 +4819,15 @@ function renderPayrollCenter() {
     `,
     system: `
       <section class="bordro-tab-content two-col">
-        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
         ${crudPanel("Sistem Ayarları", "settings", ["setting", "value", "description", "status"], getScopedRecords(getModule("settings")))}
+        ${backupActionPanel}
       </section>
       ${quickActions}
     `,
     calendar: `
-      <section class="bordro-tab-content">${attendanceMatrix}</section>
-      <section class="bordro-tab-content">${attendanceImportPanel}</section>
       <section class="bordro-tab-content">${calendarPanel}</section>
-      <section class="bordro-tab-content two-col">
-        ${accidentCheckPanel}
+      <section class="bordro-tab-content">
         ${crudPanel("Bordro Takvimi", "payrollCalendar", ["date", "event", "period", "responsible", "reminder", "status"], calendarRecords)}
-        ${crudPanel("Aylık Puantaj Girişi", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
-        ${crudPanel("İzin ve Tatil Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], getScopedRecords(getModule("leaves")))}
       </section>
     `,
     forms: `
@@ -4876,8 +4860,13 @@ function renderPayrollCenter() {
       </section>
     `,
     company: `
+      ${customerPortalPanel}
       <section class="bordro-tab-content">
         ${crudPanel("Şirket Yönetimi", "companies", ["name", "authorized", "email", "phone", "city", "contractStatus", "contractFile", "offerFile"], companies)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
+        ${crudPanel("Sistem Ayarları", "settings", ["setting", "value", "description", "status"], getScopedRecords(getModule("settings")))}
       </section>
     `,
     operationsHub: `
@@ -4888,6 +4877,9 @@ function renderPayrollCenter() {
           <p>${escapeHtml(`${activePersonnel.length} ${trText("Mevcut Çalışan")} · ${formatMoney(totalAdvance)} ${trText("Avans")} · ${tasks.length} ${trText("Açık Görev")}`)}</p>
         </div>
       </section>
+      <section class="bordro-tab-content">${payrollCalculatorPanel}</section>
+      <section class="bordro-tab-content">${attendanceMatrix}</section>
+      <section class="bordro-tab-content">${attendanceImportPanel}</section>
       <section class="bordro-kpis">
         ${[
           ["Mevcut Çalışan", activePersonnel.length, "users"],
@@ -4914,6 +4906,10 @@ function renderPayrollCenter() {
         ${payrollWorkflowPanel}
       </section>
       <section class="bordro-tab-content two-col">
+        ${accidentCheckPanel}
+        ${legalOpsPanel}
+      </section>
+      <section class="bordro-tab-content two-col">
         ${trialWarningPanel}
         ${companyRatingPanel}
       </section>
@@ -4922,20 +4918,24 @@ function renderPayrollCenter() {
         ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "grossSalary", "netSalary", "cumulativeTaxBase", "incomeTaxAmount", "advance", "netPayable", "payrollStatus"], payroll)}
       </section>
       <section class="bordro-tab-content two-col">
-        ${legalOpsPanel}
+        ${payrollExportPanel}
+        ${crudPanel("Banka / BES", "bankBes", ["person", "bankName", "iban", "besStatus", "besRate", "paymentStatus", "status"], bankBesRecords)}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Aylık Puantaj Girişi", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
+        ${crudPanel("İzin ve Tatil Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], getScopedRecords(getModule("leaves")))}
+      </section>
+      <section class="bordro-tab-content two-col">
+        ${crudPanel("Günlük Kontrol Kayıtları", "accidentChecks", ["date", "workplace", "checkedBy", "accidentStatus", "sgkStatus", "status"], accidentRecords)}
         ${crudPanel("Sicil Yönetimi", "employeeRegistry", ["registryNo", "person", "identityNo", "department", "employmentType", "incentiveStatus", "status"], registryRecords)}
       </section>
       <section class="bordro-tab-content two-col">
-        ${payrollExportPanel}
         ${crudPanel("Özlük Evrak Checklist", "documentsChecklist", ["person", "identity", "sgk", "contract", "kvkk", "health", "iban", "status"], getScopedRecords(getModule("documentsChecklist")))}
+        ${crudPanel("Fatura ve Tahsilat İşlemleri", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
       </section>
       <section class="bordro-tab-content two-col">
         ${crudPanel("Performans", "performanceReviews", ["person", "period", "target", "score", "reviewer", "result", "status"], performanceRecords)}
         ${crudPanel("İşe Alım", "recruitment", ["position", "department", "candidate", "stage", "interviewDate", "responsible", "status"], recruitmentRecords)}
-      </section>
-      <section class="bordro-tab-content two-col">
-        ${crudPanel("Borç / Avans Yönetimi", "payroll", ["person", "period", "advance", "deduction", "netSalary", "payrollStatus"], payroll)}
-        ${crudPanel("Fatura ve Tahsilat İşlemleri", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
       </section>
     `,
     definitions: `
@@ -5068,12 +5068,13 @@ function renderPayrollCenter() {
     redBulletin: `
       <section class="bordro-hero compact-hero">
         <div>
-          <span>${escapeHtml(trText("Kırmızı Bülten ve Duyurular"))}</span>
-          <h2>${escapeHtml(trText("Maaş, avans, tahsilat, görev ve şirket duyuruları tek ekranda takip edilir."))}</h2>
+          <span>${escapeHtml(trText("KVKK, Kırmızı Bülten ve Duyurular"))}</span>
+          <h2>${escapeHtml(trText("Maaş, avans, tahsilat, KVKK riski, görev ve şirket duyuruları tek ekranda takip edilir."))}</h2>
           <p>${escapeHtml(`${redBulletinItems.filter(([, value]) => Number(value) > 0).length} ${trText("aktif uyarı")} · ${getScopedRecords(getModule("notifications")).length} ${trText("duyuru")}`)}</p>
         </div>
       </section>
       ${redBulletinPanel}
+      ${privacyPanel}
       <section class="bordro-tab-content two-col">
         ${notificationCenterPanel}
         ${emailAutomationPanel}
@@ -7049,7 +7050,7 @@ function showApp(user) {
   renderLanguageSwitch();
   currentUser = user;
   activeModuleId = "payrollCenter";
-  payrollCenterTab = isCustomerUser() ? "customerPortal" : isPersonnelUser() ? "selfService" : "home";
+  payrollCenterTab = isCustomerUser() ? "company" : isPersonnelUser() ? "selfService" : "home";
   if (!canAccessModule(getModule(activeModuleId))) activeModuleId = "payrollCenter";
   document.querySelector("#currentUserName").textContent = user.displayName;
   document.querySelector("#loginPage").hidden = true;
@@ -7445,7 +7446,7 @@ document.addEventListener("click", (event) => {
   const messageThreadButton = event.target.closest("[data-message-thread]");
   if (messageThreadButton) {
     selectedMessageThreadId = messageThreadButton.dataset.messageThread;
-    payrollCenterTab = "messages";
+    payrollCenterTab = "assistant";
     activeModuleId = "payrollCenter";
     renderPayrollCenter();
     renderIcons();
@@ -7455,7 +7456,7 @@ document.addEventListener("click", (event) => {
   const messageRecipientButton = event.target.closest("[data-message-recipient]");
   if (messageRecipientButton) {
     selectedMessageThreadId = "";
-    payrollCenterTab = "messages";
+    payrollCenterTab = "assistant";
     activeModuleId = "payrollCenter";
     renderPayrollCenter();
     renderIcons();
