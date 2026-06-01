@@ -942,6 +942,7 @@ let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
 let selectedMessageThreadId = "";
 let selectedReportPerson = "";
+let selectedRatingCompany = "all";
 let pendingCalendarDate = "";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
@@ -1748,6 +1749,7 @@ function loadLocalRecords() {
 async function loadRecords() {
   if (!isRemoteMode) {
     loadLocalRecords();
+    if (ensureComplianceCalendarRecords()) saveRecords();
     return;
   }
 
@@ -1760,6 +1762,7 @@ async function loadRecords() {
 
   if (!rows?.length) {
     remoteReady = true;
+    ensureComplianceCalendarRecords();
     if (canManageRecords()) saveRecords();
     return;
   }
@@ -1780,6 +1783,7 @@ async function loadRecords() {
   });
 
   remoteReady = true;
+  if (ensureComplianceCalendarRecords() && canManageRecords()) saveRecords();
 }
 
 function renderCurrentScreenAfterRemoteSync() {
@@ -1989,6 +1993,41 @@ function normalizeInvoiceStatus(value) {
   if (["fatura kesildi", "kesildi", "onayli", "odendi"].includes(normalized)) return "Fatura Kesildi";
   if (["fatura beklemede", "beklemede"].includes(normalized)) return "Fatura Beklemede";
   return "Onay Verilmedi";
+}
+
+function ensureComplianceCalendarRecords() {
+  const module = getModule("payrollCalendar");
+  if (!module?.records) return false;
+  let changed = false;
+  fixedDashboardMonths.forEach((period) => {
+    const [month, year] = period.split(".");
+    [
+      {
+        id: `pc-${year}${month}-muhtasar`,
+        date: `${year}-${month}-26`,
+        event: "Muhtasar Beyanname Son Gün",
+        responsible: "Muhasebe",
+        reminder: "1 hafta önce",
+      },
+      {
+        id: `pc-${year}${month}-sgk`,
+        date: `${year}-${month}-26`,
+        event: "SGK Bildirge Son Gün",
+        responsible: "İK",
+        reminder: "3 gün önce",
+      },
+    ].forEach((record) => {
+      const exists = module.records.some((item) => normalizeText(item.event) === normalizeText(record.event) && String(item.period || "") === period);
+      if (exists) return;
+      module.records.push({
+        ...record,
+        period,
+        status: "Planlandı",
+      });
+      changed = true;
+    });
+  });
+  return changed;
 }
 
 function saveRecords() {
@@ -3178,7 +3217,8 @@ function renderPayrollCenter() {
   const trialAlerts = personnel
     .map((person) => ({ person, employment: getPersonEmploymentInsights(person) }))
     .filter((item) => item.employment.trialRemaining >= 0 && item.employment.trialRemaining <= 7);
-  const companyRatingRows = getCompanyPersonnelRatings(companies[0]?.name || "");
+  const selectedCompanyName = selectedRatingCompany === "all" ? "" : selectedRatingCompany;
+  const companyRatingRows = getCompanyPersonnelRatings(selectedCompanyName);
   const allPayrollRecords = getScopedRecords(getModule("payroll"));
   const allAttendanceRecords = getScopedRecords(getModule("attendance"));
   const documentRecords = getScopedRecords(getModule("presentations"));
@@ -3818,14 +3858,21 @@ function renderPayrollCenter() {
       <header>
         <div>
           <b>${escapeHtml(trText("Firma Bazlı Personel Reytingi"))}</b>
-          <h3>${escapeHtml(companies[0]?.name || trText("Firma seçimi"))}</h3>
+          <h3>${escapeHtml(selectedCompanyName || trText("Tüm firmalar"))}</h3>
         </div>
       </header>
+      <div class="rating-company-filter">
+        <label for="ratingCompanySelect">${escapeHtml(trText("Firma seç"))}</label>
+        <select id="ratingCompanySelect">
+          <option value="all">${escapeHtml(trText("Tüm firmalar"))}</option>
+          ${companies
+            .map((company) => `<option value="${escapeHtml(company.name)}" ${company.name === selectedRatingCompany ? "selected" : ""}>${escapeHtml(company.name)}</option>`)
+            .join("")}
+        </select>
+      </div>
       ${compactRows(
         ["Personel", "Performans", "Devamsızlık", "Rapor", "Reyting"],
-        companyRatingRows.length
-          ? companyRatingRows.map((row) => [row.person.name, row.avgScore, row.absent, row.report, `${row.rating}/100`])
-          : getCompanyPersonnelRatings("").map((row) => [row.person.name, row.avgScore, row.absent, row.report, `${row.rating}/100`]),
+        companyRatingRows.map((row) => [row.person.name, row.avgScore, row.absent, row.report, `${row.rating}/100`]),
       )}
     </article>
   `;
@@ -7635,6 +7682,13 @@ document.addEventListener("input", (event) => {
 
   if (event.target.id === "personReportSelect") {
     selectedReportPerson = event.target.value;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (event.target.id === "ratingCompanySelect") {
+    selectedRatingCompany = event.target.value;
     renderPayrollCenter();
     renderIcons();
     return;

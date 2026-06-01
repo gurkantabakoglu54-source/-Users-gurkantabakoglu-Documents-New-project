@@ -3837,6 +3837,29 @@ body.sidebar-collapsed .content {
   cursor: pointer;
 }
 
+.rating-company-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 14px;
+}
+
+.rating-company-filter label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.rating-company-filter select {
+  min-width: 220px;
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #312e81;
+  font-weight: 850;
+}
+
 .bulk-upload-box {
   display: grid;
   place-items: center;
