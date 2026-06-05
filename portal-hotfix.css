@@ -4042,7 +4042,524 @@ body.sidebar-collapsed .content {
   background: linear-gradient(145deg, #fff, #fff1f2);
 }
 
+/* Prozon benzeri üst menülü bordro çalışma alanı */
+.admin-shell.prozon-top-mode .main-header,
+.admin-shell.prozon-top-mode .sidebar,
+.admin-shell.prozon-top-mode .page-head {
+  display: none !important;
+}
+
+.admin-shell.prozon-top-mode .content {
+  min-height: 100vh;
+  margin-left: 0 !important;
+  padding: 0 !important;
+  background: #ffffff;
+}
+
+.admin-shell.prozon-top-mode #pageContent {
+  min-height: 100vh;
+}
+
+.prozon-dashboard-shell {
+  min-height: 100vh;
+  padding: 18px 28px 46px;
+  background:
+    radial-gradient(circle at 94% 4%, rgba(107, 140, 255, 0.08), transparent 25%),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 52%, #ffffff 100%);
+  color: #2d3038;
+}
+
+.prozon-mainbar {
+  display: grid;
+  grid-template-columns: auto minmax(260px, 1fr) auto;
+  align-items: center;
+  gap: 24px;
+}
+
+.prozon-brandmark {
+  display: grid;
+  gap: 0;
+  min-width: 168px;
+}
+
+.prozon-brandmark strong {
+  color: #9aa2b2;
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -1px;
+}
+
+.prozon-brandmark strong::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  border: 3px solid #5f87ff;
+  border-radius: 999px;
+  vertical-align: 8px;
+  box-shadow: 8px 0 0 -5px #5f87ff, 0 8px 0 -5px #5f87ff;
+}
+
+.prozon-brandmark small {
+  color: #a6afc1;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.prozon-mainbar h2 {
+  margin: 0;
+  color: #667085;
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.prozon-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.prozon-toolbar button,
+.prozon-check-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 17px;
+  border: 1px solid #e6eaf3;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #30343d;
+  font-size: 18px;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(52, 71, 103, 0.12);
+}
+
+.prozon-toolbar button:first-child,
+.prozon-check-button {
+  width: 58px;
+  padding: 0;
+}
+
+.prozon-toolbar span[data-icon],
+.prozon-check-button span[data-icon] {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+}
+
+.prozon-toolbar svg,
+.prozon-check-button svg {
+  width: 26px;
+  height: 26px;
+  stroke-width: 2.4;
+}
+
+.prozon-avatar {
+  width: 78px !important;
+  height: 78px !important;
+  min-height: 78px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border-color: #8f939c !important;
+  color: #5da96a !important;
+  font-size: 26px !important;
+  font-weight: 850 !important;
+}
+
+.prozon-horizontal-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.6vw, 52px);
+  margin-top: 22px;
+  padding: 16px 0 12px;
+  border-bottom: 3px solid #777b82;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.prozon-horizontal-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: #30343d;
+  font-size: clamp(17px, 1.2vw, 21px);
+  font-weight: 550;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.prozon-horizontal-nav span[data-icon] {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #6f8dff;
+}
+
+.prozon-horizontal-nav svg {
+  width: 36px;
+  height: 36px;
+  stroke-width: 2.1;
+  filter: drop-shadow(0 2px 0 rgba(111, 141, 255, 0.1));
+}
+
+.prozon-horizontal-nav button.active {
+  color: #3d72ff;
+  font-weight: 800;
+}
+
+.prozon-content {
+  padding: 56px 22px 70px;
+}
+
+.prozon-page-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-bottom: 34px;
+}
+
+.prozon-page-title h1 {
+  margin: 0;
+  color: #292d35;
+  font-size: clamp(27px, 2.1vw, 36px);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.prozon-date {
+  color: #25282f;
+  font-size: clamp(24px, 1.8vw, 34px);
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.prozon-page-title .bordro-period {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.prozon-page-title .bordro-period label {
+  color: #6b7280;
+}
+
+.prozon-page-title .bordro-period select {
+  min-height: 44px;
+  border-radius: 8px;
+  border-color: #dfe5f1;
+  background: #fff;
+  color: #344054;
+}
+
+.prozon-pano-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.56fr);
+  gap: 30px;
+  align-items: start;
+}
+
+.prozon-stat-board,
+.prozon-chart-card,
+.prozon-news-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+}
+
+.prozon-stat-board {
+  padding: clamp(34px, 5vw, 72px) 18px;
+}
+
+.prozon-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 42px) 30px;
+}
+
+.prozon-stat-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  align-items: center;
+  min-height: 168px;
+  padding: 24px 18px;
+  border: 0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #292d35;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.1);
+}
+
+.prozon-stat-card b {
+  display: block;
+  margin-bottom: 22px;
+  color: #292d35;
+  font-size: 22px;
+  font-weight: 520;
+  line-height: 1.28;
+}
+
+.prozon-stat-card strong {
+  color: #2d3038;
+  font-size: 27px;
+  font-weight: 560;
+}
+
+.prozon-stat-card i[data-icon] {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  place-items: center;
+  color: #637cff;
+  opacity: 0.95;
+}
+
+.prozon-stat-card svg {
+  width: 72px;
+  height: 72px;
+  stroke-width: 1.8;
+}
+
+.prozon-news-stack {
+  display: grid;
+  gap: 28px;
+}
+
+.prozon-news-card {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 28px;
+  min-height: 278px;
+  padding: 24px;
+}
+
+.prozon-news-thumb {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 100px;
+  border-radius: 2px;
+  background:
+    linear-gradient(145deg, rgba(95, 135, 255, 0.1), rgba(124, 58, 237, 0.06)),
+    #f8fafc;
+  color: #9aa2b2;
+}
+
+.prozon-news-thumb strong {
+  color: #6f8dff;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.prozon-news-thumb span {
+  color: #a6afc1;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.prozon-news-card h3 {
+  margin: 0 0 26px;
+  color: #292d35;
+  font-size: clamp(25px, 1.75vw, 34px);
+  font-weight: 520;
+  line-height: 1.18;
+}
+
+.prozon-news-card p {
+  margin: 0 0 18px;
+  color: #30343d;
+  font-size: 17px;
+  line-height: 1.48;
+}
+
+.prozon-news-card small {
+  display: block;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.prozon-news-card button {
+  margin-top: 18px;
+  border: 0;
+  background: transparent;
+  color: #1478ff;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.prozon-chart-card {
+  margin-top: 32px;
+  padding: 22px 28px 34px;
+}
+
+.prozon-chart-card h3 {
+  margin: 0 0 24px;
+  color: #30343d;
+  font-size: 24px;
+  font-weight: 580;
+  text-align: center;
+}
+
+.prozon-workplace-chart {
+  display: grid;
+  gap: 14px;
+  min-height: 260px;
+  align-content: center;
+}
+
+.prozon-workplace-chart div {
+  display: grid;
+  grid-template-columns: minmax(160px, 260px) minmax(0, 1fr) 54px;
+  align-items: center;
+  gap: 14px;
+}
+
+.prozon-workplace-chart span {
+  color: #4b5563;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.prozon-workplace-chart b {
+  display: block;
+  width: var(--w);
+  min-width: 10px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6f8dff, #8b5cf6);
+}
+
+.prozon-workplace-chart strong {
+  color: #30343d;
+  font-size: 18px;
+  font-weight: 700;
+}
+
 @media (max-width: 760px) {
+  .prozon-dashboard-shell {
+    padding: 14px 14px 32px;
+  }
+
+  .prozon-mainbar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .prozon-brandmark {
+    justify-items: center;
+  }
+
+  .prozon-brandmark strong {
+    font-size: 34px;
+  }
+
+  .prozon-mainbar h2 {
+    text-align: center;
+    font-size: 19px;
+  }
+
+  .prozon-toolbar {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .prozon-avatar {
+    width: 58px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    font-size: 20px !important;
+  }
+
+  .prozon-horizontal-nav {
+    gap: 20px;
+    padding-bottom: 10px;
+  }
+
+  .prozon-horizontal-nav button {
+    font-size: 16px;
+  }
+
+  .prozon-horizontal-nav span[data-icon],
+  .prozon-horizontal-nav svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .prozon-content {
+    padding: 28px 0 48px;
+  }
+
+  .prozon-page-title {
+    display: grid;
+    gap: 16px;
+  }
+
+  .prozon-page-title .bordro-period {
+    justify-content: flex-start;
+  }
+
+  .prozon-pano-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .prozon-stat-board {
+    padding: 22px 14px;
+  }
+
+  .prozon-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .prozon-stat-card {
+    min-height: 130px;
+    grid-template-columns: 1fr 62px;
+  }
+
+  .prozon-stat-card b {
+    margin-bottom: 14px;
+    font-size: 19px;
+  }
+
+  .prozon-stat-card i[data-icon],
+  .prozon-stat-card svg {
+    width: 58px;
+    height: 58px;
+  }
+
+  .prozon-news-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .prozon-workplace-chart div {
+    grid-template-columns: 1fr;
+  }
+
+  .prozon-workplace-chart b {
+    width: var(--w);
+    max-width: 100%;
+  }
+
   .prozon-app-shell {
     grid-template-columns: 1fr;
     min-height: auto;

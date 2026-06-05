@@ -36,6 +36,7 @@ const icons = {
   plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
   presentation:
     '<path d="M3 4h18v12H3Z"/><path d="M12 16v4"/><path d="m8 20 4-4 4 4"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
   save:
     '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>',
   send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
@@ -3201,6 +3202,9 @@ function renderPayrollCenter() {
   const recruitmentRecords = getScopedRecords(getModule("recruitment")).filter((record) => record.status !== "Tamamlandı" || recordMatchesMonths(record, periodMonths, ["interviewDate"]));
   const bankBesRecords = getScopedRecords(getModule("bankBes"));
   const formRecords = getScopedRecords(getModule("matbuForms"));
+  const leaveRecords = getScopedRecords(getModule("leaves"));
+  const monthlyLeaves = leaveRecords.filter((record) => recordMatchesMonths(record, periodMonths, ["startDate", "endDate", "date"]));
+  const pendingLeaves = monthlyLeaves.filter((record) => record.approval === "Bekliyor").length;
   const accidentRecords = getScopedRecords(getModule("accidentChecks")).filter((record) => recordMatchesMonths(record, periodMonths, ["date"]));
   const todayIso = toIsoDate(new Date());
   const todayAccidentCheck = getScopedRecords(getModule("accidentChecks")).find((record) => toInputDate(record.date) === todayIso && record.accidentStatus === "Kontrol Edildi");
@@ -4701,40 +4705,102 @@ function renderPayrollCenter() {
         .join("")}
     </section>
   `;
+  const todayLabel = new Date().toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const prozonPanoStats = [
+    ["Aktif Çalışan Sayısı", activePersonnel.length, "users"],
+    ["Bu Ay Yapılan Bordro Sayısı", payroll.length, "invoice"],
+    ["Bu Ay İşe Giren Personel Sayısı", hired, "contact"],
+    ["Bu Ay İşten Çıkan Personel Sayısı", left, "contact"],
+    ["Bu Ayki Yıllık İzin Sayısı", monthlyLeaves.length, "calendar"],
+    ["İK Onayı Bekleyen İzinler", pendingLeaves, "wallet"],
+  ];
+  const prozonNewsCards = (legislationRecords.length
+    ? legislationRecords.map((record) => ({
+        title: record.title,
+        date: record.validUntil || record.period,
+        source: record.source || "Mevzuat",
+        text: `${record.value || trText("Güncel mevzuat kaydı")} · ${record.status || trText("Kontrol Edilecek")}`,
+      }))
+    : [
+        {
+          title: "7582 Sayılı Kanun Yayımlandı",
+          date: todayLabel,
+          source: "Resmi Gazete",
+          text: "Vergi ve SGK takibi için mevzuat parametreleri kontrol edilmelidir.",
+        },
+        {
+          title: "Beyanname ve Bildirge Hatırlatmaları",
+          date: todayLabel,
+          source: "İK & Bordro",
+          text: "Muhtasar, SGK ve maaş ödeme takvimi aylık bazda takip edilmelidir.",
+        },
+      ]).slice(0, 2);
+  const workplaceDistribution = companies.length
+    ? companies.map((company) => {
+        const count = personnel.filter((person) => normalizeText(person.companyName) === normalizeText(company.name)).length;
+        return [company.name, count];
+      })
+    : [[currentUser?.companyName || "GLOBAL KALİTEKONTROL", activePersonnel.length]];
+  const workplaceMax = Math.max(...workplaceDistribution.map(([, count]) => Number(count) || 0), 1);
   const tabContents = {
     home: `
-      <section class="bordro-hero">
-        <div>
-          <span>${escapeHtml(periodLabel)}</span>
-          <h2>${escapeHtml(trText("Puantajdan personele yayına kadar tüm bordro akışını tek ekranda izleyin."))}</h2>
-          <p>${escapeHtml(`${formatMoney(totalNet)} net bordro · ${formatMoney(totalAdvance)} avans · ${formatMoney(totalDeduction)} kesinti · ${totalHours.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} saat çalışma`)}</p>
-        </div>
-        <div class="payroll-progress">
-          <strong>%${escapeHtml(payrollProgress)}</strong>
-          <span>${escapeHtml(trText("Hesaplanmış / Final"))}</span>
+      <section class="prozon-pano-layout">
+        <article class="prozon-stat-board">
+          <div class="prozon-stat-grid">
+            ${prozonPanoStats
+              .map(
+                ([label, value, icon]) => `
+                  <button class="prozon-stat-card" type="button" data-payroll-center-tab="${
+                    label.includes("İzin") ? "leaveTop" : label.includes("Bordro") ? "payrollTop" : label.includes("Çalışan") || label.includes("Personel") ? "personnelTop" : "home"
+                  }">
+                    <span>
+                      <b>${escapeHtml(trText(label))}</b>
+                      <strong>${escapeHtml(String(value))}</strong>
+                    </span>
+                    <i data-icon="${icon}"></i>
+                  </button>
+                `,
+              )
+              .join("")}
+          </div>
+        </article>
+        <aside class="prozon-news-stack">
+          ${prozonNewsCards
+            .map(
+              (card) => `
+                <article class="prozon-news-card">
+                  <div class="prozon-news-thumb">
+                    <strong>AD</strong>
+                    <span>${escapeHtml(trText("mevzuat"))}</span>
+                  </div>
+                  <div>
+                    <h3>${escapeHtml(trText(card.title))}</h3>
+                    <p>${escapeHtml(trText(card.text))}</p>
+                    <small>${escapeHtml(`${card.source} · ${card.date || todayLabel}`)}</small>
+                    <button type="button" data-payroll-center-tab="legislation">${escapeHtml(trText("Devamı İçin Tıklayınız."))}</button>
+                  </div>
+                </article>
+              `,
+            )
+            .join("")}
+        </aside>
+      </section>
+      <section class="prozon-chart-card">
+        <h3>${escapeHtml(trText("İşyerlerine Göre Personel Sayısı Dağılımı"))}</h3>
+        <div class="prozon-workplace-chart">
+          ${workplaceDistribution
+            .map(
+              ([name, count]) => `
+                <div>
+                  <span>${escapeHtml(name)}</span>
+                  <b style="--w:${Math.max(4, Math.round(((Number(count) || 0) / workplaceMax) * 100))}%"></b>
+                  <strong>${escapeHtml(String(count))}</strong>
+                </div>
+              `,
+            )
+            .join("")}
         </div>
       </section>
-      ${executiveBriefPanel}
-      <section class="bordro-kpis calm-kpis">
-        ${kpis
-          .slice(0, 6)
-          .map(
-            ([label, value, icon]) => `
-              <article>
-                <span data-icon="${icon}"></span>
-                <small>${escapeHtml(monthName)}</small>
-                <strong>${escapeHtml(value)}</strong>
-                <b>${escapeHtml(trText(label))}</b>
-              </article>
-            `,
-          )
-          .join("")}
-      </section>
-      <section class="bordro-board">${notificationCenterPanel}${emailAutomationPanel}</section>
-      <section class="bordro-board">${payrollWorkflowPanel}${calendarPanel}</section>
-      <section class="bordro-board">${accidentCheckPanel}${trialWarningPanel}</section>
-      <section class="bordro-board">${alertPanel}${moduleLauncherPanel}</section>
-      ${easyPortalPanel}
     `,
     assistant: `
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
@@ -5088,37 +5154,78 @@ function renderPayrollCenter() {
       </section>
     `,
   };
-  const activeContent = tabContents[payrollCenterTab] || tabContents.home;
   const prozonMenuItems = [
-    ["Anasayfa", "panel", "home"],
-    ["Bordro Merkezi Menü", "grid", "home"],
-    ["Sistem Yönetimi", "settings", "system"],
-    ["Takvim Yönetimi", "calendar", "calendar"],
-    ["Şirket Yönetimi", "building", "company"],
-    ["Tanımlar", "checklist", "operationsHub"],
-    ["Bordro Tanımları", "invoice", "operationsHub"],
-    ["Raporlar", "chart", "reports"],
-    ["İşlemler", "wallet", "operationsHub"],
-    ["Dinamik Rapor", "barChart", "reports"],
-    ["Borç / Avans Yönetimi", "wallet", "operationsHub"],
-    ["Matbu Formlar", "invoice", "forms"],
-    ["Asistan & Mesajlar", "bot", "assistant"],
-    ["Kırmızı Bülten", "bell", "redBulletin"],
+    ["PANO", "grid", "home"],
+    ["İŞ YERLERİ", "building", "companyTop"],
+    ["PERSONELLER", "users", "personnelTop"],
+    ["İZİN YÖNETİMİ", "calendar", "leaveTop"],
+    ["BORDRO", "invoice", "payrollTop"],
+    ["FİNANS", "wallet", "financeTop"],
+    ["HEDEF BÜTÇE", "chart", "budgetTop"],
+    ["RAPORLAR", "barChart", "reports"],
+    ["TANIMLAMALAR", "menu", "definitionsTop"],
   ];
-  const activeTabTitle = payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa";
+  tabContents.companyTop = tabContents.company;
+  tabContents.personnelTop = `
+    <section class="bordro-tab-content two-col">
+      ${employee360Panel}
+      ${crudPanel("Personeller", "personnel", ["name", "companyName", "department", "role", "startDate", "trialEndDate", "grossSalary", "status"], personnel)}
+    </section>
+    <section class="bordro-tab-content two-col">
+      ${trialWarningPanel}
+      ${companyRatingPanel}
+    </section>
+  `;
+  tabContents.leaveTop = `
+    <section class="bordro-tab-content">${calendarPanel}</section>
+    <section class="bordro-tab-content two-col">
+      ${crudPanel("İzin Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], leaveRecords)}
+      ${crudPanel("Puantaj", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
+    </section>
+  `;
+  tabContents.payrollTop = `
+    <section class="bordro-tab-content">${payrollCalculatorPanel}</section>
+    <section class="bordro-tab-content">${payrollWorkflowPanel}</section>
+    <section class="bordro-tab-content two-col">
+      ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "grossSalary", "netSalary", "cumulativeTaxBase", "incomeTaxAmount", "advance", "netPayable", "payrollStatus"], payroll)}
+      ${payrollExportPanel}
+    </section>
+  `;
+  tabContents.financeTop = `
+    <section class="bordro-tab-content two-col">
+      ${payrollExportPanel}
+      ${crudPanel("Banka / BES", "bankBes", ["person", "bankName", "iban", "besStatus", "besRate", "paymentStatus", "status"], bankBesRecords)}
+    </section>
+    <section class="bordro-tab-content two-col">
+      ${crudPanel("Fatura ve Tahsilat", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
+      ${crudPanel("Borç / Avans", "payroll", ["person", "period", "advance", "deduction", "netPayable", "payrollStatus"], payroll)}
+    </section>
+  `;
+  tabContents.budgetTop = `
+    <section class="bordro-tab-content two-col">
+      ${personReportPanel}
+      ${alertPanel}
+    </section>
+  `;
+  tabContents.definitionsTop = tabContents.system;
+  const activeContent = tabContents[payrollCenterTab] || tabContents.home;
+  const activeTabTitle = prozonMenuItems.find(([, , tab]) => tab === payrollCenterTab)?.[0] || payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa";
 
   document.querySelector("#pageContent").innerHTML = `
-    <section class="bordro-center prozon-app-shell">
-      <aside class="bordro-center-menu prozon-suite-menu">
-        <div class="mini-brand">
-          <strong>${escapeHtml(trText("Artı Destek"))}</strong>
-          <span>${escapeHtml(trText("Bordro operasyon merkezi"))}</span>
+    <section class="prozon-dashboard-shell">
+      <header class="prozon-mainbar">
+        <div class="prozon-brandmark">
+          <strong>artı destek</strong>
+          <small>${escapeHtml(trText("KURUMSAL TEKNOLOJİ ÇÖZÜMLERİ"))}</small>
         </div>
-        <button class="workplace-select" type="button" data-payroll-center-tab="company">
-          <b>${escapeHtml(currentUser?.companyName || companies[0]?.name || "ARTI DESTEK")}</b>
-          <span data-icon="chevron"></span>
-        </button>
-        <nav>
+        <h2>${escapeHtml((currentUser?.companyName || "GLOBAL KALİTEKONTROL").toLocaleUpperCase("tr"))} - (${dashboardYear})</h2>
+        <div class="prozon-toolbar">
+          <button type="button" data-payroll-center-tab="assistant" title="${escapeHtml(trText("Ara"))}"><span data-icon="search"></span></button>
+          <button type="button" data-payroll-center-tab="system"><span data-icon="grid"></span>${escapeHtml(trText("Ayarlar"))}</button>
+          <button class="prozon-avatar" type="button" data-payroll-center-tab="selfService">${escapeHtml((currentUser?.displayName || "GT").split(" ").map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr"))}</button>
+        </div>
+      </header>
+      <nav class="prozon-horizontal-nav" aria-label="${escapeHtml(trText("Bordro modülleri"))}">
           ${prozonMenuItems
             .map(
               ([label, icon, tab]) => `
@@ -5129,16 +5236,17 @@ function renderPayrollCenter() {
               `,
             )
             .join("")}
-        </nav>
-      </aside>
-      <main class="bordro-workspace">
-        <header class="bordro-topline">
+      </nav>
+      <main class="prozon-content">
+        <header class="prozon-page-title">
           <div>
-            <span>${escapeHtml(trText("Personel Yönetimi"))}</span>
-            <span>${escapeHtml(trText("Bordro İşlemleri"))}</span>
-            <strong>${escapeHtml(trText(activeTabTitle))}</strong>
+            <h1>${escapeHtml(payrollCenterTab === "home" ? `${trText("Hoşgeldin")} ${currentUser?.displayName || "Gürkan Tabakoğlu"}...` : trText(activeTabTitle))}</h1>
           </div>
           <div class="bordro-period">
+            <strong class="prozon-date">${escapeHtml(todayLabel)}</strong>
+            <button class="prozon-check-button" type="button" data-action="daily-accident-check" title="${escapeHtml(trText("Günlük kontrol"))}">
+              <span data-icon="checklist"></span>
+            </button>
             <label>${escapeHtml(trText("Tarih Aralığı"))}
               <select id="dashboardRangeSelect">
                 ${dashboardRangeOptions
@@ -7081,6 +7189,7 @@ function showLogin() {
   renderLanguageSwitch();
   document.querySelector("#loginPage").hidden = false;
   document.querySelector("#appShell").hidden = true;
+  document.querySelector("#appShell").classList.remove("prozon-top-mode");
   document.querySelector("#loginError").textContent = "";
   document.querySelector("#loginUsername").focus();
 }
@@ -7094,6 +7203,7 @@ function showApp(user) {
   document.querySelector("#currentUserName").textContent = user.displayName;
   document.querySelector("#loginPage").hidden = true;
   document.querySelector("#appShell").hidden = false;
+  document.querySelector("#appShell").classList.add("prozon-top-mode");
   renderSideNav();
   renderModule(getModule(activeModuleId));
   startRealtimeSync();
