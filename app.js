@@ -949,6 +949,10 @@ let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
 const prozonActiveSubTabs = {};
+let prozonWorkplaceCardOpen = false;
+let prozonWorkplaceCardTab = "general";
+let prozonEditingWorkplaceId = "";
+let prozonWorkplaceDraft = {};
 const prozonPanoChartDefinitions = [
   ["workplacePersonnel", "İşyeri/Personel Sayısı", "İşyerlerine Göre Personel Sayısı Dağılımı", "donut"],
   ["workplacePayroll", "İşyeri/Bordro Sayıları", "İşyerlerine Göre Bordro Sayısı", "donut"],
@@ -4753,6 +4757,18 @@ function renderPayrollCenter() {
     ["Bu Ayki Yıllık İzin Sayısı", monthlyLeaves.length, "calendar"],
     ["İK Onayı Bekleyen İzinler", pendingLeaves, "wallet"],
   ];
+  const prozonStatArt = (icon, index) => {
+    const art = {
+      users: `<svg viewBox="0 0 80 80"><circle cx="31" cy="26" r="14" fill="#d8e58f" stroke="#3d3350" stroke-width="3"/><path d="M12 62c2-18 15-26 29-22 10 3 17 10 19 22Z" fill="#d8e58f" stroke="#3d3350" stroke-width="3"/><circle cx="55" cy="37" r="10" fill="#d8e58f" stroke="#3d3350" stroke-width="3"/><path d="M48 62c2-12 10-18 20-14 5 2 8 7 9 14Z" fill="#d8e58f" stroke="#3d3350" stroke-width="3"/></svg>`,
+      invoice: `<svg viewBox="0 0 80 80"><rect x="14" y="9" width="48" height="62" rx="3" fill="#f6fbff" stroke="#4b627c" stroke-width="3"/><rect x="21" y="18" width="31" height="12" fill="#9fc0db" stroke="#4b627c" stroke-width="2"/><path d="M21 38h11M40 38h11M21 50h11M40 50h11M21 62h11" stroke="#4b627c" stroke-width="2"/><rect x="42" y="50" width="14" height="15" fill="#87d99a" stroke="#4b627c" stroke-width="2"/><rect x="65" y="12" width="8" height="55" fill="#ff9b8c" stroke="#4b627c" stroke-width="2"/><path d="M65 67l4 7 4-7" fill="#ffe0a6" stroke="#4b627c" stroke-width="2"/></svg>`,
+      entry: `<svg viewBox="0 0 80 80"><path d="M20 8h30l12 12v50H20Z" fill="#fff" stroke="#111" stroke-width="4"/><path d="M50 8v14h14M28 45v18" stroke="#111" stroke-width="4"/><circle cx="63" cy="63" r="10" fill="#83d900" stroke="#111" stroke-width="3"/><path d="m58 63 4 4 8-9" stroke="#111" stroke-width="3" fill="none"/></svg>`,
+      exit: `<svg viewBox="0 0 80 80"><path d="M20 8h30l12 12v50H20Z" fill="#fff" stroke="#111" stroke-width="4"/><path d="M50 8v14h14M28 45v18" stroke="#111" stroke-width="4"/><circle cx="63" cy="63" r="10" fill="#ff1f57" stroke="#111" stroke-width="3"/><path d="m59 59 8 8M67 59l-8 8" stroke="#111" stroke-width="3"/></svg>`,
+      calendar: `<svg viewBox="0 0 80 80"><path d="M16 43c13-21 32-23 49-6-8-2-13 1-16 10-7-5-14-6-22-2-4-3-8-4-11-2Z" fill="#ff6b93"/><path d="M31 45c7-16 18-23 34-8-8-2-13 1-16 10-6-3-12-4-18-2Z" fill="#5b7cff"/><path d="M50 47c3-7 8-11 15-10 2 8 0 16-6 22" fill="#ff9400"/><path d="M40 47 30 70M26 70h13" stroke="#c47b2c" stroke-width="3" fill="none"/></svg>`,
+      wallet: `<svg viewBox="0 0 80 80"><rect x="18" y="22" width="48" height="38" rx="8" fill="#b8c8a3" stroke="#6d8bb0" stroke-width="4"/><rect x="13" y="15" width="38" height="35" rx="8" fill="#c8dfbf" stroke="#6d8bb0" stroke-width="3"/><path d="M18 33h48" stroke="#6d8bb0" stroke-width="4"/><path d="M31 32v18M49 32v18" stroke="#8c69cf" stroke-width="4"/><circle cx="59" cy="42" r="3" fill="#5b7cff"/></svg>`,
+    };
+    const key = icon === "contact" ? (index === 2 ? "entry" : "exit") : icon;
+    return `<i class="prozon-stat-art ${escapeHtml(key)}">${art[key] || art.users}</i>`;
+  };
   const prozonNewsCards = (legislationRecords.length
     ? legislationRecords.map((record) => ({
         title: record.title,
@@ -4942,7 +4958,7 @@ function renderPayrollCenter() {
     return record[key] ?? "";
   };
   const prozonFilterCell = (type = "search") => {
-    if (type === "date") return `<span class="prozon-filter-date"><span data-icon="search"></span><span data-icon="calendar"></span></span>`;
+    if (type === "date") return `<span class="prozon-filter-date"><span data-icon="search"></span><input type="date" aria-label="${escapeHtml(trText("Tarih"))}" /></span>`;
     if (type === "select") return `<span class="prozon-filter-select">${escapeHtml(trText("Tümü"))}<span data-icon="chevron"></span></span>`;
     return `<span class="prozon-filter-search"><span data-icon="search"></span></span>`;
   };
@@ -4951,7 +4967,7 @@ function renderPayrollCenter() {
     return `
       <div class="prozon-grid-shell">
         <aside class="prozon-grid-rail">
-          ${canEdit && moduleId ? `<button type="button" data-action="add" data-module="${moduleId}" title="${escapeHtml(trText("Ekle"))}">+</button>` : ""}
+          ${canEdit && moduleId ? `<button type="button" data-action="${moduleId === "companies" ? "workplace-new" : "add"}" data-module="${moduleId}" title="${escapeHtml(trText("Ekle"))}">+</button>` : ""}
           ${canEdit && moduleId ? `<button type="button" data-action="export" data-module="${moduleId}" title="${escapeHtml(trText("Excel"))}"><span data-icon="download"></span></button>` : ""}
         </aside>
         <div class="prozon-grid-scroll">
@@ -4966,7 +4982,7 @@ function renderPayrollCenter() {
                   ? records
                       .map(
                         (record, index) => `
-                          <tr data-row-id="${escapeHtml(record.id || String(index))}">
+                          <tr data-row-id="${escapeHtml(record.id || String(index))}" ${moduleId === "companies" ? `data-prozon-workplace-id="${escapeHtml(record.id || String(index))}"` : ""}>
                             ${columns.map(([key]) => `<td>${escapeHtml(String(prozonValue(record, key, index) || ""))}</td>`).join("")}
                           </tr>
                         `,
@@ -4981,6 +4997,178 @@ function renderPayrollCenter() {
     `;
   };
   const youtubeUrl = (query) => `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+  const workplaceTabs = [
+    ["general", "Genel Bilgiler"],
+    ["address", "Adres / İletişim Bilgileri"],
+    ["bank", "Banka Bilgileri"],
+    ["publicOfficials", "Kamu Yetkilileri"],
+    ["nace", "Nace Kodları"],
+    ["hierarchy", "Hiyerarşik Konum"],
+    ["roadMeal", "Yol/Yemek"],
+    ["costCenter", "Masraf Merkezi"],
+    ["withholding", "Muhtasar"],
+  ];
+  const baseWorkplaceRecord = companies.find((record) => record.id === prozonEditingWorkplaceId) || {};
+  const workplaceRecord = { ...baseWorkplaceRecord, ...prozonWorkplaceDraft };
+  const workplaceValue = (key, fallback = "") => escapeHtml(workplaceRecord[key] || fallback);
+  const prozonField = (label, key, options = null, extra = "") => `
+    <label class="prozon-workplace-field ${extra}">
+      <span>${escapeHtml(trText(label))}:</span>
+      ${
+        options
+          ? `<select name="${key}">
+              ${options.map((option) => `<option value="${escapeHtml(option)}" ${String(workplaceRecord[key] || "") === option ? "selected" : ""}>${escapeHtml(trText(option))}</option>`).join("")}
+            </select>`
+          : `<input name="${key}" ${extra.includes("date-field") ? 'type="date"' : ""} value="${extra.includes("date-field") ? escapeHtml(toInputDate(workplaceRecord[key] || "")) : workplaceValue(key)}" />`
+      }
+    </label>
+  `;
+  const prozonGridTable = (columns, rows = 0) => `
+    <div class="prozon-workplace-grid-table">
+      <aside><button type="button">+</button>${rows ? `<button type="button">×</button>` : ""}</aside>
+      <table>
+        <thead><tr>${columns.map((column) => `<th>${escapeHtml(trText(column))}</th>`).join("")}</tr></thead>
+        <tbody>${Array.from({ length: rows }, () => `<tr>${columns.map(() => "<td></td>").join("")}</tr>`).join("")}</tbody>
+      </table>
+    </div>
+  `;
+  const prozonWorkplaceCardScreen = () => {
+    const cardTitle = prozonEditingWorkplaceId ? "İŞYERİ KARTI" : "İŞYERİ KARTI (YENİ KAYIT)";
+    const content = {
+      general: `
+        <div class="prozon-workplace-general">
+          <section>
+            ${prozonField("Kod", "code", null, "code-field")}
+            ${prozonField("Tanım", "name")}
+            ${prozonField("İş Kolu Tipi", "sector", ["Seçiniz...", "Üretim", "Hizmet", "Teknopark", "Lojistik"])}
+            ${prozonField("Tescil No", "taxNo")}
+            ${prozonField("Mülkiyet Durumu", "ownership", ["Kira", "Mülk", "Diğer"])}
+            ${prozonField("Açılış Tarihi", "startDate", null, "date-field")}
+            ${prozonField("Kapanış Tarihi", "endDate", null, "date-field")}
+          </section>
+          <section>
+            ${prozonField("İşkur Sicil No", "iskurNo")}
+            ${prozonField("İşkur İşyeri Şifresi", "iskurPassword")}
+          </section>
+        </div>
+      `,
+      address: `
+        <div class="prozon-workplace-address">
+          <div>
+            ${prozonField("Ülke", "country", ["TÜRKİYE"])}
+            ${prozonField("İlçe", "district", ["Seçiniz...", "Adapazarı", "Erenler", "Gebze", "Osmangazi"])}
+            ${prozonField("Cadde", "street")}
+            ${prozonField("Mahalle", "neighborhood")}
+            ${prozonField("Posta Kodu", "postalCode", null, "short")}
+            ${prozonField("E-Posta", "email")}
+            ${prozonField("Adres Kodu", "addressCode")}
+          </div>
+          <div>
+            ${prozonField("İl", "city", ["Seçiniz...", "Sakarya", "Kocaeli", "Bursa", "İstanbul", "Ankara"])}
+            ${prozonField("Vergi Dairesi", "taxOffice", ["Seçiniz...", "Sakarya VD", "Gebze VD", "Bursa VD"])}
+            ${prozonField("Sokak", "avenue")}
+            <div class="prozon-coordinate-box">
+              <span>${escapeHtml(trText("X ve Y Koordinatları"))}:</span>
+              <label>X:<input name="coordinateX" value="${workplaceValue("coordinateX", "0,000000")}" /></label>
+              <label>Y:<input name="coordinateY" value="${workplaceValue("coordinateY", "0,000000")}" /></label>
+              <button type="button">${escapeHtml(trText("Haritadan Konum Seç"))}</button>
+            </div>
+          </div>
+          <label class="prozon-workplace-address-full"><span>${escapeHtml(trText("Adres"))}:</span><textarea name="address">${workplaceValue("address")}</textarea></label>
+          <div class="prozon-workplace-phone-row"><span>${escapeHtml(trText("Telefonlar"))}:</span>${prozonGridTable(["NUMARA", "NUMARA TİPİ", "DAHİLİ"])}</div>
+        </div>
+      `,
+      bank: prozonGridTable(["TANIM", "ŞUBE KODU", "HESAP NO", "IBAN NO", "BANKA FİRMA KODU", "DÖVİZ TİPİ"]),
+      publicOfficials: prozonGridTable(["AD SOYAD", "TİP", "NUMARA TİPİ", "NUMARA", "DAHİLİ", "AKTİF Mİ"]),
+      nace: prozonGridTable(["VARSAYILAN", "KOD", "FAALİYET TANIMI", "TEHLİKE SINIFI"], 1),
+      hierarchy: prozonGridTable(["BİRİM TANIMI"], 1),
+      roadMeal: `
+        <div class="prozon-workplace-benefits">
+          ${prozonField("Varsayılan Yemek Hakediş Tipi", "mealType", ["Şirket Varsayılanı Ver", "Yok", "Günlük", "Aylık"])}
+          ${prozonField("Varsayılan Yol Hakediş Tipi", "roadType", ["Şirket Varsayılanı Ver", "Yok", "Günlük", "Aylık"])}
+        </div>
+      `,
+      costCenter: prozonGridTable(["MASRAF MERKEZİ TANIM", "KOD", "ORAN"], 1),
+      withholding: `
+        <div class="prozon-workplace-withholding">
+          <section>${prozonField("Serbest Bölgede", "freeZone", ["", "Evet", "Hayır"])}</section>
+          <section>
+            ${prozonField("SGK İşyeri Kodu", "sgkWorkplaceCode")}
+            ${prozonField("SGK İşyeri Şifresi", "sgkPassword")}
+            ${prozonField("SGK Kullanıcı Adı", "sgkUsername")}
+            ${prozonField("SGK Sistem Şifresi", "sgkSystemPassword")}
+            ${prozonField("SGK Sicil No", "sgkRegistryNo")}
+          </section>
+          <section>
+            ${prozonField("İŞKUR Yetkilisi", "iskurOfficial", ["Seçiniz...", "Gürkan Tabakoğlu", "Zehra Battal"])}
+            ${prozonField("TC. Kimlik No", "iskurIdentityNo")}
+            ${prozonField("SGK Yetkilisi", "sgkOfficial", ["Seçiniz...", "Gürkan Tabakoğlu", "Zehra Battal"])}
+            ${prozonField("TC. Kimlik No", "sgkIdentityNo")}
+          </section>
+          <section>
+            ${prozonField("Varsayılan Belge Türü", "defaultDocumentType", ["Seçiniz...", "1", "2", "4", "5"])}
+            ${prozonField("Varsayılan Kanun No", "defaultLawNo", ["Seçiniz...", "5510", "5746", "4691"])}
+          </section>
+          <section>
+            ${prozonField("Bordro Hesaplama Tipi", "payrollCalcType", ["Şirket Varsayılanı", "Dinamik Puantajlı"])}
+            ${prozonField("BDP İşyeri Kodu", "bdpWorkplaceCode")}
+          </section>
+          <section class="full">${prozonField("Vizite RP. Çalışma Tipi", "visitReportType", ["Şirket Parametresi ile", "Manuel"])}</section>
+        </div>
+      `,
+    };
+    return `
+      <section class="prozon-workplace-card">
+        <form id="prozonWorkplaceForm">
+          <input type="hidden" name="id" value="${escapeHtml(prozonEditingWorkplaceId)}" />
+          <header class="prozon-workplace-card-top">
+            <h2>${escapeHtml(trText(cardTitle))}</h2>
+            <button type="button" data-action="workplace-card-close" title="${escapeHtml(trText("Kapat"))}">↘</button>
+          </header>
+          <div class="prozon-workplace-card-title">
+            <span data-icon="building"></span>
+            <div>
+              <strong>${escapeHtml(trText("İşyeri Kartı"))}</strong>
+              <p>${escapeHtml(trText("Yeni kayıt için işyeri bilgilerini giriniz."))}</p>
+            </div>
+            <button type="button" class="help">?</button>
+          </div>
+          <nav class="prozon-workplace-tabs">
+            ${workplaceTabs.map(([id, label]) => `<button class="${id === prozonWorkplaceCardTab ? "active" : ""}" type="button" data-workplace-card-tab="${id}">${escapeHtml(trText(label))}</button>`).join("")}
+          </nav>
+          <div class="prozon-workplace-card-body">${content[prozonWorkplaceCardTab] || content.general}</div>
+          <footer class="prozon-workplace-card-footer">
+            <label><input type="checkbox" name="isDefault" ${workplaceRecord.isDefault || workplaceRecord.contractStatus === "Aktif" ? "checked" : ""} /> ${escapeHtml(trText("Varsayılan İşyeri(Merkez Ofis)"))}</label>
+            <div>
+              <button class="save" type="button" data-action="workplace-save">${escapeHtml(trText("Kaydet"))}</button>
+              <button class="close" type="button" data-action="workplace-card-close">${escapeHtml(trText("Kapat"))}</button>
+            </div>
+          </footer>
+        </form>
+      </section>
+    `;
+  };
+  const prozonWorkplaceListScreen = () =>
+    prozonWorkplaceCardOpen
+      ? prozonWorkplaceCardScreen()
+      : `
+        <section class="prozon-list-screen prozon-workplaces-list">
+          <header class="prozon-list-heading">
+            <div class="prozon-title-block">
+              <span data-icon="building"></span>
+              <div>
+                <h2>${escapeHtml(trText("İşyerleri Listesi"))}</h2>
+                <p>${escapeHtml(trText("İşyerleri ile ilgili işlemlere bu ekrandan erişebilirsiniz"))}</p>
+              </div>
+            </div>
+            <div class="prozon-list-actions">
+              <button class="primary" type="button" data-action="workplace-new"><span data-icon="building"></span>${escapeHtml(trText("Yeni İşyeri"))}</button>
+              <button type="button" title="${escapeHtml(trText("Yardım"))}">?</button>
+            </div>
+          </header>
+          ${renderProzonTable([["__code", "KOD"], ["name", "TANIM"], ["startDate", "AÇILIŞ TARİHİ", "date"], ["endDate", "KAPANIŞ TARİHİ", "date"], ["taxNo", "TESCİL NO"], ["__default", "VARSAYILAN", "select"], ["sgkRegistryNo", "SGK SİCİL NO"]], companies, "companies")}
+        </section>
+      `;
   const prozonListScreen = ({ title, subtitle, icon, moduleId, columns, records, primaryLabel, helpQuery, toolbar = "", groupable = false }) => `
     <section class="prozon-list-screen">
       <header class="prozon-list-heading">
@@ -5049,7 +5237,7 @@ function renderPayrollCenter() {
           <div class="prozon-stat-grid">
             ${prozonPanoStats
               .map(
-                ([label, value, icon]) => `
+                ([label, value, icon], index) => `
                   <button class="prozon-stat-card" type="button" data-payroll-center-tab="${
                     label.includes("İzin") ? "leaveTop" : label.includes("Bordro") ? "payrollTop" : label.includes("Çalışan") || label.includes("Personel") ? "personnelTop" : "home"
                   }">
@@ -5057,7 +5245,7 @@ function renderPayrollCenter() {
                       <b>${escapeHtml(trText(label))}</b>
                       <strong>${escapeHtml(String(value))}</strong>
                     </span>
-                    <i data-icon="${icon}"></i>
+                    ${prozonStatArt(icon, index)}
                   </button>
                 `,
               )
@@ -5521,17 +5709,7 @@ function renderPayrollCenter() {
     { id: "doc90", no: "90", title: "İTİBARİ HİZMET SÜRESİNE TABİ OLARAK ÇALIŞANLAR", default: "" },
   ];
   const screenFactories = {
-    companyTop: () =>
-      prozonListScreen({
-        title: "İşyerleri Listesi",
-        subtitle: "İşyerleri ile ilgili işlemlere bu ekrandan erişebilirsiniz",
-        icon: "building",
-        moduleId: "companies",
-        primaryLabel: "Yeni İşyeri",
-        helpQuery: "Prozon işyerleri listesi işyeri tanımlama",
-        columns: [["__code", "KOD"], ["name", "TANIM"], ["startDate", "AÇILIŞ TARİHİ", "date"], ["endDate", "KAPANIŞ TARİHİ", "date"], ["taxNo", "TESCİL NO"], ["__default", "VARSAYILAN", "select"], ["city", "SGK SİCİL NO"]],
-        records: companies,
-      }),
+    companyTop: () => prozonWorkplaceListScreen(),
     personnelTop: () =>
       prozonListScreen({
         title: activeSubTab === "preRegister" ? "Personel Ön Kayıt Listesi" : activeSubTab === "advances" ? "Avanslar" : "Personel Listesi",
@@ -5643,8 +5821,7 @@ function renderPayrollCenter() {
     <section class="prozon-dashboard-shell">
       <header class="prozon-mainbar">
         <div class="prozon-brandmark logo-mode">
-          <strong>prozon</strong>
-          <small>KURUMSAL TEKNOLOJİ ÇÖZÜMLERİ</small>
+          <img src="assets/arti-destek-logo.png" alt="Artı Destek" />
         </div>
         <h2>${escapeHtml((currentUser?.companyName || "GLOBAL KALİTEKONTROL").toLocaleUpperCase("tr"))} - (${dashboardYear})</h2>
         <div class="prozon-toolbar">
@@ -7477,6 +7654,92 @@ function markNotificationRead(recordId) {
   renderIcons();
 }
 
+function saveProzonWorkplaceCard() {
+  const form = document.querySelector("#prozonWorkplaceForm");
+  if (!form) return;
+  captureProzonWorkplaceDraft();
+  const module = getModule("companies");
+  const formData = new FormData(form);
+  Object.entries(prozonWorkplaceDraft).forEach(([key, value]) => {
+    if (!formData.has(key)) formData.set(key, value);
+  });
+  const recordId = String(formData.get("id") || prozonEditingWorkplaceId || "").trim();
+  const previousRecord = module.records.find((item) => item.id === recordId) || {};
+  const record = {
+    ...previousRecord,
+    id: recordId || createId("companies"),
+    code: String(formData.get("code") || previousRecord.code || `ISY${String(module.records.length + 1).padStart(4, "0")}`).trim(),
+    name: String(formData.get("name") || previousRecord.name || "").trim(),
+    sector: String(formData.get("sector") || previousRecord.sector || "").trim(),
+    taxNo: String(formData.get("taxNo") || previousRecord.taxNo || "").trim(),
+    ownership: String(formData.get("ownership") || previousRecord.ownership || "").trim(),
+    startDate: String(formData.get("startDate") || previousRecord.startDate || "").trim(),
+    endDate: String(formData.get("endDate") || previousRecord.endDate || "").trim(),
+    iskurNo: String(formData.get("iskurNo") || previousRecord.iskurNo || "").trim(),
+    iskurPassword: String(formData.get("iskurPassword") || previousRecord.iskurPassword || "").trim(),
+    country: String(formData.get("country") || previousRecord.country || "TÜRKİYE").trim(),
+    city: String(formData.get("city") || previousRecord.city || "").trim(),
+    district: String(formData.get("district") || previousRecord.district || "").trim(),
+    taxOffice: String(formData.get("taxOffice") || previousRecord.taxOffice || "").trim(),
+    street: String(formData.get("street") || previousRecord.street || "").trim(),
+    avenue: String(formData.get("avenue") || previousRecord.avenue || "").trim(),
+    neighborhood: String(formData.get("neighborhood") || previousRecord.neighborhood || "").trim(),
+    postalCode: String(formData.get("postalCode") || previousRecord.postalCode || "").trim(),
+    email: String(formData.get("email") || previousRecord.email || "").trim(),
+    addressCode: String(formData.get("addressCode") || previousRecord.addressCode || "").trim(),
+    coordinateX: String(formData.get("coordinateX") || previousRecord.coordinateX || "").trim(),
+    coordinateY: String(formData.get("coordinateY") || previousRecord.coordinateY || "").trim(),
+    address: String(formData.get("address") || previousRecord.address || "").trim(),
+    mealType: String(formData.get("mealType") || previousRecord.mealType || "").trim(),
+    roadType: String(formData.get("roadType") || previousRecord.roadType || "").trim(),
+    freeZone: String(formData.get("freeZone") || previousRecord.freeZone || "").trim(),
+    sgkWorkplaceCode: String(formData.get("sgkWorkplaceCode") || previousRecord.sgkWorkplaceCode || "").trim(),
+    sgkPassword: String(formData.get("sgkPassword") || previousRecord.sgkPassword || "").trim(),
+    sgkUsername: String(formData.get("sgkUsername") || previousRecord.sgkUsername || "").trim(),
+    sgkSystemPassword: String(formData.get("sgkSystemPassword") || previousRecord.sgkSystemPassword || "").trim(),
+    sgkRegistryNo: String(formData.get("sgkRegistryNo") || previousRecord.sgkRegistryNo || "").trim(),
+    defaultDocumentType: String(formData.get("defaultDocumentType") || previousRecord.defaultDocumentType || "").trim(),
+    defaultLawNo: String(formData.get("defaultLawNo") || previousRecord.defaultLawNo || "").trim(),
+    iskurOfficial: String(formData.get("iskurOfficial") || previousRecord.iskurOfficial || "").trim(),
+    iskurIdentityNo: String(formData.get("iskurIdentityNo") || previousRecord.iskurIdentityNo || "").trim(),
+    sgkOfficial: String(formData.get("sgkOfficial") || previousRecord.sgkOfficial || "").trim(),
+    sgkIdentityNo: String(formData.get("sgkIdentityNo") || previousRecord.sgkIdentityNo || "").trim(),
+    payrollCalcType: String(formData.get("payrollCalcType") || previousRecord.payrollCalcType || "").trim(),
+    bdpWorkplaceCode: String(formData.get("bdpWorkplaceCode") || previousRecord.bdpWorkplaceCode || "").trim(),
+    visitReportType: String(formData.get("visitReportType") || previousRecord.visitReportType || "").trim(),
+    isDefault: formData.get("isDefault") === "on",
+    contractStatus: formData.get("isDefault") === "on" ? "Aktif" : previousRecord.contractStatus || "Beklemede",
+    status: previousRecord.status || "AKTİF",
+  };
+
+  if (!record.name) {
+    window.alert("Tanım alanını doldurmalısın.");
+    return;
+  }
+
+  module.records = recordId ? module.records.map((item) => (item.id === recordId ? record : item)) : [record, ...module.records];
+  addAudit(recordId ? "Düzenleme" : "Ekleme", module, record, recordId ? "İşyeri kartı güncellendi." : "Yeni işyeri oluşturuldu.");
+  selectedRecordId = record.id;
+  prozonEditingWorkplaceId = "";
+  prozonWorkplaceCardOpen = false;
+  prozonWorkplaceCardTab = "general";
+  prozonWorkplaceDraft = {};
+  saveRecords();
+  renderPayrollCenter();
+  renderSideNav();
+  renderIcons();
+}
+
+function captureProzonWorkplaceDraft() {
+  const form = document.querySelector("#prozonWorkplaceForm");
+  if (!form) return;
+  const formData = new FormData(form);
+  for (const [key, value] of formData.entries()) {
+    prozonWorkplaceDraft[key] = String(value);
+  }
+  prozonWorkplaceDraft.isDefault = form.querySelector('[name="isDefault"]')?.checked ? "on" : "";
+}
+
 function openProjectChart(recordId) {
   const module = getModule("projects");
   const record = module.records.find((item) => item.id === recordId);
@@ -8032,6 +8295,27 @@ document.addEventListener("click", (event) => {
   if (prozonSubTabButton) {
     prozonActiveSubTabs[payrollCenterTab] = prozonSubTabButton.dataset.prozonSubtab;
     activeModuleId = "payrollCenter";
+    prozonWorkplaceCardOpen = false;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  const workplaceTabButton = event.target.closest("[data-workplace-card-tab]");
+  if (workplaceTabButton) {
+    captureProzonWorkplaceDraft();
+    prozonWorkplaceCardTab = workplaceTabButton.dataset.workplaceCardTab;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  const workplaceRow = event.target.closest("[data-prozon-workplace-id]");
+  if (workplaceRow) {
+    prozonEditingWorkplaceId = workplaceRow.dataset.prozonWorkplaceId;
+    prozonWorkplaceCardTab = "general";
+    prozonWorkplaceDraft = {};
+    prozonWorkplaceCardOpen = true;
     renderPayrollCenter();
     renderIcons();
     return;
@@ -8163,6 +8447,31 @@ document.addEventListener("click", (event) => {
 
   if (action === "daily-accident-check") {
     markDailyAccidentCheck();
+    return;
+  }
+
+  if (action === "workplace-new") {
+    prozonEditingWorkplaceId = "";
+    prozonWorkplaceCardTab = "general";
+    prozonWorkplaceDraft = {};
+    prozonWorkplaceCardOpen = true;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "workplace-card-close") {
+    prozonWorkplaceCardOpen = false;
+    prozonEditingWorkplaceId = "";
+    prozonWorkplaceCardTab = "general";
+    prozonWorkplaceDraft = {};
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "workplace-save") {
+    saveProzonWorkplaceCard();
     return;
   }
 

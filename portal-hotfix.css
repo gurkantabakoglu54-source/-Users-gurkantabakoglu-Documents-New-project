@@ -4533,26 +4533,21 @@ body.sidebar-collapsed .content {
 }
 
 .prozon-brandmark.logo-mode {
-  width: 150px;
-  min-width: 150px;
+  width: 154px;
+  min-width: 154px;
+  height: 58px;
+  align-content: center;
 }
 
-.prozon-brandmark strong {
-  color: #9aa3b5;
-  font-size: 39px;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 0.78;
-}
-
-.prozon-brandmark small {
-  font-size: 6px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
+.prozon-brandmark.logo-mode img {
+  width: 54px;
+  height: 54px;
+  max-height: 54px;
+  object-fit: contain;
 }
 
 .prozon-mainbar h2 {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -4626,12 +4621,12 @@ body.sidebar-collapsed .content {
 }
 
 .prozon-page-title h1 {
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 .prozon-date {
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 600;
 }
 
@@ -4661,8 +4656,8 @@ body.sidebar-collapsed .content {
 }
 
 .prozon-stat-card {
-  grid-template-columns: minmax(0, 1fr) 58px;
-  min-height: 130px;
+  grid-template-columns: minmax(0, 1fr) 72px;
+  min-height: 122px;
   padding: 18px 12px;
   border-radius: 8px;
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
@@ -4670,19 +4665,25 @@ body.sidebar-collapsed .content {
 
 .prozon-stat-card b {
   margin-bottom: 16px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
 }
 
 .prozon-stat-card strong {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 500;
 }
 
-.prozon-stat-card i[data-icon],
-.prozon-stat-card svg {
-  width: 54px;
-  height: 54px;
+.prozon-stat-art {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+}
+
+.prozon-stat-art svg {
+  width: 70px;
+  height: 70px;
 }
 
 .prozon-news-stack {
@@ -4745,10 +4746,10 @@ body.sidebar-collapsed .content {
 
 .prozon-chart-card {
   display: grid;
-  grid-template-rows: auto minmax(300px, 1fr);
-  min-height: 366px;
+  grid-template-rows: auto minmax(250px, 1fr);
+  min-height: 328px;
   margin: 0;
-  padding: 16px 22px 22px;
+  padding: 14px 20px 20px;
 }
 
 .prozon-chart-card.is-featured {
@@ -4759,7 +4760,7 @@ body.sidebar-collapsed .content {
 .prozon-chart-card h3 {
   margin: 0 0 12px;
   color: #303030;
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 600;
   text-align: center;
 }
@@ -4768,8 +4769,8 @@ body.sidebar-collapsed .content {
   display: grid;
   align-content: center;
   justify-items: center;
-  width: 222px;
-  height: 222px;
+  width: 190px;
+  height: 190px;
   margin: auto;
   border-radius: 50%;
   background: #eeeeef;
@@ -4778,12 +4779,12 @@ body.sidebar-collapsed .content {
 }
 
 .prozon-empty-donut span {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
 }
 
 .prozon-empty-donut strong {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
 }
 
@@ -4792,7 +4793,7 @@ body.sidebar-collapsed .content {
   grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.55fr);
   align-items: center;
   gap: 18px;
-  min-height: 280px;
+  min-height: 238px;
 }
 
 .prozon-donut-ring {
@@ -4801,7 +4802,7 @@ body.sidebar-collapsed .content {
 }
 
 .prozon-donut-chart .prozon-donut-ring > .prozon-empty-donut {
-  border: 65px solid var(--donut-color, #386f98);
+  border: 54px solid var(--donut-color, #386f98);
   background: #eeeeef;
 }
 
@@ -5044,6 +5045,374 @@ body.sidebar-collapsed .content {
   color: #3865f5;
 }
 
+.prozon-workplaces-list .prozon-data-grid tr[data-prozon-workplace-id] {
+  cursor: pointer;
+}
+
+.prozon-workplaces-list .prozon-data-grid tr[data-prozon-workplace-id]:hover {
+  background: #f7fbff;
+}
+
+.prozon-workplace-card {
+  min-height: calc(100vh - 162px);
+  color: #303030;
+}
+
+.prozon-workplace-card form {
+  display: grid;
+  min-height: calc(100vh - 162px);
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+
+.prozon-workplace-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+}
+
+.prozon-workplace-card-top h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.prozon-workplace-card-top button {
+  border: 0;
+  background: transparent;
+  color: #2f7dcc;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.prozon-workplace-card-title {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 58px;
+  align-items: center;
+  gap: 12px;
+  min-height: 100px;
+}
+
+.prozon-workplace-card-title > span[data-icon] {
+  display: grid;
+  width: 66px;
+  height: 66px;
+  place-items: center;
+  color: #3865f5;
+}
+
+.prozon-workplace-card-title svg {
+  width: 64px;
+  height: 64px;
+  stroke-width: 1.8;
+}
+
+.prozon-workplace-card-title strong {
+  display: block;
+  color: #303030;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.prozon-workplace-card-title p {
+  margin: 3px 0 0;
+  color: #303030;
+  font-size: 19px;
+}
+
+.prozon-workplace-card-title .help {
+  width: 54px;
+  min-height: 54px;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  background: #fff;
+  color: #001bff;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.prozon-workplace-tabs {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  border: 1px solid #d8d8d8;
+  background: #f7f7f7;
+}
+
+.prozon-workplace-tabs button {
+  position: relative;
+  min-height: 54px;
+  border: 0;
+  border-right: 1px solid #e0e0e0;
+  background: transparent;
+  color: #333;
+  font-size: 22px;
+  font-weight: 430;
+}
+
+.prozon-workplace-tabs button.active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background: #2f7dcc;
+}
+
+.prozon-workplace-card-body {
+  padding: 16px 6px 20px;
+  overflow: auto;
+}
+
+.prozon-workplace-field {
+  display: grid;
+  grid-template-columns: 270px minmax(180px, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 70px;
+  color: #303030;
+  font-size: 22px;
+}
+
+.prozon-workplace-field span {
+  text-align: right;
+  font-weight: 500;
+}
+
+.prozon-workplace-field input,
+.prozon-workplace-field select,
+.prozon-coordinate-box input,
+.prozon-coordinate-box button,
+.prozon-workplace-address-full textarea {
+  min-height: 54px;
+  padding: 0 14px;
+  border: 1px solid #d4d8dd;
+  border-radius: 6px;
+  background: #fff;
+  color: #303030;
+  font-size: 22px;
+}
+
+.prozon-workplace-field.code-field {
+  grid-template-columns: 270px 270px 56px;
+}
+
+.prozon-workplace-field.code-field::after {
+  content: "↻";
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 1px solid #d4d8dd;
+  border-radius: 6px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.prozon-workplace-general {
+  display: grid;
+  justify-content: start;
+  margin-left: 190px;
+}
+
+.prozon-workplace-general section {
+  width: 940px;
+  padding: 24px 90px;
+  border: 1px solid #dfe2e6;
+  border-radius: 5px;
+}
+
+.prozon-workplace-address {
+  display: grid;
+  grid-template-columns: minmax(520px, 0.9fr) minmax(520px, 0.9fr);
+  gap: 0 80px;
+  padding: 0 80px;
+}
+
+.prozon-workplace-address .prozon-workplace-field {
+  grid-template-columns: 140px minmax(220px, 1fr);
+}
+
+.prozon-workplace-address-full {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 12px;
+  color: #303030;
+  font-size: 22px;
+}
+
+.prozon-workplace-address-full span {
+  text-align: right;
+}
+
+.prozon-workplace-address-full textarea {
+  min-height: 78px;
+  border-style: dashed;
+}
+
+.prozon-coordinate-box {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 42px 0 0;
+  color: #303030;
+  font-size: 22px;
+}
+
+.prozon-coordinate-box > span {
+  grid-row: span 3;
+  text-align: right;
+}
+
+.prozon-coordinate-box label {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.prozon-coordinate-box button {
+  border-color: #111;
+}
+
+.prozon-workplace-phone-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+  color: #303030;
+  font-size: 22px;
+}
+
+.prozon-workplace-phone-row > span {
+  padding-top: 16px;
+  text-align: right;
+}
+
+.prozon-workplace-grid-table {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  min-height: 620px;
+  border: 1px solid #d8d8d8;
+}
+
+.prozon-workplace-grid-table aside {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  background: #efefef;
+}
+
+.prozon-workplace-grid-table aside button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: #303030;
+  font-size: 34px;
+}
+
+.prozon-workplace-grid-table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.prozon-workplace-grid-table th,
+.prozon-workplace-grid-table td {
+  height: 54px;
+  padding: 0 12px;
+  border-right: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  color: #777;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.prozon-workplace-benefits {
+  display: grid;
+  gap: 300px;
+  padding: 34px;
+}
+
+.prozon-workplace-benefits .prozon-workplace-field {
+  grid-template-columns: 320px 470px;
+}
+
+.prozon-workplace-withholding {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 140px;
+  padding: 14px 120px;
+}
+
+.prozon-workplace-withholding section {
+  padding: 18px;
+  border: 1px solid #dfe2e6;
+  border-radius: 5px;
+}
+
+.prozon-workplace-withholding section.full {
+  grid-column: 1 / -1;
+}
+
+.prozon-workplace-withholding .prozon-workplace-field {
+  grid-template-columns: 250px minmax(180px, 1fr);
+}
+
+.prozon-workplace-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 82px;
+  padding: 8px 14px;
+}
+
+.prozon-workplace-card-footer label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #303030;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.prozon-workplace-card-footer input[type="checkbox"] {
+  width: 34px;
+  height: 34px;
+  accent-color: #2f7dcc;
+}
+
+.prozon-workplace-card-footer div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prozon-workplace-card-footer button {
+  min-width: 230px;
+  min-height: 56px;
+  border-radius: 6px;
+  font-size: 22px;
+}
+
+.prozon-workplace-card-footer .save {
+  border: 1px solid #3865f5;
+  background: #3865f5;
+  color: #fff;
+}
+
+.prozon-workplace-card-footer .close {
+  border: 1px solid #3865f5;
+  background: #fff;
+  color: #3865f5;
+}
+
 .prozon-list-screen {
   display: grid;
   gap: 0;
@@ -5081,14 +5450,14 @@ body.sidebar-collapsed .content {
 .prozon-title-block h2 {
   margin: 0 0 4px;
   color: #303030;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 540;
 }
 
 .prozon-title-block p {
   margin: 0;
   color: #303030;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 420;
 }
 
@@ -5114,7 +5483,7 @@ body.sidebar-collapsed .content {
   border-radius: 5px;
   background: #fff;
   color: #303030;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 450;
   text-decoration: none;
   cursor: pointer;
@@ -5202,12 +5571,12 @@ body.sidebar-collapsed .content {
 
 .prozon-data-grid th,
 .prozon-data-grid td {
-  height: 50px;
+  height: 42px;
   padding: 0 12px;
   border-right: 1px solid #d8d8d8;
   border-bottom: 1px solid #d8d8d8;
   color: #333;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 420;
   vertical-align: middle;
   white-space: nowrap;
@@ -5218,7 +5587,7 @@ body.sidebar-collapsed .content {
 .prozon-data-grid th {
   position: relative;
   color: #777;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 520;
   text-align: left;
 }
@@ -5257,6 +5626,15 @@ body.sidebar-collapsed .content {
   justify-content: space-between;
   gap: 10px;
   color: #777;
+}
+
+.prozon-filter-date input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #333;
+  font: inherit;
 }
 
 .prozon-filter-search svg,
