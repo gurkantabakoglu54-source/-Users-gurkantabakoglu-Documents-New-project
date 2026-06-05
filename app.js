@@ -9,8 +9,12 @@ const icons = {
   checklist:
     '<path d="M9 11 11 13 15 9"/><path d="M9 17 11 19 15 15"/><path d="M4 5h16"/><path d="M4 11h2"/><path d="M4 17h2"/>',
   contact: '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/>',
+  download:
+    '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
   edit:
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  filter: '<path d="M3 5h18l-7 8v5l-4 2v-7Z"/>',
+  flag: '<path d="M5 22V4"/><path d="M5 4c4-2 6 2 10 0 2-.8 3-.5 4 0v10c-4-2-6 2-10 0-2-.8-3-.5-4 0"/>',
   folder:
     '<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>',
   invoice:
@@ -40,8 +44,11 @@ const icons = {
   save:
     '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>',
   send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  refresh: '<path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/>',
   trash:
     '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/>',
+  youtube:
+    '<path d="M22 12s0-3-.4-4.4c-.2-.8-.9-1.4-1.7-1.6C18.4 5.6 12 5.6 12 5.6s-6.4 0-7.9.4c-.8.2-1.5.8-1.7 1.6C2 9 2 12 2 12s0 3 .4 4.4c.2.8.9 1.4 1.7 1.6 1.5.4 7.9.4 7.9.4s6.4 0 7.9-.4c.8-.2 1.5-.8 1.7-1.6.4-1.4.4-4.4.4-4.4Z"/><path d="m10 9 5 3-5 3Z"/>',
   users:
     '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-5"/>',
@@ -941,6 +948,7 @@ let dashboardMonth = "05.2026";
 let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
+const prozonActiveSubTabs = {};
 let selectedMessageThreadId = "";
 let selectedReportPerson = "";
 let selectedRatingCompany = "all";
@@ -4742,6 +4750,126 @@ function renderPayrollCenter() {
       })
     : [[currentUser?.companyName || "GLOBAL KALİTEKONTROL", activePersonnel.length]];
   const workplaceMax = Math.max(...workplaceDistribution.map(([, count]) => Number(count) || 0), 1);
+  const splitName = (name = "") => {
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    return {
+      first: parts.slice(0, -1).join(" ") || parts[0] || "",
+      last: parts.length > 1 ? parts.at(-1) : "",
+    };
+  };
+  const prozonValue = (record, key, index) => {
+    if (key === "__row") return index + 1;
+    if (key === "__code") return record.code || record.registryNo || record.invoiceNo || record.id || `AD-${String(index + 1).padStart(3, "0")}`;
+    if (key === "__firstName") return splitName(record.name || record.person || record.candidate).first;
+    if (key === "__lastName") return splitName(record.name || record.person || record.candidate).last;
+    if (key === "__fullName") return record.name || record.person || record.candidate || record.owner || "";
+    if (key === "__workplace") return record.companyName || record.company || record.name || currentUser?.companyName || "GLOBAL KALİTEKONTROL";
+    if (key === "__default") return record.contractStatus === "Aktif" || record.status === "AKTİF" || record.status === "Güncel" ? "✓" : "";
+    if (key === "__page") return record.status || "Aktif";
+    if (key === "__blank") return "";
+    return record[key] ?? "";
+  };
+  const prozonFilterCell = (type = "search") => {
+    if (type === "date") return `<span class="prozon-filter-date"><span data-icon="search"></span><span data-icon="calendar"></span></span>`;
+    if (type === "select") return `<span class="prozon-filter-select">${escapeHtml(trText("Tümü"))}<span data-icon="chevron"></span></span>`;
+    return `<span class="prozon-filter-search"><span data-icon="search"></span></span>`;
+  };
+  const renderProzonTable = (columns, records, moduleId) => {
+    const canEdit = canManageRecords();
+    return `
+      <div class="prozon-grid-shell">
+        <aside class="prozon-grid-rail">
+          ${canEdit && moduleId ? `<button type="button" data-action="add" data-module="${moduleId}" title="${escapeHtml(trText("Ekle"))}">+</button>` : ""}
+          ${canEdit && moduleId ? `<button type="button" data-action="export" data-module="${moduleId}" title="${escapeHtml(trText("Excel"))}"><span data-icon="download"></span></button>` : ""}
+        </aside>
+        <div class="prozon-grid-scroll">
+          <table class="prozon-data-grid">
+            <thead>
+              <tr>${columns.map(([, label]) => `<th>${escapeHtml(trText(label))}<span data-icon="filter"></span></th>`).join("")}</tr>
+              <tr>${columns.map(([, , type]) => `<td>${prozonFilterCell(type)}</td>`).join("")}</tr>
+            </thead>
+            <tbody>
+              ${
+                records.length
+                  ? records
+                      .map(
+                        (record, index) => `
+                          <tr data-row-id="${escapeHtml(record.id || String(index))}">
+                            ${columns.map(([key]) => `<td>${escapeHtml(String(prozonValue(record, key, index) || ""))}</td>`).join("")}
+                          </tr>
+                        `,
+                      )
+                      .join("")
+                  : `<tr class="is-empty"><td colspan="${columns.length}"></td></tr>`
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  };
+  const youtubeUrl = (query) => `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+  const prozonListScreen = ({ title, subtitle, icon, moduleId, columns, records, primaryLabel, helpQuery, toolbar = "", groupable = false }) => `
+    <section class="prozon-list-screen">
+      <header class="prozon-list-heading">
+        <div class="prozon-title-block">
+          <span data-icon="${icon}"></span>
+          <div>
+            <h2>${escapeHtml(trText(title))}</h2>
+            <p>${escapeHtml(trText(subtitle))}</p>
+          </div>
+        </div>
+        <div class="prozon-list-actions">
+          ${toolbar}
+          ${primaryLabel && moduleId && canManageRecords() ? `<button class="primary" type="button" data-action="add" data-module="${moduleId}"><span data-icon="${icon}"></span>${escapeHtml(trText(primaryLabel))}</button>` : ""}
+          <button type="button" data-payroll-center-tab="${payrollCenterTab}"><span data-icon="refresh"></span>${escapeHtml(trText("Yenile"))}</button>
+          ${helpQuery ? `<a href="${youtubeUrl(helpQuery)}" target="_blank" rel="noreferrer" title="${escapeHtml(trText("Video anlatım"))}"><span data-icon="youtube"></span></a>` : ""}
+          <button type="button" title="${escapeHtml(trText("Yardım"))}">?</button>
+        </div>
+      </header>
+      ${groupable ? `<div class="prozon-group-strip"><span data-icon="chevron"></span>${escapeHtml(trText("Gruplamak istediğiniz sütunu bu alana sürükleyiniz."))}</div>` : ""}
+      ${renderProzonTable(columns, records, moduleId)}
+    </section>
+  `;
+  const prozonParameterScreen = () => `
+    <section class="prozon-list-screen prozon-parameter-screen">
+      <header class="prozon-list-heading">
+        <div class="prozon-title-block">
+          <span data-icon="settings"></span>
+          <div>
+            <h2>${escapeHtml(trText("Şirket Parametreleri"))}</h2>
+            <p>${escapeHtml(trText("Şirket parametrelerini bu ekranda düzenleyebilirsiniz."))}</p>
+          </div>
+        </div>
+        <div class="prozon-list-actions">
+          <a href="${youtubeUrl("şirket parametreleri bordro ayarları")}" target="_blank" rel="noreferrer"><span data-icon="youtube"></span></a>
+          <button type="button">?</button>
+        </div>
+      </header>
+      <nav class="prozon-inner-tabs">
+        ${["Yol/Yemek Parametreleri", "Genel Parametreler", "Bordro Parametreleri", "FM Tanımlamaları", "PDKS Tanımlamaları", "Muhtasar Bilgileri", "Entegrasyonlar"]
+          .map((label, index) => `<button class="${index === 1 ? "active" : ""}" type="button">${escapeHtml(trText(label))}</button>`)
+          .join("")}
+      </nav>
+      <div class="prozon-form-card">
+        <h3>${escapeHtml(trText("Sağlık Raporu Genel Prensipleri"))}:</h3>
+        <div class="prozon-form-row">
+          <label>${escapeHtml(trText("Ödeme Tipi"))}: <select><option>${escapeHtml(trText("Raporlu Günler İçin Ödeme Yapma"))}</option><option>${escapeHtml(trText("Raporlu Günleri Öde"))}</option></select></label>
+          <label><input type="checkbox" /> ${escapeHtml(trText("Ücretli Raporlu Günleri Teşviklendir"))}</label>
+          <label><input type="checkbox" /> ${escapeHtml(trText("Oto. Vizite RP. Çek"))}</label>
+        </div>
+        <div class="prozon-form-row">
+          <label>${escapeHtml(trText("Avans Varsayılan Onaylama Tipi"))}: <select><option>${escapeHtml(trText("Sadece Üst Yönetici ve İK Onaylar"))}</option></select></label>
+          <label><input type="checkbox" /> ${escapeHtml(trText("İK'nın Avans Atamasında Personel Onayı Gerekli"))}</label>
+        </div>
+        <div class="prozon-form-row">
+          <label>${escapeHtml(trText("Bordro Hesaplama Tipi"))}: <select><option>${escapeHtml(trText("Dinamik Puantajlı"))}</option></select></label>
+          <label>${escapeHtml(trText("Deneme Süresi(Gün)"))}: <input value="60" /></label>
+          <label>${escapeHtml(trText("Varsayılan Dil"))}: <select><option>${escapeHtml(trText("Türkçe"))}</option><option>English</option></select></label>
+        </div>
+      </div>
+    </section>
+  `;
   const tabContents = {
     home: `
       <section class="prozon-pano-layout">
@@ -4777,7 +4905,7 @@ function renderPayrollCenter() {
                     <h3>${escapeHtml(trText(card.title))}</h3>
                     <p>${escapeHtml(trText(card.text))}</p>
                     <small>${escapeHtml(`${card.source} · ${card.date || todayLabel}`)}</small>
-                    <button type="button" data-payroll-center-tab="legislation">${escapeHtml(trText("Devamı İçin Tıklayınız."))}</button>
+                    <button type="button" data-payroll-center-tab="managementTop">${escapeHtml(trText("Devamı İçin Tıklayınız."))}</button>
                   </div>
                 </article>
               `,
@@ -5164,64 +5292,202 @@ function renderPayrollCenter() {
     ["HEDEF BÜTÇE", "chart", "budgetTop"],
     ["RAPORLAR", "barChart", "reports"],
     ["TANIMLAMALAR", "menu", "definitionsTop"],
+    ["YÖNETİM", "flag", "managementTop"],
   ];
-  tabContents.companyTop = tabContents.company;
-  tabContents.personnelTop = `
-    <section class="bordro-tab-content two-col">
-      ${employee360Panel}
-      ${crudPanel("Personeller", "personnel", ["name", "companyName", "department", "role", "startDate", "trialEndDate", "grossSalary", "status"], personnel)}
-    </section>
-    <section class="bordro-tab-content two-col">
-      ${trialWarningPanel}
-      ${companyRatingPanel}
-    </section>
-  `;
-  tabContents.leaveTop = `
-    <section class="bordro-tab-content">${calendarPanel}</section>
-    <section class="bordro-tab-content two-col">
-      ${crudPanel("İzin Yönetimi", "leaves", ["person", "type", "startDate", "endDate", "dayCount", "approval", "status"], leaveRecords)}
-      ${crudPanel("Puantaj", "attendance", ["person", "period", "dailyHours", "totalHours", "overtimeHours", "status"], attendance)}
-    </section>
-  `;
-  tabContents.payrollTop = `
-    <section class="bordro-tab-content">${payrollCalculatorPanel}</section>
-    <section class="bordro-tab-content">${payrollWorkflowPanel}</section>
-    <section class="bordro-tab-content two-col">
-      ${crudPanel("Bordro İşlemleri", "payroll", ["person", "period", "grossSalary", "netSalary", "cumulativeTaxBase", "incomeTaxAmount", "advance", "netPayable", "payrollStatus"], payroll)}
-      ${payrollExportPanel}
-    </section>
-  `;
-  tabContents.financeTop = `
-    <section class="bordro-tab-content two-col">
-      ${payrollExportPanel}
-      ${crudPanel("Banka / BES", "bankBes", ["person", "bankName", "iban", "besStatus", "besRate", "paymentStatus", "status"], bankBesRecords)}
-    </section>
-    <section class="bordro-tab-content two-col">
-      ${crudPanel("Fatura ve Tahsilat", "invoices", ["invoiceNo", "company", "amount", "withholding", "paymentStatus", "status"], invoices)}
-      ${crudPanel("Borç / Avans", "payroll", ["person", "period", "advance", "deduction", "netPayable", "payrollStatus"], payroll)}
-    </section>
-  `;
-  tabContents.budgetTop = `
-    <section class="bordro-tab-content two-col">
-      ${personReportPanel}
-      ${alertPanel}
-    </section>
-  `;
-  tabContents.definitionsTop = tabContents.system;
+  const prozonSubTabs = {
+    companyTop: [["workplaces", "İşyerleri Listesi"]],
+    personnelTop: [
+      ["personnel", "Personel Listesi"],
+      ["preRegister", "Ön Kayıt Listesi"],
+      ["extraPayments", "Ek Ödeme Listesi"],
+      ["benefits", "Yan Haklar"],
+      ["deductions", "Kesintiler"],
+      ["sickReports", "Hastalık Raporları"],
+      ["overtime", "Fazla Çalışmalar"],
+      ["advances", "Avanslar"],
+    ],
+    leaveTop: [
+      ["leaveRequests", "İzin Talepleri"],
+      ["hrPendingLeaves", "İK Onayı Bekleyen İzin Talepleri"],
+      ["leaveFees", "İzin Ücretleri Listesi"],
+      ["compensatory", "Telafi Çalışmaları"],
+      ["manualEntitlement", "Manuel Hakediş Ekleme"],
+      ["bridgeLeave", "Köprü İzin Tarihleri"],
+      ["leaveDefs", "İzin Tanımlamaları"],
+    ],
+    payrollTop: [
+      ["payrollList", "Bordro Listesi"],
+      ["attendanceSchedule", "Puantaj Cetveli"],
+      ["absenceForm", "Devamsızlık Formu"],
+      ["rules", "Kurlar"],
+      ["payrollExcel", "Bordro Excel Alımları"],
+      ["severance", "Kıdem/İhbar Hesapla"],
+      ["pdks", "PDKS"],
+      ["fixedAttendance", "Sabit Puantaj Cetveli"],
+    ],
+    financeTop: [["banks", "Banka Tanımlamaları"], ["bankSlips", "Banka Fişleri"], ["cash", "Kasa Tanımlamaları"], ["cashSlips", "Kasa Fişleri"]],
+    budgetTop: [["personBudget", "Personel Hedef Bütçe"]],
+    reports: [
+      ["detailedPersonnel", "Detaylı Personel Raporu"],
+      ["allCompanyPersonnel", "Detaylı Personel Raporu (Tüm Şirketler)"],
+      ["compensationLoad", "Tazminat Yükü Raporu"],
+      ["personBalances", "Personel Bakiyeleri Raporu"],
+      ["workCertificate", "Çalışma Belgesi Raporu"],
+      ["costCenter", "Masraf Merkezi"],
+    ],
+    definitionsTop: [
+      ["companyParams", "Şirket Parametreleri"],
+      ["companyHierarchy", "Şirket Hiyerarşisi"],
+      ["personDefs", "Personel Tanımlamaları"],
+      ["payrollDefs", "Bordro Tanımlamaları"],
+      ["benefitDeductionDefs", "Yan Hak / Kesinti Tanımlamaları"],
+      ["incentiveDefs", "Teşvik Tanımlamaları"],
+    ],
+    managementTop: [["documentTypes", "Belge Türleri"], ["laws", "Kanunlar"], ["minimumWage", "Asgari Ücret Parametreleri"], ["sgkParams", "SGK Parametreleri"], ["payrollParams", "Bordro Parametreleri"], ["other", "Diğer"]],
+  };
+  const topScreenDefaults = Object.fromEntries(Object.entries(prozonSubTabs).map(([tab, items]) => [tab, items[0]?.[0]]));
+  const activeSubTab = prozonActiveSubTabs[payrollCenterTab] || topScreenDefaults[payrollCenterTab] || "";
+  const documentTypeRows = [
+    { id: "doc1", no: "1", title: "HİZMET AKDİ İLE TÜM SİGORTA KOLLARINA TABİ ÇALIŞANLAR", default: "✓" },
+    { id: "doc2", no: "2", title: "SOSYAL GÜVENLİK DESTEK PRİMİNE TABİ ÇALIŞANLAR", default: "" },
+    { id: "doc4", no: "4", title: "YER ALTINDA SÜREKLİ ÇALIŞANLAR", default: "" },
+    { id: "doc5", no: "5", title: "YER ALTINDA GRUPLU (MÜNAVEBELİ) ÇALIŞANLAR", default: "" },
+    { id: "doc6", no: "6", title: "YER ÜSTÜ GRUPLU ÇALIŞANLAR", default: "" },
+    { id: "doc7", no: "7", title: "3308 SAYILI KANUNDA BELİRTİLEN ADAY ÇIRAK, ÇIRAK VE İŞLETMELERDE MESLEKİ EĞİTİM GÖREN ÖĞRENCİLER", default: "" },
+    { id: "doc12", no: "12", title: "GEÇİCİ 20. MADDEYE TABİ OLANLAR", default: "" },
+    { id: "doc29", no: "29", title: "TÜM SİGORTA KOLLARINA TABİ ÇALIŞIP 60 GÜN FİİLİ HİZMET SÜRESİ ZAMMINA TABİ ÇALIŞANLAR", default: "" },
+    { id: "doc42", no: "42", title: "3308 SAYILI KANUNDA BELİRTİLEN ADAY ÇIRAK, ÇIRAK VE İŞLETMELERDE MESLEKİ EĞİTİM GÖREN ÖĞRENCİLER", default: "" },
+    { id: "doc90", no: "90", title: "İTİBARİ HİZMET SÜRESİNE TABİ OLARAK ÇALIŞANLAR", default: "" },
+  ];
+  const screenFactories = {
+    companyTop: () =>
+      prozonListScreen({
+        title: "İşyerleri Listesi",
+        subtitle: "İşyerleri ile ilgili işlemlere bu ekrandan erişebilirsiniz",
+        icon: "building",
+        moduleId: "companies",
+        primaryLabel: "Yeni İşyeri",
+        helpQuery: "Prozon işyerleri listesi işyeri tanımlama",
+        columns: [["__code", "KOD"], ["name", "TANIM"], ["startDate", "AÇILIŞ TARİHİ", "date"], ["endDate", "KAPANIŞ TARİHİ", "date"], ["taxNo", "TESCİL NO"], ["__default", "VARSAYILAN", "select"], ["city", "SGK SİCİL NO"]],
+        records: companies,
+      }),
+    personnelTop: () =>
+      prozonListScreen({
+        title: activeSubTab === "preRegister" ? "Personel Ön Kayıt Listesi" : activeSubTab === "advances" ? "Avanslar" : "Personel Listesi",
+        subtitle: "Personeller ile ilgili işlemlere bu ekrandan erişebilirsiniz",
+        icon: "users",
+        moduleId: activeSubTab === "advances" ? "payroll" : "personnel",
+        primaryLabel: activeSubTab === "preRegister" ? "Yeni Ön Kayıt" : activeSubTab === "advances" ? "Yeni Avans" : "Yeni Personel",
+        helpQuery: "personel yönetimi ön kayıt yan hak kesinti avans",
+        groupable: true,
+        columns:
+          activeSubTab === "advances"
+            ? [["person", "AD SOYAD"], ["period", "DÖNEM"], ["advance", "AVANS"], ["deduction", "KESİNTİ"], ["netPayable", "NET ÖDENECEK"], ["payrollStatus", "DURUM", "select"]]
+            : [["status", "DURUM", "select"], ["__firstName", "AD"], ["__lastName", "SOYAD"], ["email", "EPOSTA"], ["phone", "GSM"], ["department", "ÖN KAYIT TANIM"], ["__page", "SAYFA BİLGİSİ"]],
+        records: activeSubTab === "advances" ? payroll : personnel,
+      }),
+    leaveTop: () =>
+      prozonListScreen({
+        title: "İzin Talep Listesi",
+        subtitle: activeSubTab === "hrPendingLeaves" ? "İK onayı bekleyen izin talepleri" : "İzin Talepleri",
+        icon: "calendar",
+        moduleId: "leaves",
+        primaryLabel: "Toplu İzin",
+        helpQuery: "izin yönetimi yıllık izin talebi onay süreci",
+        toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option><option>${escapeHtml(trText("Bekliyor"))}</option><option>${escapeHtml(trText("Onaylandı"))}</option></select>`,
+        columns: [["__code", "SİCİL NO"], ["person", "AD SOYAD"], ["identityNo", "TCKİMLİKNO"], ["type", "İZİN TANIMI"], ["approval", "ONAY DURUMU", "select"], ["startDate", "İZİN BAŞLANGIÇ ...", "date"], ["endDate", "İŞE DÖNÜŞ TARİHİ", "date"], ["dayCount", "GÜN"]],
+        records: activeSubTab === "hrPendingLeaves" ? leaveRecords.filter((record) => record.approval === "Bekliyor") : leaveRecords,
+      }),
+    payrollTop: () =>
+      activeSubTab === "rules"
+        ? prozonListScreen({
+            title: "Kurlar",
+            subtitle: "Bu ekranda kur değerlerini yönetebilirsiniz.",
+            icon: "chart",
+            moduleId: "legislation",
+            helpQuery: "TC Merkez Bankası kur bordro",
+            toolbar: `<label>${escapeHtml(trText("Tarih"))}: <input type="text" value="${escapeHtml(todayLabel)}" /></label><button type="button"><span data-icon="download"></span>${escapeHtml(trText("TC Merkez Bankasından Kurları Al"))}</button>`,
+            groupable: true,
+            columns: [["validUntil", "TARİH", "date"], ["source", "DÖVİZ", "select"], ["value", "ALIŞ"], ["value", "SATIŞ"], ["period", "EFEKTİF A..."], ["status", "EFEKTİF S..."]],
+            records: legislationRecords,
+          })
+        : prozonListScreen({
+            title: activeSubTab === "severance" ? "Kıdem/İhbar Hesapla" : "Bordro Listesi",
+            subtitle: "Bordro ve puantaj işlemlerini bu ekrandan yönetebilirsiniz.",
+            icon: "invoice",
+            moduleId: activeSubTab === "attendanceSchedule" ? "attendance" : "payroll",
+            primaryLabel: "Yeni Bordro",
+            helpQuery: "bordro listesi puantaj cetveli kıdem ihbar hesaplama",
+            groupable: true,
+            columns: [["person", "AD SOYAD"], ["period", "DÖNEM"], ["grossSalary", "BRÜT"], ["netSalary", "NET"], ["advance", "AVANS"], ["netPayable", "NET ÖDEME"], ["payrollStatus", "DURUM", "select"]],
+            records: payroll,
+          }),
+    financeTop: () =>
+      prozonListScreen({
+        title: activeSubTab === "banks" ? "Banka Tanım Listesi" : "Finans Listesi",
+        subtitle: "Bu formda banka tanımlarını listeleyebilirsiniz.",
+        icon: "wallet",
+        moduleId: "bankBes",
+        primaryLabel: "Yeni Banka",
+        helpQuery: "banka tanımları bordro banka fişleri",
+        columns: [["bankName", "BANKA ADI"], ["person", "PERSONEL"], ["iban", "IBAN"], ["besStatus", "BES", "select"], ["paymentStatus", "ÖDEME DURUMU", "select"]],
+        records: bankBesRecords,
+      }),
+    budgetTop: () =>
+      prozonListScreen({
+        title: "Personel Hedef Bütçe",
+        subtitle: "Karşılaştırma yapmak için bütçe taslaklarını seçiniz.",
+        icon: "chart",
+        moduleId: "reports",
+        helpQuery: "personel hedef bütçe bordro maliyet raporu",
+        columns: [["status", "SEÇ", "select"], ["title", "TANIM"], ["period", "BAŞLANGIÇ TA...", "date"], ["period", "BİTİŞ TARİHİ", "date"], ["type", "AÇIKLAMA"]],
+        records: reports,
+      }),
+    reports: () =>
+      prozonListScreen({
+        title: "Detaylı Personel Raporu",
+        subtitle: "Bu ekranda personellerinizin bilgilerini detaylı şekilde raporlayabilirsiniz.",
+        icon: "barChart",
+        moduleId: "reports",
+        primaryLabel: "Excel'e Aktar",
+        helpQuery: "detaylı personel raporu bordro raporlama",
+        groupable: true,
+        columns: [["__fullName", "AD SOYAD"], ["__workplace", "SON ÇALIŞILAN İŞYERİ"], ["city", "İLİ"], ["identityNo", "TCKİMLİKNO"], ["registryNo", "SGK SİCİL NO"], ["__code", "SİCİL NO"]],
+        records: personnel,
+      }),
+    definitionsTop: () => prozonParameterScreen(),
+    managementTop: () =>
+      prozonListScreen({
+        title: "Belge Türleri Listesi",
+        subtitle: "Belge Türleri oluşturup, düzenleyebilirsiniz.",
+        icon: "invoice",
+        moduleId: "legislation",
+        helpQuery: "SGK belge türleri kanunlar bordro parametreleri",
+        columns: [["no", "BELGE NO"], ["title", "TANIM"], ["default", "VARSAYILAN", "select"]],
+        records: documentTypeRows,
+      }),
+  };
+  tabContents.companyTop = screenFactories.companyTop();
+  tabContents.personnelTop = screenFactories.personnelTop();
+  tabContents.leaveTop = screenFactories.leaveTop();
+  tabContents.payrollTop = screenFactories.payrollTop();
+  tabContents.financeTop = screenFactories.financeTop();
+  tabContents.budgetTop = screenFactories.budgetTop();
+  tabContents.reports = screenFactories.reports();
+  tabContents.definitionsTop = screenFactories.definitionsTop();
+  tabContents.managementTop = screenFactories.managementTop();
   const activeContent = tabContents[payrollCenterTab] || tabContents.home;
-  const activeTabTitle = prozonMenuItems.find(([, , tab]) => tab === payrollCenterTab)?.[0] || payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa";
 
   document.querySelector("#pageContent").innerHTML = `
     <section class="prozon-dashboard-shell">
       <header class="prozon-mainbar">
-        <div class="prozon-brandmark">
-          <strong>artı destek</strong>
-          <small>${escapeHtml(trText("KURUMSAL TEKNOLOJİ ÇÖZÜMLERİ"))}</small>
+        <div class="prozon-brandmark logo-mode">
+          <img src="assets/arti-destek-logo.png" alt="Artı Destek" />
         </div>
         <h2>${escapeHtml((currentUser?.companyName || "GLOBAL KALİTEKONTROL").toLocaleUpperCase("tr"))} - (${dashboardYear})</h2>
         <div class="prozon-toolbar">
           <button type="button" data-payroll-center-tab="assistant" title="${escapeHtml(trText("Ara"))}"><span data-icon="search"></span></button>
-          <button type="button" data-payroll-center-tab="system"><span data-icon="grid"></span>${escapeHtml(trText("Ayarlar"))}</button>
+          <button type="button" data-payroll-center-tab="definitionsTop"><span data-icon="grid"></span>${escapeHtml(trText("Ayarlar"))}</button>
           <button class="prozon-avatar" type="button" data-payroll-center-tab="selfService">${escapeHtml((currentUser?.displayName || "GT").split(" ").map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr"))}</button>
         </div>
       </header>
@@ -5229,7 +5495,7 @@ function renderPayrollCenter() {
           ${prozonMenuItems
             .map(
               ([label, icon, tab]) => `
-                <button class="${tab === payrollCenterTab || (label === "Bordro Merkezi Menü" && payrollCenterTab === "home") ? "active" : ""}" type="button" data-payroll-center-tab="${tab}">
+                <button class="${tab === payrollCenterTab ? "active" : ""}" type="button" data-payroll-center-tab="${tab}">
                   <span data-icon="${icon}"></span>
                   ${escapeHtml(trText(label))}
                 </button>
@@ -5237,32 +5503,51 @@ function renderPayrollCenter() {
             )
             .join("")}
       </nav>
+      ${
+        prozonSubTabs[payrollCenterTab]?.length
+          ? `<nav class="prozon-sub-nav" aria-label="${escapeHtml(trText("Alt menü"))}">
+              ${prozonSubTabs[payrollCenterTab]
+                .map(
+                  ([id, label]) => `
+                    <button class="${id === activeSubTab ? "active" : ""}" type="button" data-prozon-subtab="${id}">
+                      <span></span>${escapeHtml(trText(label))}
+                    </button>
+                  `,
+                )
+                .join("")}
+            </nav>`
+          : ""
+      }
       <main class="prozon-content">
-        <header class="prozon-page-title">
-          <div>
-            <h1>${escapeHtml(payrollCenterTab === "home" ? `${trText("Hoşgeldin")} ${currentUser?.displayName || "Gürkan Tabakoğlu"}...` : trText(activeTabTitle))}</h1>
-          </div>
-          <div class="bordro-period">
-            <strong class="prozon-date">${escapeHtml(todayLabel)}</strong>
-            <button class="prozon-check-button" type="button" data-action="daily-accident-check" title="${escapeHtml(trText("Günlük kontrol"))}">
-              <span data-icon="checklist"></span>
-            </button>
-            <label>${escapeHtml(trText("Tarih Aralığı"))}
-              <select id="dashboardRangeSelect">
-                ${dashboardRangeOptions
-                  .map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === dashboardRange ? "selected" : ""}>${escapeHtml(trText(label))}</option>`)
-                  .join("")}
-              </select>
-            </label>
-            <label>${escapeHtml(trText("Dönem"))}
-              <select id="dashboardMonthSelect">
-                ${getDashboardMonths()
-                  .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
-                  .join("")}
-              </select>
-            </label>
-          </div>
-        </header>
+        ${
+          payrollCenterTab === "home"
+            ? `<header class="prozon-page-title">
+                <div>
+                  <h1>${escapeHtml(`${trText("Hoşgeldin")} ${currentUser?.displayName || "Gürkan Tabakoğlu"}...`)}</h1>
+                </div>
+                <div class="bordro-period">
+                  <strong class="prozon-date">${escapeHtml(todayLabel)}</strong>
+                  <button class="prozon-check-button" type="button" data-action="daily-accident-check" title="${escapeHtml(trText("Günlük kontrol"))}">
+                    <span data-icon="checklist"></span>
+                  </button>
+                  <label>${escapeHtml(trText("Tarih Aralığı"))}
+                    <select id="dashboardRangeSelect">
+                      ${dashboardRangeOptions
+                        .map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === dashboardRange ? "selected" : ""}>${escapeHtml(trText(label))}</option>`)
+                        .join("")}
+                    </select>
+                  </label>
+                  <label>${escapeHtml(trText("Dönem"))}
+                    <select id="dashboardMonthSelect">
+                      ${getDashboardMonths()
+                        .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
+                        .join("")}
+                    </select>
+                  </label>
+                </div>
+              </header>`
+            : ""
+        }
         ${activeContent}
       </main>
     </section>
@@ -7589,6 +7874,15 @@ document.addEventListener("click", (event) => {
     renderPayrollCenter();
     renderIcons();
     closeMobileSidebar();
+    return;
+  }
+
+  const prozonSubTabButton = event.target.closest("[data-prozon-subtab]");
+  if (prozonSubTabButton) {
+    prozonActiveSubTabs[payrollCenterTab] = prozonSubTabButton.dataset.prozonSubtab;
+    activeModuleId = "payrollCenter";
+    renderPayrollCenter();
+    renderIcons();
     return;
   }
 
