@@ -4518,6 +4518,532 @@ body.sidebar-collapsed .content {
   font-weight: 700;
 }
 
+.prozon-dashboard-shell {
+  min-height: 100vh;
+  padding: 4px 22px 18px;
+  background: #fff;
+  color: #303030;
+  font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+}
+
+.prozon-mainbar {
+  grid-template-columns: 150px minmax(220px, 1fr) auto;
+  gap: 24px;
+  min-height: 66px;
+}
+
+.prozon-brandmark.logo-mode {
+  width: 150px;
+  min-width: 150px;
+}
+
+.prozon-brandmark strong {
+  color: #9aa3b5;
+  font-size: 39px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.78;
+}
+
+.prozon-brandmark small {
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.prozon-mainbar h2 {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.prozon-toolbar {
+  gap: 8px;
+}
+
+.prozon-toolbar button,
+.prozon-check-button {
+  min-height: 43px;
+  padding: 0 12px;
+  border-color: #dce3f2;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(33, 57, 105, 0.14);
+}
+
+.prozon-toolbar button:first-child,
+.prozon-check-button {
+  width: 48px;
+}
+
+.prozon-toolbar svg,
+.prozon-check-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.prozon-avatar {
+  width: 58px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  font-size: 22px !important;
+}
+
+.prozon-horizontal-nav {
+  gap: clamp(14px, 2vw, 40px);
+  margin-top: 4px;
+  padding: 8px 0 14px;
+  border-bottom: 0;
+}
+
+.prozon-horizontal-nav button {
+  min-height: 54px;
+  padding: 0 8px;
+  border-radius: 8px 8px 0 0;
+  color: #333;
+  font-size: clamp(13px, 0.82vw, 15px);
+  font-weight: 500;
+}
+
+.prozon-horizontal-nav button.active {
+  padding: 0 18px;
+  color: #2d73d5;
+  background: #f8f8f8;
+  font-weight: 600;
+}
+
+.prozon-horizontal-nav span[data-icon],
+.prozon-horizontal-nav svg {
+  width: 27px;
+  height: 27px;
+}
+
+.prozon-content {
+  padding: 42px 16px 26px;
+}
+
+.prozon-page-title {
+  margin-bottom: 26px;
+}
+
+.prozon-page-title h1 {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.prozon-date {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.prozon-pano-layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 0.9fr) minmax(430px, 0.9fr) minmax(360px, 0.64fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.prozon-stat-board,
+.prozon-chart-card,
+.prozon-news-card {
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.09);
+}
+
+.prozon-stat-board {
+  padding: 22px 12px;
+}
+
+.prozon-stat-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 24px;
+}
+
+.prozon-stat-card {
+  grid-template-columns: minmax(0, 1fr) 58px;
+  min-height: 130px;
+  padding: 18px 12px;
+  border-radius: 8px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.prozon-stat-card b {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.prozon-stat-card strong {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.prozon-stat-card i[data-icon],
+.prozon-stat-card svg {
+  width: 54px;
+  height: 54px;
+}
+
+.prozon-news-stack {
+  max-height: 100%;
+  gap: 24px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.prozon-news-card {
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 22px;
+  min-height: 176px;
+  padding: 16px;
+}
+
+.prozon-news-thumb {
+  min-height: 102px;
+  background:
+    linear-gradient(160deg, rgba(30, 45, 64, 0.74), rgba(255, 255, 255, 0.15)),
+    linear-gradient(90deg, #e8eef6, #ffffff);
+}
+
+.prozon-news-thumb strong {
+  color: #9aa3b5;
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.prozon-news-thumb span {
+  font-size: 8px;
+}
+
+.prozon-news-card h3 {
+  margin: 0 0 26px;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.16;
+}
+
+.prozon-news-card p,
+.prozon-news-card small {
+  color: #303030;
+  font-size: 15px;
+  line-height: 1.42;
+}
+
+.prozon-news-card button {
+  margin-top: 10px;
+  padding: 0;
+  font-size: 15px;
+}
+
+.prozon-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: 26px;
+  margin-top: 26px;
+}
+
+.prozon-chart-card {
+  display: grid;
+  grid-template-rows: auto minmax(300px, 1fr);
+  min-height: 366px;
+  margin: 0;
+  padding: 16px 22px 22px;
+}
+
+.prozon-chart-card.is-featured {
+  grid-template-rows: auto 1fr;
+  min-height: auto;
+}
+
+.prozon-chart-card h3 {
+  margin: 0 0 12px;
+  color: #303030;
+  font-size: 21px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.prozon-empty-donut {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  width: 222px;
+  height: 222px;
+  margin: auto;
+  border-radius: 50%;
+  background: #eeeeef;
+  color: #444;
+  line-height: 1;
+}
+
+.prozon-empty-donut span {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.prozon-empty-donut strong {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.prozon-donut-chart {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.55fr);
+  align-items: center;
+  gap: 18px;
+  min-height: 280px;
+}
+
+.prozon-donut-ring {
+  display: grid;
+  place-items: center;
+}
+
+.prozon-donut-chart .prozon-donut-ring > .prozon-empty-donut {
+  border: 65px solid var(--donut-color, #386f98);
+  background: #eeeeef;
+}
+
+.prozon-donut-chart ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #666;
+  font-size: 15px;
+}
+
+.prozon-donut-chart li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.prozon-donut-chart i {
+  width: 14px;
+  height: 14px;
+}
+
+.prozon-axis-chart {
+  display: grid;
+  grid-template-rows: minmax(230px, 1fr) 36px;
+  min-height: 300px;
+}
+
+.prozon-axis-plot {
+  position: relative;
+  display: flex;
+  align-items: end;
+  gap: 34px;
+  padding: 18px 48px 0;
+  border-left: 1px solid #6b7280;
+  border-bottom: 1px solid #6b7280;
+  background: repeating-linear-gradient(to top, transparent 0 52px, #d6d6d6 53px 54px);
+}
+
+.prozon-axis-plot i:not(.combo-line) {
+  display: block;
+  width: 30px;
+  height: max(2px, var(--h));
+  min-height: 1px;
+  background: #29aee9;
+}
+
+.prozon-axis-chart.line .prozon-axis-plot i {
+  width: 2px;
+  background: transparent;
+  border-left: 2px solid #29aee9;
+}
+
+.prozon-axis-chart.combo .combo-bar {
+  background: rgba(41, 174, 233, 0.46);
+}
+
+.prozon-axis-chart.combo .combo-line {
+  display: block;
+  width: 2px;
+  height: max(2px, var(--h));
+  background: #ff493d;
+}
+
+.prozon-axis-labels {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.prozon-horizontal-chart {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  min-height: 280px;
+}
+
+.prozon-horizontal-chart div {
+  display: grid;
+  grid-template-columns: minmax(160px, 260px) minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.prozon-horizontal-chart span {
+  color: #666;
+  font-size: 14px;
+}
+
+.prozon-horizontal-chart b {
+  width: var(--w);
+  height: 18px;
+  min-width: 4px;
+  background: #29aee9;
+}
+
+.prozon-chart-manager {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.prozon-chart-manager-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: min(836px, 96vw);
+  max-height: min(94vh, 960px);
+  margin: 0 0 0 0;
+  padding: 18px 18px 16px;
+  border-radius: 0 0 8px 0;
+  background: #fff;
+  box-shadow: 8px 0 22px rgba(15, 23, 42, 0.15);
+}
+
+.prozon-chart-manager-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.prozon-chart-manager-panel header div,
+.prozon-chart-manager-title {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.prozon-chart-manager-panel h2 {
+  margin: 0;
+  font-size: 29px;
+  font-weight: 500;
+}
+
+.prozon-chart-manager-panel header button {
+  border: 0;
+  background: transparent;
+  color: #303030;
+}
+
+.prozon-chart-manager-panel header svg {
+  width: 34px;
+  height: 34px;
+}
+
+.prozon-chart-manager-title {
+  padding: 34px 6px 20px;
+  color: #303030;
+  font-size: 34px;
+}
+
+.prozon-chart-manager-title span[data-icon],
+.prozon-chart-manager-title svg {
+  width: 82px;
+  height: 82px;
+  color: #3865f5;
+}
+
+.prozon-chart-table {
+  overflow-y: auto;
+  border: 1px solid #d8d8d8;
+}
+
+.prozon-chart-table .head,
+.prozon-chart-table label {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  min-height: 74px;
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.prozon-chart-table .head span,
+.prozon-chart-table label span,
+.prozon-chart-table label b {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-right: 1px solid #d8d8d8;
+  color: #333;
+  font-size: 29px;
+  font-weight: 500;
+}
+
+.prozon-chart-table .head span {
+  justify-content: center;
+  color: #777;
+}
+
+.prozon-chart-table label span {
+  justify-content: center;
+}
+
+.prozon-chart-table label b {
+  border-right: 0;
+}
+
+.prozon-chart-table input {
+  width: 44px;
+  height: 44px;
+  accent-color: #2f7dcc;
+}
+
+.prozon-chart-manager-panel footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+.prozon-chart-manager-panel footer button {
+  min-height: 72px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 29px;
+  font-weight: 500;
+}
+
+.prozon-chart-manager-panel .outline-green {
+  border: 2px solid #009b16;
+  color: #008b12;
+}
+
+.prozon-chart-manager-panel .solid-blue {
+  border: 2px solid #3865f5;
+  background: #3865f5;
+  color: #fff;
+}
+
+.prozon-chart-manager-panel .outline-blue {
+  border: 2px solid #3865f5;
+  color: #3865f5;
+}
+
 .prozon-list-screen {
   display: grid;
   gap: 0;

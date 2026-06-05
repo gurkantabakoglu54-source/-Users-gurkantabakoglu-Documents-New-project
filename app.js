@@ -949,6 +949,37 @@ let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
 const prozonActiveSubTabs = {};
+const prozonPanoChartDefinitions = [
+  ["workplacePersonnel", "İşyeri/Personel Sayısı", "İşyerlerine Göre Personel Sayısı Dağılımı", "donut"],
+  ["workplacePayroll", "İşyeri/Bordro Sayıları", "İşyerlerine Göre Bordro Sayısı", "donut"],
+  ["sameDistrict", "Aynı İlçede Yaşayan Personeller", "Aynı İlçede Yaşayan Personel Sayısı", "donut"],
+  ["nationality", "Uyruğa Göre Personel Sayısı", "Uyruklara Göre Personeller", "donut"],
+  ["occupation", "Meslek Koduna Göre Personel Sayısı", "Meslek Koduna Göre Personeller", "donut"],
+  ["employeeType", "Çalışan Tipine Göre Personel Sayıları", "Çalışan Tipine Göre Personel Sayıları", "donut"],
+  ["leaveDefinition", "İzin Tanımına Göre İzinli Personel Sayısı", "İzin Tanımına Göre İzinli Personel Sayıları", "donut"],
+  ["sgkEntryPending", "SGK İşe Giriş Bildirim Bekleyen Sayısı", "SGK İşe Giriş Bildirim Bekleyen Sayısı", "donut"],
+  ["sgkExitPending", "SGK İşten Çıkış Bildirim Bekleyen Sayısı", "SGK İşten Çıkış Bildirim Bekleyen Sayısı", "donut"],
+  ["preRegister", "Ön Kayıt Durumları", "Ön Kayıt Sayıları", "donut"],
+  ["overtime", "Fazla Mesai Kayıtları", "Fazla Mesai Kayıtları", "donut"],
+  ["sickReports", "Aylara Göre Raporlu Personeller (12 Ay)", "Raporlu Personel Sayısı (Son 8 Ay)", "line"],
+  ["personMoves", "Personel Sayısı", "Personel Giriş-Çıkış Hareketleri", "combo"],
+  ["leaveBalance", "Aylara göre toplam izin bakiyesi", "Aylara Göre Toplam İzin Bakiyesi", "line"],
+  ["projectDays", "Proje Bitimine Kalan Gün Sayısı (Teknopark)", "Proje Bitimine Kalan Gün Sayısı (Teknopark)", "horizontal"],
+  ["gender", "Cinsiyet Dağılımına Göre Personeller", "Cinsiyet Dağılımına Göre Personeller", "gender"],
+  ["education", "Eğitim Düzeyi - Çalışan Sayısı", "Eğitim Düzeyi - Çalışan Sayısı", "horizontal"],
+  ["ageSeniority", "Yaş - Kıdem Yılı Ortalaması", "Yaş - Kıdem Yılı Ortalaması", "bar"],
+  ["department", "Departman Bazlı Personel Sayısı", "Departman Bazlı Personel Sayısı", "donut"],
+  ["ageRange", "Yaş Aralığı - Çalışan Sayısı", "Yaş Aralığı - Çalışan Sayısı", "bar"],
+];
+const storedProzonChartsRaw = localStorage.getItem("prozon-pano-charts");
+let storedProzonCharts = null;
+try {
+  storedProzonCharts = storedProzonChartsRaw ? JSON.parse(storedProzonChartsRaw) : null;
+} catch {
+  storedProzonCharts = null;
+}
+let prozonVisibleChartIds = Array.isArray(storedProzonCharts) ? storedProzonCharts : prozonPanoChartDefinitions.map(([id]) => id);
+let prozonChartManagerOpen = false;
 let selectedMessageThreadId = "";
 let selectedReportPerson = "";
 let selectedRatingCompany = "all";
@@ -4742,7 +4773,7 @@ function renderPayrollCenter() {
           source: "İK & Bordro",
           text: "Muhtasar, SGK ve maaş ödeme takvimi aylık bazda takip edilmelidir.",
         },
-      ]).slice(0, 2);
+      ]).slice(0, 6);
   const workplaceDistribution = companies.length
     ? companies.map((company) => {
         const count = personnel.filter((person) => normalizeText(person.companyName) === normalizeText(company.name)).length;
@@ -4750,6 +4781,147 @@ function renderPayrollCenter() {
       })
     : [[currentUser?.companyName || "GLOBAL KALİTEKONTROL", activePersonnel.length]];
   const workplaceMax = Math.max(...workplaceDistribution.map(([, count]) => Number(count) || 0), 1);
+  const countBy = (records, key, fallback = "BELİRTİLMEMİŞ") => {
+    const grouped = records.reduce((acc, record) => {
+      const value = String(record[key] || fallback).trim() || fallback;
+      acc[value] = (acc[value] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(grouped);
+  };
+  const emptyDonut = (total = 0) => `
+    <div class="prozon-empty-donut" aria-label="${escapeHtml(trText("Toplam"))}">
+      <span>${escapeHtml(trText("Toplam"))}</span>
+      <strong>${Number(total).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+    </div>
+  `;
+  const prozonDonutChart = (rows, options = {}) => {
+    const total = rows.reduce((sum, [, value]) => sum + (Number(value) || 0), 0);
+    if (!total) return emptyDonut(0);
+    const first = rows[0];
+    const color = options.color || "#386f98";
+    return `
+      <div class="prozon-donut-chart" style="--donut-color:${color}">
+        <div class="prozon-donut-ring">${emptyDonut(total)}</div>
+        <ul>
+          ${rows
+            .map(([label, value]) => `<li><i style="background:${color}"></i><span>${escapeHtml(trText(label))}</span><strong>${escapeHtml(String(value))}</strong></li>`)
+            .join("")}
+        </ul>
+      </div>
+    `;
+  };
+  const prozonAxisChart = (labels, rows, type = "bar") => {
+    const max = Math.max(...rows.map(([, value]) => Number(value) || 0), 1);
+    return `
+      <div class="prozon-axis-chart ${type}">
+        <div class="prozon-axis-plot">
+          ${rows
+            .map(
+              ([, value], index) =>
+                type === "combo"
+                  ? `<i class="combo-bar" style="--x:${index};--h:${Math.max(0, Math.round(((Number(value) || 0) / max) * 100))}%"></i><i class="combo-line" style="--x:${index};--h:${Math.max(0, Math.round(((Number(value) || 0) / max) * 100))}%"></i>`
+                  : `<i style="--h:${Math.max(0, Math.round(((Number(value) || 0) / max) * 100))}%"></i>`,
+            )
+            .join("")}
+        </div>
+        <div class="prozon-axis-labels">${labels.map((label) => `<span>${escapeHtml(trText(label))}</span>`).join("")}</div>
+      </div>
+    `;
+  };
+  const prozonHorizontalChart = (rows) => {
+    const max = Math.max(...rows.map(([, value]) => Number(value) || 0), 1);
+    if (!rows.some(([, value]) => Number(value) > 0)) {
+      return `<div class="prozon-axis-chart horizontal"><div class="prozon-axis-plot"></div></div>`;
+    }
+    return `
+      <div class="prozon-horizontal-chart">
+        ${rows
+          .map(([label, value]) => `<div><span>${escapeHtml(trText(label))}</span><b style="--w:${Math.max(4, Math.round(((Number(value) || 0) / max) * 100))}%"></b><strong>${escapeHtml(String(value))}</strong></div>`)
+          .join("")}
+      </div>
+    `;
+  };
+  const monthLabels = ["Kasım", "Aralık", "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran"];
+  const prozonChartRows = {
+    workplacePersonnel: workplaceDistribution,
+    workplacePayroll: workplaceDistribution.map(([name]) => [name, payroll.filter((record) => normalizeText(record.companyName || record.company || "") === normalizeText(name)).length]),
+    sameDistrict: countBy(personnel, "city"),
+    nationality: [["BELİRTİLMEMİŞ", personnel.length]],
+    occupation: countBy(personnel, "role"),
+    employeeType: countBy(personnel, "status"),
+    leaveDefinition: countBy(monthlyLeaves, "type"),
+    sgkEntryPending: [["Bekleyen", Math.max(0, hired - payroll.length)]],
+    sgkExitPending: [["Bekleyen", Math.max(0, left)]],
+    preRegister: [["Ön Kayıt", personnel.filter((record) => normalizeText(record.status).includes("bekle")).length]],
+    overtime: [["Fazla Mesai", attendance.filter((record) => parseMoney(record.overtimeHours) > 0).length]],
+    sickReports: monthLabels.map((label) => [label, 0]),
+    personMoves: monthLabels.map((label, index) => [label, index === monthLabels.length - 1 ? Math.max(hired, left) : 0]),
+    leaveBalance: monthLabels.map((label) => [label, 0]),
+    projectDays: [["KALAN GÜN/PROJE ADI", 0]],
+    gender: [["BELİRTİLMEMİŞ", Math.max(personnel.length, 1)]],
+    education: [["KAYIT SAYISI/EĞİTİM DÜZEYİ TANIM", 0]],
+    ageSeniority: [["Yaş Ort.", 0], ["Kıdem Ort.", 0]],
+    department: countBy(personnel, "department"),
+    ageRange: [["18-25", 0], ["26-33", 0], ["34-39", 0], ["40-47", 0], ["48-54", 0], ["55-62", 0], ["63+", 0]],
+  };
+  const renderProzonPanoChart = ([id, , title, type], compact = false) => {
+    const rows = prozonChartRows[id] || [];
+    const chart =
+      type === "donut"
+        ? prozonDonutChart(rows)
+        : type === "gender"
+          ? prozonDonutChart(rows, { color: "#386f98" })
+          : type === "horizontal"
+            ? prozonHorizontalChart(rows)
+            : prozonAxisChart(rows.map(([label]) => label), rows, type);
+    return `
+      <article class="prozon-chart-card ${compact ? "is-featured" : ""}" data-chart-id="${escapeHtml(id)}">
+        <h3>${escapeHtml(trText(title))}</h3>
+        ${chart}
+      </article>
+    `;
+  };
+  const selectedPanoCharts = prozonPanoChartDefinitions.filter(([id]) => prozonVisibleChartIds.includes(id));
+  const featuredChart = selectedPanoCharts[0] || null;
+  const remainingCharts = featuredChart ? selectedPanoCharts.filter(([id]) => id !== featuredChart[0]) : [];
+  const prozonChartManager = prozonChartManagerOpen
+    ? `
+      <section class="prozon-chart-manager" role="dialog" aria-modal="true" aria-label="${escapeHtml(trText("Pano Grafik Yönetimi"))}">
+        <div class="prozon-chart-manager-panel">
+          <header>
+            <div>
+              <span data-icon="checklist"></span>
+              <h2>${escapeHtml(trText("PANO GRAFİK YÖNETİMİ"))}</h2>
+            </div>
+            <button type="button" data-action="pano-chart-close" aria-label="${escapeHtml(trText("Kapat"))}"><span data-icon="x"></span></button>
+          </header>
+          <div class="prozon-chart-manager-title">
+            <span data-icon="checklist"></span>
+            <strong>${escapeHtml(trText("Pano Grafik Yönetimi"))}</strong>
+          </div>
+          <div class="prozon-chart-table">
+            <div class="head"><span>${escapeHtml(trText("SEÇ"))}</span><span>${escapeHtml(trText("GRAFİK ADI"))}</span></div>
+            ${prozonPanoChartDefinitions
+              .map(
+                ([id, label]) => `
+                  <label>
+                    <span><input type="checkbox" data-prozon-chart-toggle="${escapeHtml(id)}" ${prozonVisibleChartIds.includes(id) ? "checked" : ""} /></span>
+                    <b>${escapeHtml(trText(label))}</b>
+                  </label>
+                `,
+              )
+              .join("")}
+          </div>
+          <footer>
+            <button class="outline-green" type="button" data-action="pano-chart-clear">${escapeHtml(trText("Hepsini Kaldır"))}</button>
+            <button class="solid-blue" type="button" data-action="pano-chart-close">${escapeHtml(trText("Tamam"))}</button>
+            <button class="outline-blue" type="button" data-action="pano-chart-close">${escapeHtml(trText("Kapat"))}</button>
+          </footer>
+        </div>
+      </section>
+    `
+    : "";
   const splitName = (name = "") => {
     const parts = String(name).trim().split(/\s+/).filter(Boolean);
     return {
@@ -4892,6 +5064,7 @@ function renderPayrollCenter() {
               .join("")}
           </div>
         </article>
+        ${featuredChart ? renderProzonPanoChart(featuredChart, true) : ""}
         <aside class="prozon-news-stack">
           ${prozonNewsCards
             .map(
@@ -4913,22 +5086,10 @@ function renderPayrollCenter() {
             .join("")}
         </aside>
       </section>
-      <section class="prozon-chart-card">
-        <h3>${escapeHtml(trText("İşyerlerine Göre Personel Sayısı Dağılımı"))}</h3>
-        <div class="prozon-workplace-chart">
-          ${workplaceDistribution
-            .map(
-              ([name, count]) => `
-                <div>
-                  <span>${escapeHtml(name)}</span>
-                  <b style="--w:${Math.max(4, Math.round(((Number(count) || 0) / workplaceMax) * 100))}%"></b>
-                  <strong>${escapeHtml(String(count))}</strong>
-                </div>
-              `,
-            )
-            .join("")}
-        </div>
+      <section class="prozon-chart-grid">
+        ${remainingCharts.map((chart) => renderProzonPanoChart(chart)).join("")}
       </section>
+      ${prozonChartManager}
     `,
     assistant: `
       <section class="bordro-board">${assistantPanel}${smartAlertsPanel}</section>
@@ -5482,7 +5643,8 @@ function renderPayrollCenter() {
     <section class="prozon-dashboard-shell">
       <header class="prozon-mainbar">
         <div class="prozon-brandmark logo-mode">
-          <img src="assets/arti-destek-logo.png" alt="Artı Destek" />
+          <strong>prozon</strong>
+          <small>KURUMSAL TEKNOLOJİ ÇÖZÜMLERİ</small>
         </div>
         <h2>${escapeHtml((currentUser?.companyName || "GLOBAL KALİTEKONTROL").toLocaleUpperCase("tr"))} - (${dashboardYear})</h2>
         <div class="prozon-toolbar">
@@ -5530,20 +5692,9 @@ function renderPayrollCenter() {
                   <button class="prozon-check-button" type="button" data-action="daily-accident-check" title="${escapeHtml(trText("Günlük kontrol"))}">
                     <span data-icon="checklist"></span>
                   </button>
-                  <label>${escapeHtml(trText("Tarih Aralığı"))}
-                    <select id="dashboardRangeSelect">
-                      ${dashboardRangeOptions
-                        .map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === dashboardRange ? "selected" : ""}>${escapeHtml(trText(label))}</option>`)
-                        .join("")}
-                    </select>
-                  </label>
-                  <label>${escapeHtml(trText("Dönem"))}
-                    <select id="dashboardMonthSelect">
-                      ${getDashboardMonths()
-                        .map((month) => `<option value="${escapeHtml(month)}" ${month === dashboardMonth ? "selected" : ""}>${escapeHtml(month)}</option>`)
-                        .join("")}
-                    </select>
-                  </label>
+                  <button class="prozon-check-button" type="button" data-action="pano-chart-manager" title="${escapeHtml(trText("Pano Grafik Yönetimi"))}">
+                    <span data-icon="settings"></span>
+                  </button>
                 </div>
               </header>`
             : ""
@@ -8015,6 +8166,28 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (action === "pano-chart-manager") {
+    prozonChartManagerOpen = true;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "pano-chart-close") {
+    prozonChartManagerOpen = false;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "pano-chart-clear") {
+    prozonVisibleChartIds = [];
+    localStorage.setItem("prozon-pano-charts", JSON.stringify(prozonVisibleChartIds));
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   const module = getModule(manageButton.dataset.module || activeModuleId);
   const recordId = manageButton.dataset.id || selectedRecordId;
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete", "notification-read"];
@@ -8120,6 +8293,17 @@ document.addEventListener("input", (event) => {
     } else {
       renderDashboard();
     }
+    renderIcons();
+    return;
+  }
+
+  if (event.target.matches("[data-prozon-chart-toggle]")) {
+    const chartId = event.target.dataset.prozonChartToggle;
+    prozonVisibleChartIds = event.target.checked
+      ? [...new Set([...prozonVisibleChartIds, chartId])]
+      : prozonVisibleChartIds.filter((id) => id !== chartId);
+    localStorage.setItem("prozon-pano-charts", JSON.stringify(prozonVisibleChartIds));
+    renderPayrollCenter();
     renderIcons();
     return;
   }
