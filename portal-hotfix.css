@@ -1464,6 +1464,18 @@ tbody tr.selected {
   box-shadow: var(--ad-shadow);
 }
 
+.prozon-app-shell {
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: calc(100vh - 92px);
+  border: 1px solid rgba(124, 58, 237, 0.14);
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, #ffffff 0 300px, #f6f4fb 300px 100%);
+  box-shadow:
+    0 24px 70px rgba(49, 46, 129, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
 .bordro-center-full {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -1476,6 +1488,104 @@ tbody tr.selected {
   border-right: 1px solid #e3e8f3;
   background:
     linear-gradient(180deg, #ffffff 0%, #f7f8fc 100%);
+}
+
+.prozon-suite-menu {
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 92px);
+  gap: 16px;
+  padding: 24px 18px;
+  border-right: 1px solid rgba(124, 58, 237, 0.12);
+  background:
+    radial-gradient(circle at 25% 0%, rgba(236, 72, 153, 0.1), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #fbfaff 62%, #f5f3ff 100%);
+}
+
+.prozon-suite-menu .mini-brand {
+  gap: 5px;
+  padding: 4px 10px 20px;
+}
+
+.prozon-suite-menu .mini-brand strong {
+  color: #5b21b6;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.prozon-suite-menu .mini-brand span {
+  color: #7c3aed;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.prozon-suite-menu .workplace-select {
+  min-height: 52px;
+  padding: 12px 14px;
+  border-color: rgba(124, 58, 237, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.08)),
+    #fff;
+  color: #1f2937;
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.08);
+}
+
+.prozon-suite-menu nav {
+  gap: 7px;
+  padding-right: 4px;
+}
+
+.prozon-suite-menu nav button {
+  min-height: 48px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 920;
+}
+
+.prozon-suite-menu nav button span[data-icon] {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f1eaff;
+  color: #7c3aed;
+}
+
+.prozon-suite-menu nav button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.prozon-suite-menu nav button:hover,
+.prozon-suite-menu nav button.active {
+  background: linear-gradient(90deg, rgba(236, 72, 153, 0.1), rgba(124, 58, 237, 0.08));
+  color: #111827;
+  box-shadow: inset 4px 0 0 #ec4899;
+}
+
+.prozon-suite-menu nav button:hover span[data-icon],
+.prozon-suite-menu nav button.active span[data-icon] {
+  background: linear-gradient(145deg, #ede9fe, #fce7f3);
+  color: #6d28d9;
+}
+
+.prozon-app-shell .bordro-workspace {
+  padding: 22px 26px 32px;
+  background:
+    radial-gradient(circle at 94% 0%, rgba(124, 58, 237, 0.12), transparent 28%),
+    linear-gradient(180deg, #fbfcff 0%, #f2f4fa 100%);
+}
+
+.prozon-app-shell .bordro-topline {
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 38px rgba(49, 46, 129, 0.08);
 }
 
 .mini-brand {
@@ -3933,6 +4043,35 @@ body.sidebar-collapsed .content {
 }
 
 @media (max-width: 760px) {
+  .prozon-app-shell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    border-radius: 18px;
+    background: #f8fafc;
+  }
+
+  .prozon-suite-menu {
+    position: relative;
+    height: auto;
+    padding: 14px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.12);
+  }
+
+  .prozon-suite-menu nav {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .prozon-suite-menu nav button {
+    min-width: 190px;
+  }
+
+  .prozon-app-shell .bordro-workspace {
+    padding: 14px;
+  }
+
   .side-nav button {
     min-height: 58px;
     border-radius: 16px;

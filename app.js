@@ -5089,15 +5089,54 @@ function renderPayrollCenter() {
     `,
   };
   const activeContent = tabContents[payrollCenterTab] || tabContents.home;
+  const prozonMenuItems = [
+    ["Anasayfa", "panel", "home"],
+    ["Bordro Merkezi Menü", "grid", "home"],
+    ["Sistem Yönetimi", "settings", "system"],
+    ["Takvim Yönetimi", "calendar", "calendar"],
+    ["Şirket Yönetimi", "building", "company"],
+    ["Tanımlar", "checklist", "operationsHub"],
+    ["Bordro Tanımları", "invoice", "operationsHub"],
+    ["Raporlar", "chart", "reports"],
+    ["İşlemler", "wallet", "operationsHub"],
+    ["Dinamik Rapor", "barChart", "reports"],
+    ["Borç / Avans Yönetimi", "wallet", "operationsHub"],
+    ["Matbu Formlar", "invoice", "forms"],
+    ["Asistan & Mesajlar", "bot", "assistant"],
+    ["Kırmızı Bülten", "bell", "redBulletin"],
+  ];
+  const activeTabTitle = payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa";
 
   document.querySelector("#pageContent").innerHTML = `
-    <section class="bordro-center bordro-center-full">
+    <section class="bordro-center prozon-app-shell">
+      <aside class="bordro-center-menu prozon-suite-menu">
+        <div class="mini-brand">
+          <strong>${escapeHtml(trText("Artı Destek"))}</strong>
+          <span>${escapeHtml(trText("Bordro operasyon merkezi"))}</span>
+        </div>
+        <button class="workplace-select" type="button" data-payroll-center-tab="company">
+          <b>${escapeHtml(currentUser?.companyName || companies[0]?.name || "ARTI DESTEK")}</b>
+          <span data-icon="chevron"></span>
+        </button>
+        <nav>
+          ${prozonMenuItems
+            .map(
+              ([label, icon, tab]) => `
+                <button class="${tab === payrollCenterTab || (label === "Bordro Merkezi Menü" && payrollCenterTab === "home") ? "active" : ""}" type="button" data-payroll-center-tab="${tab}">
+                  <span data-icon="${icon}"></span>
+                  ${escapeHtml(trText(label))}
+                </button>
+              `,
+            )
+            .join("")}
+        </nav>
+      </aside>
       <main class="bordro-workspace">
         <header class="bordro-topline">
           <div>
             <span>${escapeHtml(trText("Personel Yönetimi"))}</span>
             <span>${escapeHtml(trText("Bordro İşlemleri"))}</span>
-            <strong>${escapeHtml(trText(payrollCenterTabs.find(([id]) => id === payrollCenterTab)?.[1] || "Anasayfa"))}</strong>
+            <strong>${escapeHtml(trText(activeTabTitle))}</strong>
           </div>
           <div class="bordro-period">
             <label>${escapeHtml(trText("Tarih Aralığı"))}
