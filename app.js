@@ -953,6 +953,41 @@ let prozonWorkplaceCardOpen = false;
 let prozonWorkplaceCardTab = "general";
 let prozonEditingWorkplaceId = "";
 let prozonWorkplaceDraft = {};
+const prozonNaceRows = [
+  ["01", "Bitkisel ve hayvansal üretim ile avcılık ve ilgili hizmet faaliyetleri", ""],
+  ["01.1", "Tek yıllık (uzun ömürlü olmayan) bitkisel ürünlerin yetiştirilmesi", ""],
+  ["01.11", "Tahılların (pirinç hariç), baklagillerin ve yağlı tohumların yetiştirilmesi", ""],
+  ["01.11.07", "Baklagillerin yetiştirilmesi (fasulye, bakla, nohut, mercimek, bezelye vb.)", "Tehlikeli"],
+  ["01.11.12", "Tahıl yetiştiriciliği (buğday, arpa, çavdar, yulaf vb.) (pirinç hariç)", "Tehlikeli"],
+  ["01.11.14", "Yağlı tohum yetiştiriciliği (soya, yer fıstığı, pamuk çekirdeği, keten tohumu vb.)", "Tehlikeli"],
+  ["01.12", "Çeltik (kabuklu pirinç) yetiştirilmesi", ""],
+  ["01.12.14", "Çeltik (kabuklu pirinç) yetiştirilmesi", "Tehlikeli"],
+  ["01.13", "Sebze, kavun-karpuz, kök ve yumru sebzelerin yetiştirilmesi", ""],
+  ["01.13.17", "Şeker pancarı yetiştirilmesi", "Tehlikeli"],
+  ["01.13.22", "Kökleri, soğanları ve yumruları tüketilen sebzelerin yetiştirilmesi", "Tehlikeli"],
+  ["10.11.01", "Etin işlenmesi ve saklanması", "Tehlikeli"],
+  ["13.92.01", "Hazır ev tekstili ürünleri imalatı", "Tehlikeli"],
+  ["25.62.01", "Metallerin makinede işlenmesi ve şekil verilmesi", "Tehlikeli"],
+  ["29.10.01", "Motorlu kara taşıtlarının imalatı", "Tehlikeli"],
+  ["30.11.01", "Gemilerin ve yüzer yapıların inşası", "Çok Tehlikeli"],
+  ["41.20.01", "İkamet amaçlı binaların inşaatı", "Çok Tehlikeli"],
+  ["43.21.01", "Elektrik tesisatı işleri", "Çok Tehlikeli"],
+  ["46.90.01", "Belirli bir mala tahsis edilmemiş toptan ticaret", "Az Tehlikeli"],
+  ["47.11.01", "Bakkal ve marketlerde yapılan perakende ticaret", "Az Tehlikeli"],
+  ["49.41.01", "Kara yolu ile şehirler arası yük taşımacılığı", "Tehlikeli"],
+  ["56.10.01", "Lokantalar ve seyyar yemek hizmeti faaliyetleri", "Az Tehlikeli"],
+  ["62.01.01", "Bilgisayar programlama faaliyetleri", "Az Tehlikeli"],
+  ["69.20.01", "Muhasebe, defter tutma ve denetim faaliyetleri; vergi danışmanlığı", "Az Tehlikeli"],
+  ["70.22.01", "İşletme ve diğer idari danışmanlık faaliyetleri", "Az Tehlikeli"],
+  ["71.12.10", "Mühendislik danışmanlık hizmetleri", "Az Tehlikeli"],
+  ["71.20.07", "Teknik test ve analiz faaliyetleri", "Tehlikeli"],
+  ["78.20.01", "Geçici iş bulma kuruluşlarının faaliyetleri", "Az Tehlikeli"],
+  ["80.10.01", "Özel güvenlik faaliyetleri", "Tehlikeli"],
+  ["81.21.01", "Binaların genel temizliği", "Tehlikeli"],
+  ["85.59.13", "İş sağlığı ve güvenliği eğitim faaliyetleri", "Az Tehlikeli"],
+  ["86.21.01", "Genel hekimlik uygulama faaliyetleri", "Az Tehlikeli"],
+  ["95.11.01", "Bilgisayar ve çevre birimlerinin onarımı", "Az Tehlikeli"],
+];
 const prozonPanoChartDefinitions = [
   ["workplacePersonnel", "İşyeri/Personel Sayısı", "İşyerlerine Göre Personel Sayısı Dağılımı", "donut"],
   ["workplacePayroll", "İşyeri/Bordro Sayıları", "İşyerlerine Göre Bordro Sayısı", "donut"],
@@ -5011,6 +5046,19 @@ function renderPayrollCenter() {
   const baseWorkplaceRecord = companies.find((record) => record.id === prozonEditingWorkplaceId) || {};
   const workplaceRecord = { ...baseWorkplaceRecord, ...prozonWorkplaceDraft };
   const workplaceValue = (key, fallback = "") => escapeHtml(workplaceRecord[key] || fallback);
+  const getWorkplaceRows = (key, fallback = []) => {
+    const source = prozonWorkplaceDraft[key] ?? workplaceRecord[key] ?? fallback;
+    if (Array.isArray(source)) return source;
+    if (typeof source === "string" && source.trim()) {
+      try {
+        const parsed = JSON.parse(source);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    return fallback;
+  };
   const prozonField = (label, key, options = null, extra = "") => `
     <label class="prozon-workplace-field ${extra}">
       <span>${escapeHtml(trText(label))}:</span>
@@ -5032,6 +5080,84 @@ function renderPayrollCenter() {
       </table>
     </div>
   `;
+  const prozonEditableGrid = (key, columns, emptyRow) => {
+    const rows = getWorkplaceRows(key, []);
+    return `
+      <div class="prozon-workplace-grid-table editable" data-workplace-grid="${escapeHtml(key)}">
+        <aside>
+          <button type="button" data-action="workplace-row-add" data-grid-key="${escapeHtml(key)}">+</button>
+          ${rows.length ? `<button type="button" data-action="workplace-row-delete" data-grid-key="${escapeHtml(key)}" data-row-index="${rows.length - 1}">×</button>` : ""}
+        </aside>
+        <table>
+          <thead><tr>${columns.map(([, label]) => `<th>${escapeHtml(trText(label))}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${
+              rows.length
+                ? rows
+                    .map(
+                      (row, rowIndex) => `
+                        <tr>
+                          ${columns
+                            .map(([field, label, type, options = []]) => {
+                              const value = row[field] || "";
+                              if (type === "checkbox") {
+                                return `<td><input type="checkbox" name="${key}__${rowIndex}__${field}" ${value ? "checked" : ""} /></td>`;
+                              }
+                              if (type === "select") {
+                                return `<td><select name="${key}__${rowIndex}__${field}">${options.map((option) => `<option value="${escapeHtml(option)}" ${option === value ? "selected" : ""}>${escapeHtml(trText(option))}</option>`).join("")}</select></td>`;
+                              }
+                              return `<td><input name="${key}__${rowIndex}__${field}" value="${escapeHtml(value)}" aria-label="${escapeHtml(trText(label))}" /></td>`;
+                            })
+                            .join("")}
+                          <td class="row-actions">
+                            <button type="button" data-action="workplace-row-delete" data-grid-key="${escapeHtml(key)}" data-row-index="${rowIndex}">Sil</button>
+                          </td>
+                        </tr>
+                      `,
+                    )
+                    .join("")
+                : `<tr class="is-empty"><td colspan="${columns.length + 1}"></td></tr>`
+            }
+          </tbody>
+        </table>
+      </div>
+      <input type="hidden" name="${escapeHtml(key)}" value="${escapeHtml(JSON.stringify(rows))}" data-empty-row="${escapeHtml(JSON.stringify(emptyRow))}" />
+    `;
+  };
+  const prozonNaceGrid = () => {
+    const selected = new Set(getWorkplaceRows("naceRows", []).map((row) => row.code));
+    return `
+      <div class="prozon-nace-picker">
+        <header>
+          <h3>${escapeHtml(trText("NACE KODLARI"))}</h3>
+          <span data-icon="note"></span>
+          <div><strong>${escapeHtml(trText("Nace Kodları"))}</strong><p>- ${escapeHtml(trText("Nace Kodu Seçim Ekranı"))}</p></div>
+        </header>
+        <div class="prozon-nace-table">
+          <table>
+            <thead>
+              <tr><th>${escapeHtml(trText("SEÇ"))}</th><th>${escapeHtml(trText("KOD"))}</th><th>${escapeHtml(trText("FAALİYET TANIMI"))}</th><th>${escapeHtml(trText("TEHLİKE S"))}</th></tr>
+              <tr><td>${escapeHtml(trText("Tümü"))}</td><td><span data-icon="search"></span></td><td><span data-icon="search"></span></td><td><span data-icon="search"></span></td></tr>
+            </thead>
+            <tbody>
+              ${prozonNaceRows
+                .map(
+                  ([code, title, danger]) => `
+                    <tr>
+                      <td><input type="checkbox" name="naceRows__${escapeHtml(code)}" ${selected.has(code) ? "checked" : ""} data-nace-code="${escapeHtml(code)}" data-nace-title="${escapeHtml(title)}" data-nace-danger="${escapeHtml(danger)}" /></td>
+                      <td>${escapeHtml(code)}</td>
+                      <td>${escapeHtml(title)}</td>
+                      <td>${escapeHtml(danger)}</td>
+                    </tr>
+                  `,
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  };
   const prozonWorkplaceCardScreen = () => {
     const cardTitle = prozonEditingWorkplaceId ? "İŞYERİ KARTI" : "İŞYERİ KARTI (YENİ KAYIT)";
     const content = {
@@ -5078,17 +5204,58 @@ function renderPayrollCenter() {
           <div class="prozon-workplace-phone-row"><span>${escapeHtml(trText("Telefonlar"))}:</span>${prozonGridTable(["NUMARA", "NUMARA TİPİ", "DAHİLİ"])}</div>
         </div>
       `,
-      bank: prozonGridTable(["TANIM", "ŞUBE KODU", "HESAP NO", "IBAN NO", "BANKA FİRMA KODU", "DÖVİZ TİPİ"]),
-      publicOfficials: prozonGridTable(["AD SOYAD", "TİP", "NUMARA TİPİ", "NUMARA", "DAHİLİ", "AKTİF Mİ"]),
-      nace: prozonGridTable(["VARSAYILAN", "KOD", "FAALİYET TANIMI", "TEHLİKE SINIFI"], 1),
-      hierarchy: prozonGridTable(["BİRİM TANIMI"], 1),
+      bank: prozonEditableGrid(
+        "bankRows",
+        [
+          ["name", "TANIM"],
+          ["branchCode", "ŞUBE KODU"],
+          ["accountNo", "HESAP NO"],
+          ["iban", "IBAN NO"],
+          ["bankCompanyCode", "BANKA FİRMA KODU"],
+          ["currency", "DÖVİZ TİPİ", "select", ["TL", "EUR", "USD"]],
+        ],
+        { name: "", branchCode: "", accountNo: "", iban: "", bankCompanyCode: "", currency: "TL" },
+      ),
+      publicOfficials: prozonEditableGrid(
+        "publicOfficialRows",
+        [
+          ["fullName", "AD SOYAD"],
+          ["type", "TİP", "select", ["Seçiniz...", "İŞKUR Yetkilisi", "SGK Yetkilisi", "Muhasebe", "İK"]],
+          ["numberType", "NUMARA TİPİ", "select", ["Seçiniz...", "Cep", "İş", "Dahili"]],
+          ["number", "NUMARA"],
+          ["extension", "DAHİLİ"],
+          ["active", "AKTİF Mİ", "checkbox"],
+        ],
+        { fullName: "", type: "Seçiniz...", numberType: "Seçiniz...", number: "", extension: "", active: true },
+      ),
+      nace: prozonNaceGrid(),
+      hierarchy: prozonEditableGrid(
+        "hierarchyRows",
+        [
+          ["unitName", "BİRİM TANIMI"],
+          ["parentUnit", "ÜST BİRİM"],
+          ["hierarchyName", "HİYERARŞİK KONUM"],
+        ],
+        { unitName: "", parentUnit: "", hierarchyName: "" },
+      ),
       roadMeal: `
         <div class="prozon-workplace-benefits">
           ${prozonField("Varsayılan Yemek Hakediş Tipi", "mealType", ["Şirket Varsayılanı Ver", "Yok", "Günlük", "Aylık"])}
           ${prozonField("Varsayılan Yol Hakediş Tipi", "roadType", ["Şirket Varsayılanı Ver", "Yok", "Günlük", "Aylık"])}
         </div>
       `,
-      costCenter: prozonGridTable(["MASRAF MERKEZİ TANIM", "KOD", "ORAN"], 1),
+      costCenter: prozonEditableGrid(
+        "costCenterRows",
+        [
+          ["name", "MASRAF MERKEZİ TANIM"],
+          ["code", "KOD"],
+          ["rate", "ORAN"],
+          ["tryAmount", "TL HARCAMA"],
+          ["eurAmount", "EUR HARCAMA"],
+          ["usdAmount", "USD HARCAMA"],
+        ],
+        { name: "", code: "", rate: "100,00", tryAmount: "", eurAmount: "", usdAmount: "" },
+      ),
       withholding: `
         <div class="prozon-workplace-withholding">
           <section>${prozonField("Serbest Bölgede", "freeZone", ["", "Evet", "Hayır"])}</section>
@@ -7707,6 +7874,11 @@ function saveProzonWorkplaceCard() {
     payrollCalcType: String(formData.get("payrollCalcType") || previousRecord.payrollCalcType || "").trim(),
     bdpWorkplaceCode: String(formData.get("bdpWorkplaceCode") || previousRecord.bdpWorkplaceCode || "").trim(),
     visitReportType: String(formData.get("visitReportType") || previousRecord.visitReportType || "").trim(),
+    bankRows: Array.isArray(prozonWorkplaceDraft.bankRows) ? prozonWorkplaceDraft.bankRows : previousRecord.bankRows || [],
+    publicOfficialRows: Array.isArray(prozonWorkplaceDraft.publicOfficialRows) ? prozonWorkplaceDraft.publicOfficialRows : previousRecord.publicOfficialRows || [],
+    naceRows: Array.isArray(prozonWorkplaceDraft.naceRows) ? prozonWorkplaceDraft.naceRows : previousRecord.naceRows || [],
+    hierarchyRows: Array.isArray(prozonWorkplaceDraft.hierarchyRows) ? prozonWorkplaceDraft.hierarchyRows : previousRecord.hierarchyRows || [],
+    costCenterRows: Array.isArray(prozonWorkplaceDraft.costCenterRows) ? prozonWorkplaceDraft.costCenterRows : previousRecord.costCenterRows || [],
     isDefault: formData.get("isDefault") === "on",
     contractStatus: formData.get("isDefault") === "on" ? "Aktif" : previousRecord.contractStatus || "Beklemede",
     status: previousRecord.status || "AKTİF",
@@ -7735,8 +7907,31 @@ function captureProzonWorkplaceDraft() {
   if (!form) return;
   const formData = new FormData(form);
   for (const [key, value] of formData.entries()) {
+    if (key.includes("__")) continue;
     prozonWorkplaceDraft[key] = String(value);
   }
+  document.querySelectorAll("[data-workplace-grid]").forEach((grid) => {
+    const key = grid.dataset.workplaceGrid;
+    const rows = [];
+    grid.querySelectorAll("tbody tr:not(.is-empty)").forEach((row, rowIndex) => {
+      const record = {};
+      row.querySelectorAll("input[name], select[name]").forEach((input) => {
+        const field = input.name.split("__").at(-1);
+        record[field] = input.type === "checkbox" ? input.checked : input.value;
+      });
+      if (Object.values(record).some((value) => value !== "" && value !== false)) rows.push(record);
+    });
+    prozonWorkplaceDraft[key] = rows;
+  });
+  const naceRows = [];
+  form.querySelectorAll("[data-nace-code]:checked").forEach((input) => {
+    naceRows.push({
+      code: input.dataset.naceCode || "",
+      title: input.dataset.naceTitle || "",
+      danger: input.dataset.naceDanger || "",
+    });
+  });
+  if (form.querySelector("[data-nace-code]")) prozonWorkplaceDraft.naceRows = naceRows;
   prozonWorkplaceDraft.isDefault = form.querySelector('[name="isDefault"]')?.checked ? "on" : "";
 }
 
@@ -8465,6 +8660,34 @@ document.addEventListener("click", (event) => {
     prozonEditingWorkplaceId = "";
     prozonWorkplaceCardTab = "general";
     prozonWorkplaceDraft = {};
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "workplace-row-add") {
+    captureProzonWorkplaceDraft();
+    const gridKey = manageButton.dataset.gridKey;
+    const emptyRowInput = document.querySelector(`[name="${gridKey}"][data-empty-row]`);
+    let emptyRow = {};
+    try {
+      emptyRow = JSON.parse(emptyRowInput?.dataset.emptyRow || "{}");
+    } catch {
+      emptyRow = {};
+    }
+    const rows = Array.isArray(prozonWorkplaceDraft[gridKey]) ? prozonWorkplaceDraft[gridKey] : [];
+    prozonWorkplaceDraft[gridKey] = [...rows, emptyRow];
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "workplace-row-delete") {
+    captureProzonWorkplaceDraft();
+    const gridKey = manageButton.dataset.gridKey;
+    const rowIndex = Number(manageButton.dataset.rowIndex || "-1");
+    const rows = Array.isArray(prozonWorkplaceDraft[gridKey]) ? prozonWorkplaceDraft[gridKey] : [];
+    prozonWorkplaceDraft[gridKey] = rows.filter((_, index) => index !== rowIndex);
     renderPayrollCenter();
     renderIcons();
     return;

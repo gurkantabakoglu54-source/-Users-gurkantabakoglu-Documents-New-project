@@ -5073,7 +5073,7 @@ body.sidebar-collapsed .content {
 
 .prozon-workplace-card-top h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -5110,14 +5110,14 @@ body.sidebar-collapsed .content {
 .prozon-workplace-card-title strong {
   display: block;
   color: #303030;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
 }
 
 .prozon-workplace-card-title p {
   margin: 3px 0 0;
   color: #303030;
-  font-size: 19px;
+  font-size: 16px;
 }
 
 .prozon-workplace-card-title .help {
@@ -5145,7 +5145,7 @@ body.sidebar-collapsed .content {
   border-right: 1px solid #e0e0e0;
   background: transparent;
   color: #333;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 430;
 }
 
@@ -5171,7 +5171,7 @@ body.sidebar-collapsed .content {
   gap: 14px;
   min-height: 70px;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .prozon-workplace-field span {
@@ -5190,7 +5190,7 @@ body.sidebar-collapsed .content {
   border-radius: 6px;
   background: #fff;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .prozon-workplace-field.code-field {
@@ -5240,7 +5240,7 @@ body.sidebar-collapsed .content {
   gap: 14px;
   margin-top: 12px;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .prozon-workplace-address-full span {
@@ -5259,7 +5259,7 @@ body.sidebar-collapsed .content {
   gap: 10px;
   margin: 42px 0 0;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .prozon-coordinate-box > span {
@@ -5285,7 +5285,7 @@ body.sidebar-collapsed .content {
   gap: 14px;
   margin-top: 28px;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .prozon-workplace-phone-row > span {
@@ -5323,14 +5323,46 @@ body.sidebar-collapsed .content {
 
 .prozon-workplace-grid-table th,
 .prozon-workplace-grid-table td {
-  height: 54px;
+  height: 42px;
   padding: 0 12px;
   border-right: 1px solid #d8d8d8;
   border-bottom: 1px solid #d8d8d8;
   color: #777;
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 500;
   text-align: left;
+}
+
+.prozon-workplace-grid-table.editable input,
+.prozon-workplace-grid-table.editable select {
+  width: 100%;
+  height: 34px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #303030;
+  font: inherit;
+}
+
+.prozon-workplace-grid-table.editable input:focus,
+.prozon-workplace-grid-table.editable select:focus {
+  border-color: #2f7dcc;
+  background: #fff;
+  outline: 0;
+}
+
+.prozon-workplace-grid-table .row-actions {
+  width: 86px;
+  text-align: center;
+}
+
+.prozon-workplace-grid-table .row-actions button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  background: #fff;
+  color: #c0342b;
+  font-size: 14px;
 }
 
 .prozon-workplace-benefits {
@@ -5378,7 +5410,7 @@ body.sidebar-collapsed .content {
   align-items: center;
   gap: 12px;
   color: #303030;
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 500;
 }
 
@@ -5398,7 +5430,7 @@ body.sidebar-collapsed .content {
   min-width: 230px;
   min-height: 56px;
   border-radius: 6px;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .prozon-workplace-card-footer .save {
@@ -5411,6 +5443,89 @@ body.sidebar-collapsed .content {
   border: 1px solid #3865f5;
   background: #fff;
   color: #3865f5;
+}
+
+.prozon-nace-picker {
+  display: grid;
+  gap: 14px;
+}
+
+.prozon-nace-picker header {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.prozon-nace-picker header h3 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.prozon-nace-picker header span[data-icon],
+.prozon-nace-picker header svg {
+  width: 74px;
+  height: 74px;
+  color: #3865f5;
+}
+
+.prozon-nace-picker header strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.prozon-nace-picker header p {
+  margin: 4px 0 0;
+  font-size: 17px;
+}
+
+.prozon-nace-table {
+  max-height: 600px;
+  overflow: auto;
+  border: 1px solid #d8d8d8;
+}
+
+.prozon-nace-table table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.prozon-nace-table th,
+.prozon-nace-table td {
+  height: 42px;
+  padding: 0 12px;
+  border-right: 1px solid #d8d8d8;
+  border-bottom: 1px solid #d8d8d8;
+  color: #303030;
+  font-size: 17px;
+  text-align: left;
+}
+
+.prozon-nace-table th:first-child,
+.prozon-nace-table td:first-child {
+  width: 110px;
+  text-align: center;
+}
+
+.prozon-nace-table th:nth-child(2),
+.prozon-nace-table td:nth-child(2) {
+  width: 150px;
+}
+
+.prozon-nace-table th:last-child,
+.prozon-nace-table td:last-child {
+  width: 150px;
+}
+
+.prozon-nace-table input[type="checkbox"] {
+  width: 28px;
+  height: 28px;
+  accent-color: #2f7dcc;
 }
 
 .prozon-list-screen {
