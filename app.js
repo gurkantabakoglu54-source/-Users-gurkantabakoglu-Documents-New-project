@@ -582,17 +582,190 @@ const modules = [
     icon: "calendar",
     breadcrumb: ["Panel", "İzinler", "İzin Listesi"],
     columns: [
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TC Kimlik No"],
       ["person", "Personel"],
       ["type", "İzin Türü"],
-      ["startDate", "Başlangıç"],
-      ["endDate", "Bitiş"],
+      ["startDate", "Başlangıç", "date"],
+      ["endDate", "Bitiş", "date"],
       ["dayCount", "Gün"],
       ["approval", "Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+      ["approvedStart", "Onaylanan Başlangıç", "date"],
+      ["approvedReturn", "Onaylanan İşe Dönüş", "date"],
       ["status", "Durumu", "select", ["AKTİF", "PASİF"]],
     ],
     records: [
       { id: "lv1", person: "Zehra Battal", type: "Yıllık İzin", startDate: "12/05/2026", endDate: "14/05/2026", dayCount: "3", approval: "Bekliyor", status: "AKTİF" },
     ],
+  },
+  {
+    id: "leaveFees",
+    title: "İzin Ücreti",
+    icon: "wallet",
+    breadcrumb: ["Panel", "İzin Yönetimi", "İzin Ücretleri Listesi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Ad Soyad"],
+      ["homePhone", "Ev Telefonu"],
+      ["phone", "GSM"],
+      ["workPhone", "İş Telefonu"],
+      ["role", "Role Adı"],
+      ["mailStatus", "SMS Mail Forma"],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["paymentDate", "Ödeme Tarihi", "date"],
+      ["status", "Durum", "select", ["Bekliyor", "Ödendi", "İptal"]],
+    ],
+    records: [],
+  },
+  {
+    id: "compensatoryLeaves",
+    title: "Telafi Çalışması",
+    icon: "checklist",
+    breadcrumb: ["Panel", "İzin Yönetimi", "Telafi Çalışmaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["requester", "Talep Eden"],
+      ["person", "Ad Soyad"],
+      ["startDate", "Başlangıç Tarih Saati", "datetime-local"],
+      ["endDate", "Bitiş Tarih Saati", "datetime-local"],
+      ["description", "Açıklama"],
+      ["status", "Durum", "select", ["Planlandı", "Tamamlandı", "İptal"]],
+    ],
+    records: [],
+  },
+  {
+    id: "manualLeaveEntitlements",
+    title: "Manuel İzin Hakedişi",
+    icon: "calendar",
+    breadcrumb: ["Panel", "İzin Yönetimi", "Manuel Hakediş Ekleme"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Ad Soyad"],
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TCKimlikNo"],
+      ["leaveType", "İzin Tanımı"],
+      ["entitlementDay", "Hak Ediş Gün Sayısı"],
+      ["entitlementDate", "Hak Ediş Tarihi", "date"],
+      ["description", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "bridgeLeaveDates",
+    title: "Köprü İzin",
+    icon: "calendar",
+    breadcrumb: ["Panel", "İzin Yönetimi", "Köprü İzin Tarihleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["title", "Tanım"],
+      ["startDate", "Başlangıç Tarihi", "date"],
+      ["endDate", "Bitiş Tarihi", "date"],
+      ["returnDate", "İşe Dönüş Tarihi", "date"],
+      ["dayCount", "İzin Günü"],
+      ["description", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "leaveDefinitions",
+    title: "İzin Tanımı",
+    icon: "calendar",
+    breadcrumb: ["Panel", "İzin Yönetimi", "İzin Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["leaveName", "İzin Tanımı"],
+      ["leaveCode", "İzin Kodu"],
+      ["entitlementType", "İzin Hak Ediş", "select", ["Yıllık", "Aylık", "Manuel", "Yok"]],
+      ["systemRecord", "Sistem Kaydı", "select", ["Evet", "Hayır"]],
+      ["allCompanies", "Tüm Şirketlerde", "select", ["Evet", "Hayır"]],
+      ["status", "Durum", "select", ["Aktif", "Pasif"]],
+    ],
+    records: [{ id: "ld1", leaveName: "YILLIK İZİN", leaveCode: "Yİ", entitlementType: "Yıllık", systemRecord: "Evet", allCompanies: "Evet", status: "Aktif" }],
+  },
+  {
+    id: "leaveEntitlements",
+    title: "İzin Hakedişi",
+    icon: "checklist",
+    breadcrumb: ["Panel", "İzin Yönetimi", "İzin Hakedişleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TCKimlikNo"],
+      ["person", "Ad Soyad"],
+      ["leaveType", "İzin Tanımı"],
+      ["referenceDate", "Yıllık İzin Referans Tarihi", "date"],
+      ["validReferenceDate", "Geçerli Yıllık İzin Referans Tarihi", "date"],
+      ["entitlementDay", "Hak Ediş Gün Sayısı"],
+      ["usedDay", "Yanan Gün Sayısı"],
+      ["remainingDay", "Kullanılabilir Gün"],
+      ["leaveRate", "İzin Oranı (%)"],
+    ],
+    records: [],
+  },
+  {
+    id: "leaveRemainingReports",
+    title: "İzne Kalan Gün Raporu",
+    icon: "note",
+    breadcrumb: ["Panel", "İzin Yönetimi", "İzne Kalan Gün Raporu"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Ad Soyad"],
+      ["leaveType", "İzin Tanımı"],
+      ["remainingDay", "İzine Kalan Gün"],
+      ["leaveDayCount", "İzin Gün Sayısı"],
+      ["gender", "Cinsiyet"],
+      ["birthdayLeave", "Doğum Günü İzni Mi", "select", ["Tümü", "Evet", "Hayır"]],
+      ["leaveReferenceDate", "İzin Referans Tarihi", "date"],
+      ["seniorityReferenceDate", "Kıdem Referans Tarihi", "date"],
+    ],
+    records: [],
+  },
+  {
+    id: "leaveCostReports",
+    title: "İzin Maliyet Yükü Raporu",
+    icon: "invoice",
+    breadcrumb: ["Panel", "İzin Yönetimi", "İzin Maliyet Yükü Raporu"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["registryNo", "Sicil No"],
+      ["person", "Ad Soyad"],
+      ["identityNo", "TCKimlikNo"],
+      ["startDate", "İşe Başlama Tarihi", "date"],
+      ["referenceDate", "Yıllık İzin Referans Tarihi", "date"],
+      ["validReferenceDate", "Geçerli İzin Referans Tarihi", "date"],
+      ["usedDay", "Yanan Gün Sayısı"],
+      ["leaveType", "İzin Tanımı"],
+      ["cost", "Kullanılabilir Maliyet"],
+    ],
+    records: [],
+  },
+  {
+    id: "recentLeaveEntitlements",
+    title: "Hak Edilen İzinler",
+    icon: "calendar",
+    breadcrumb: ["Panel", "İzin Yönetimi", "Son İzin Hakedişleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TCKimlikNo"],
+      ["person", "Ad Soyad"],
+      ["startDate", "İşe Başlama Tarihi", "date"],
+      ["leaveCode", "İzin Kodu"],
+      ["leaveType", "İzin Tanımı"],
+      ["entitlementDate", "Hak Ediş Tarihi", "date"],
+      ["entitlementDay", "Hak Ediş Gün Sayısı"],
+    ],
+    records: [],
   },
   {
     id: "trainings",
@@ -5308,7 +5481,7 @@ function renderPayrollCenter() {
         <div class="prozon-grid-scroll">
           <table class="prozon-data-grid">
             <thead>
-              <tr>${columns.map(([, label]) => `<th>${escapeHtml(trText(label))}<span data-icon="filter"></span></th>`).join("")}</tr>
+              <tr>${columns.map(([key, label]) => `<th>${escapeHtml(trText(label))}<span data-icon="filter" data-prozon-filter-target="${escapeHtml(`${moduleId || ""}:${key}`)}"></span></th>`).join("")}</tr>
               <tr>${columns.map((column) => `<td>${prozonFilterCell(column, moduleId)}</td>`).join("")}</tr>
             </thead>
             <tbody>
@@ -5649,9 +5822,9 @@ function renderPayrollCenter() {
         <div class="prozon-list-actions">
           ${toolbar}
           ${primaryLabel && moduleId && canManageRecords() ? `<button class="primary" type="button" data-action="add" data-module="${moduleId}"><span data-icon="${icon}"></span>${escapeHtml(trText(primaryLabel))}</button>` : ""}
-          <button type="button" data-payroll-center-tab="${payrollCenterTab}"><span data-icon="refresh"></span>${escapeHtml(trText("Yenile"))}</button>
+          <button type="button" data-action="prozon-refresh"><span data-icon="refresh"></span>${escapeHtml(trText("Yenile"))}</button>
           ${helpQuery ? `<a href="${youtubeUrl(helpQuery)}" target="_blank" rel="noreferrer" title="${escapeHtml(trText("Video anlatım"))}"><span data-icon="youtube"></span></a>` : ""}
-          <button type="button" title="${escapeHtml(trText("Yardım"))}">?</button>
+          ${helpQuery ? `<a href="${youtubeUrl(`${helpQuery} yardım`)}" target="_blank" rel="noreferrer" title="${escapeHtml(trText("Yardım"))}">?</a>` : `<button type="button" data-action="prozon-refresh" title="${escapeHtml(trText("Yardım"))}">?</button>`}
         </div>
       </header>
       ${groupable ? `<div class="prozon-group-strip"><span data-icon="chevron"></span>${escapeHtml(trText("Gruplamak istediğiniz sütunu bu alana sürükleyiniz."))}</div>` : ""}
@@ -6137,6 +6310,10 @@ function renderPayrollCenter() {
       ["manualEntitlement", "Manuel Hakediş Ekleme"],
       ["bridgeLeave", "Köprü İzin Tarihleri"],
       ["leaveDefs", "İzin Tanımlamaları"],
+      ["leaveEntitlements", "İzin Raporları"],
+      ["leaveRemaining", "İzne Kalan Gün Raporu"],
+      ["recentEntitlements", "Son İzin Hakedişleri"],
+      ["leaveCost", "İzin Maliyet Yükü Raporu"],
     ],
     payrollTop: [
       ["payrollList", "Bordro Listesi"],
@@ -6339,18 +6516,114 @@ function renderPayrollCenter() {
         records: getScopedRecords(module),
       });
     },
-    leaveTop: () =>
-      prozonListScreen({
-        title: "İzin Talep Listesi",
-        subtitle: activeSubTab === "hrPendingLeaves" ? "İK onayı bekleyen izin talepleri" : "İzin Talepleri",
-        icon: "calendar",
-        moduleId: "leaves",
-        primaryLabel: "Toplu İzin",
-        helpQuery: "izin yönetimi yıllık izin talebi onay süreci",
-        toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option><option>${escapeHtml(trText("Bekliyor"))}</option><option>${escapeHtml(trText("Onaylandı"))}</option></select>`,
-        columns: [["__code", "SİCİL NO"], ["person", "AD SOYAD"], ["identityNo", "TCKİMLİKNO"], ["type", "İZİN TANIMI"], ["approval", "ONAY DURUMU", "select"], ["startDate", "İZİN BAŞLANGIÇ ...", "date"], ["endDate", "İŞE DÖNÜŞ TARİHİ", "date"], ["dayCount", "GÜN"]],
-        records: activeSubTab === "hrPendingLeaves" ? leaveRecords.filter((record) => record.approval === "Bekliyor") : leaveRecords,
-      }),
+    leaveTop: () => {
+      const leaveScreens = {
+        leaveRequests: {
+          title: "İzin Talep Listesi",
+          subtitle: "İzin Talepleri",
+          moduleId: "leaves",
+          icon: "calendar",
+          primaryLabel: "Toplu İzin",
+          columns: [["__code", "SİCİL NO"], ["person", "AD SOYAD"], ["identityNo", "TCKİMLİKNO"], ["type", "İZİN TANIMI"], ["approval", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["startDate", "İZİN BAŞLANGIÇ", "date"], ["endDate", "İŞE DÖNÜŞ TARİHİ", "date"], ["dayCount", "GÜN"], ["approvedStart", "ONAYLANAN BAŞLANGIÇ", "date"], ["approvedReturn", "ONAYLANAN İŞE DÖNÜŞ", "date"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option><option>${escapeHtml(trText("Bekliyor"))}</option><option>${escapeHtml(trText("Onaylandı"))}</option></select><input type="date" /><input type="date" />`,
+        },
+        hrPendingLeaves: {
+          title: "İzin Listesi - İK Onayı Bekleyenler",
+          subtitle: "İK Onayı bekleyen izinler listesi",
+          moduleId: "leaves",
+          icon: "calendar",
+          primaryLabel: "Yeni İzin",
+          columns: [["person", "AD SOYAD"], ["type", "İZİN TANIMI"], ["startDate", "TALEP EDİLEN İZİN BAŞLANGIÇ", "date"], ["endDate", "TALEP EDİLEN İZİN İŞE DÖNÜŞ", "date"], ["dayCount", "İZİN SÜRESİ"], ["approval", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["approvedStart", "ONAYLANAN İZİN BAŞLANGIÇ", "date"], ["approvedReturn", "ONAYLANAN İŞE DÖNÜŞ", "date"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option></select><input type="date" /><input type="date" />`,
+          records: leaveRecords.filter((record) => record.approval === "Bekliyor"),
+        },
+        leaveFees: {
+          title: "Personel İzin Ücretleri Listesi",
+          subtitle: "Personel İzin Ücretleri",
+          moduleId: "leaveFees",
+          icon: "wallet",
+          primaryLabel: "Yeni İzin Ücreti Kaydı",
+          columns: [["person", "AD SOYAD"], ["homePhone", "EV TELEFONU"], ["phone", "GSM"], ["workPhone", "İŞ TELEFONU"], ["role", "ROLE ADI"], ["mailStatus", "SMS MAIL FORMA"], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["paymentDate", "ÖDEME TARİHİ", "date"]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        compensatory: {
+          title: "Telafi Çalışmaları",
+          subtitle: "Telafi çalışma planlamalarını bu formdan görebilirsiniz.",
+          moduleId: "compensatoryLeaves",
+          icon: "checklist",
+          primaryLabel: "Yeni Telafi",
+          columns: [["requester", "TALEP EDEN"], ["person", "AD SOYAD"], ["startDate", "BAŞLANGIÇ TARİH SAATİ", "date"], ["endDate", "BİTİŞ TARİH SAATİ", "date"], ["description", "AÇIKLAMA"], ["status", "DURUM", "select", ["Planlandı", "Tamamlandı", "İptal"]]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-07-05" />`,
+        },
+        manualEntitlement: {
+          title: "Personel İzin Hakediş Manuel Kayıtlar",
+          subtitle: "Bu kartta personele verilmiş manuel izinleri görebilirsiniz.",
+          moduleId: "manualLeaveEntitlements",
+          icon: "calendar",
+          primaryLabel: "Yeni Hakediş",
+          columns: [["person", "AD SOYAD"], ["registryNo", "SİCİL NO"], ["identityNo", "TCKİMLİKNO"], ["leaveType", "İZİN TANIMI"], ["entitlementDay", "HAK EDİŞ GÜN SAYISI"], ["entitlementDate", "HAK EDİŞ TARİHİ", "date"]],
+        },
+        bridgeLeave: {
+          title: "Köprü İzin Listesi",
+          subtitle: "Bu formda köprü izinleri listeleyebilirsiniz.",
+          moduleId: "bridgeLeaveDates",
+          icon: "calendar",
+          primaryLabel: "Yeni Köprü İzin",
+          columns: [["title", "TANIM"], ["startDate", "BAŞLANGIÇ TARİHİ", "date"], ["endDate", "BİTİŞ TARİHİ", "date"], ["returnDate", "İŞE DÖNÜŞ TARİHİ", "date"], ["dayCount", "İZİN GÜNÜ"], ["description", "AÇIKLAMA"]],
+        },
+        leaveDefs: {
+          title: "İzin Listesi",
+          subtitle: "İzin Tanımlamaları",
+          moduleId: "leaveDefinitions",
+          icon: "calendar",
+          primaryLabel: "Yeni İzin Tanımı",
+          columns: [["leaveName", "İZİN TANIMI"], ["leaveCode", "İZİN KODU"], ["entitlementType", "İZİN HAK EDİŞ", "select", ["Yıllık", "Aylık", "Manuel", "Yok"]], ["systemRecord", "SİSTEM KAYDI", "select", ["Evet", "Hayır"]], ["allCompanies", "TÜM ŞİRKETLER", "select", ["Evet", "Hayır"]]],
+        },
+        leaveEntitlements: {
+          title: "İzin Hakediş Listesi",
+          subtitle: "İzin hakedişleri",
+          moduleId: "leaveEntitlements",
+          icon: "checklist",
+          primaryLabel: "İzin Hakediş Logları",
+          columns: [["registryNo", "SİCİL NO"], ["identityNo", "TCKİMLİKNO"], ["person", "AD SOYAD"], ["leaveType", "İZİN TANIMI"], ["referenceDate", "YILLIK İZİN REFERANS TARİHİ", "date"], ["validReferenceDate", "GEÇERLİ YILLIK İZİN REFERANS TARİHİ", "date"], ["entitlementDay", "HAK EDİŞ GÜN"], ["usedDay", "YANAN GÜN SAYISI"], ["remainingDay", "KULLANILABİLİR GÜN"], ["leaveRate", "İZİN ORANI (%)"]],
+          toolbar: `<select><option>${escapeHtml(trText("HEPSİ"))}</option></select><label><input type="checkbox" /> ${escapeHtml(trText("Ücretsiz İzinler Kıdemi Ötelesin"))}</label><select><option>${escapeHtml(trText("HEPSİ"))}</option></select>`,
+        },
+        leaveRemaining: {
+          title: "İzne Kalan Gün Raporu",
+          subtitle: "Bu ekranda personellerin izinlerine kalan günlerini görüntüleyebilirsiniz.",
+          moduleId: "leaveRemainingReports",
+          icon: "note",
+          primaryLabel: "Rapor Al",
+          columns: [["person", "AD SOYAD"], ["leaveType", "İZİN TANIMI"], ["remainingDay", "İZİNE KALAN GÜN"], ["leaveDayCount", "İZİN GÜN SAYISI"], ["gender", "CİNSİYET"], ["birthdayLeave", "DOĞUM GÜNÜ İZNİ Mİ", "select", ["Tümü", "Evet", "Hayır"]], ["leaveReferenceDate", "İZİN REFERANS TARİHİ", "date"], ["seniorityReferenceDate", "KIDEM REFERANS TARİHİ", "date"]],
+        },
+        recentEntitlements: {
+          title: "Hak Edilen İzinler",
+          subtitle: "Bu ekranda son hak edilen izinleri görebilirsiniz.",
+          moduleId: "recentLeaveEntitlements",
+          icon: "calendar",
+          primaryLabel: "Rapor Al",
+          columns: [["registryNo", "SİCİL NO"], ["identityNo", "TCKİMLİKNO"], ["person", "AD SOYAD"], ["startDate", "İŞE BAŞLAMA TARİHİ", "date"], ["leaveCode", "İZİN KODU"], ["leaveType", "İZİN TANIMI"], ["entitlementDate", "HAK EDİŞ TARİHİ", "date"], ["entitlementDay", "HAK EDİŞ GÜN SAYISI"]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        leaveCost: {
+          title: "Personel İzin Maliyet Yükü Raporu",
+          subtitle: "Bu ekranda personellerin izin maliyet yükü bilgilerini görüntüleyebilirsiniz.",
+          moduleId: "leaveCostReports",
+          icon: "invoice",
+          primaryLabel: "Rapor Al",
+          columns: [["registryNo", "SİCİL NO"], ["person", "AD SOYAD"], ["identityNo", "TCKİMLİKNO"], ["startDate", "İŞE BAŞLAMA TARİHİ", "date"], ["referenceDate", "YILLIK İZİN REFERANS TARİHİ", "date"], ["validReferenceDate", "GEÇERLİ İZİN REFERANS TARİHİ", "date"], ["usedDay", "YANAN GÜN SAYISI"], ["leaveType", "İZİN TANIMI"], ["cost", "KULLANILABİLİR MALİYET"]],
+          toolbar: `<label><input type="checkbox" /> ${escapeHtml(trText("Ücretsiz İzinler Kıdemi Ötelesin"))}</label><input type="date" value="2026-06-05" />`,
+        },
+      };
+      const screen = leaveScreens[activeSubTab] || leaveScreens.leaveRequests;
+      const module = getModule(screen.moduleId);
+      return prozonListScreen({
+        ...screen,
+        helpQuery: `${screen.title} izin yönetimi prozon`,
+        groupable: true,
+        records: screen.records || getScopedRecords(module),
+      });
+    },
     payrollTop: () =>
       activeSubTab === "rules"
         ? prozonListScreen({
@@ -8977,6 +9250,15 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const filterIcon = event.target.closest("[data-prozon-filter-target]");
+  if (filterIcon) {
+    const [moduleId, key] = filterIcon.dataset.prozonFilterTarget.split(":");
+    const filterControl = document.querySelector(`[data-prozon-filter-module="${CSS.escape(moduleId)}"][data-prozon-filter-key="${CSS.escape(key)}"]`);
+    filterControl?.focus();
+    if (filterControl?.tagName === "SELECT") filterControl.click();
+    return;
+  }
+
   const messageThreadButton = event.target.closest("[data-message-thread]");
   if (messageThreadButton) {
     selectedMessageThreadId = messageThreadButton.dataset.messageThread;
@@ -9051,6 +9333,12 @@ document.addEventListener("click", (event) => {
   }
 
   const action = manageButton.dataset.action;
+  if (action === "prozon-refresh") {
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   if (action === "ai-ask") {
     const question = document.querySelector("#aiAssistantQuestion")?.value || "";
     const answerBox = document.querySelector("#aiAssistantAnswer");
