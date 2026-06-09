@@ -215,9 +215,14 @@ const modules = [
     icon: "users",
     breadcrumb: ["Panel", "Personeller", "Personel Listesi"],
     columns: [
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TC Kimlik No"],
       ["name", "Adı Soyadı"],
       ["department", "Departman"],
       ["role", "Görevi"],
+      ["employmentType", "Personel Tipi", "select", ["Normal Çalışan", "Stajyer", "Taşeron", "Geçici"]],
+      ["professionCode", "Meslek Kodu"],
+      ["title", "Ünvan"],
       ["city", "Şehir"],
       ["email", "E-posta"],
       ["phone", "Telefon"],
@@ -243,6 +248,278 @@ const modules = [
     icon: "users",
     breadcrumb: ["Panel", "Personel 360", "Personel Kartı"],
     noActions: true,
+    records: [],
+  },
+  {
+    id: "personnelPreRegistrations",
+    title: "Personel Ön Kayıt",
+    icon: "users",
+    breadcrumb: ["Panel", "Personeller", "Ön Kayıt Listesi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["status", "Durum", "select", ["Yeni", "Görüşüldü", "Onaylandı", "Reddedildi"]],
+      ["name", "Ad"],
+      ["surname", "Soyad"],
+      ["email", "Eposta"],
+      ["phone", "GSM"],
+      ["definition", "Ön Kayıt Tanım"],
+      ["pageInfo", "Sayfa Bilgisi"],
+      ["note", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelExtraPayments",
+    title: "Personel Ek Ödeme",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Personeller", "Ek Ödeme Listesi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Ad Soyad"],
+      ["identityNo", "TC Kimlik No"],
+      ["workplace", "İşyeri"],
+      ["benefitType", "Yan Hak Çeşidi"],
+      ["paymentDate", "Ödeme Tarihi", "date"],
+      ["netGross", "Net/Brüt", "select", ["Net", "Brüt"]],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["payrollStatus", "Bordro Durumu", "select", ["Tümü", "Bekliyor", "Bordrolaştı"]],
+      ["description", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelBenefits",
+    title: "Personel Yan Hak",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Personeller", "Yan Haklar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["active", "Aktif", "select", ["Aktif", "Pasif"]],
+      ["person", "Ad Soyad"],
+      ["identityNo", "TC Kimlik No"],
+      ["workplace", "İşyeri Tanım"],
+      ["benefitName", "Yan Hak Tanımı"],
+      ["netGross", "Net/Brüt", "select", ["Net", "Brüt"]],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["duration", "Süreli", "select", ["Evet", "Hayır"]],
+      ["startDate", "Başlangıç Tarihi", "date"],
+      ["endDate", "Bitiş Tarihi", "date"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelDeductions",
+    title: "Kesinti",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Personeller", "Kesintiler"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["registryNo", "Sicil No"],
+      ["identityNo", "TCKimlikNo"],
+      ["person", "Ad Soyad"],
+      ["deductionName", "Kesinti Tanımı"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["deductionDate", "Kesinti Tarihi", "date"],
+      ["amount", "Personelden Kesilecek Tutar"],
+      ["description", "Açıklama"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelHealthReports",
+    title: "Sağlık Raporu",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Personeller", "Hastalık Raporları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel"],
+      ["reportStart", "Rapor Başlangıç Tarihi", "date"],
+      ["reportEnd", "Rapor Bitiş Tarihi", "date"],
+      ["reportDay", "Rapor Günü"],
+      ["missingReason", "Eksik Gün Nedeni"],
+      ["reportType", "Rapor Tipi"],
+      ["description", "Rapor Açıklaması"],
+      ["approvalStatus", "Sağlık Raporu Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelVisitReports",
+    title: "Vizite Raporu",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Personeller", "Vizite Raporları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["approvalStatus", "Onay Durumu", "select", ["Tümü", "Bekliyor", "Onaylandı"]],
+      ["activationStatus", "Sağlık Raporlarına Aktarım", "select", ["Tümü", "Aktarıldı", "Bekliyor"]],
+      ["archive", "Arşiv", "select", ["Tümü", "Evet", "Hayır"]],
+      ["queryDate", "Sorgulandığı Tarih", "date"],
+      ["trackingNo", "Rapor Takip No"],
+      ["sequenceNo", "Rapor Sıra No"],
+      ["name", "Ad"],
+      ["surname", "Soyad"],
+      ["identityNo", "TCKimlik No"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelManualWorkReports",
+    title: "Manuel Çalışmazlık Bildirimi",
+    icon: "note",
+    breadcrumb: ["Panel", "Personeller", "Manuel Çalışmazlık Bildirimleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["workplace", "Sorgulandığı İşyeri"],
+      ["name", "Ad"],
+      ["surname", "Soyad"],
+      ["identityNo", "TCKNo"],
+      ["exitDate", "İşten Ayrılma Tarihi", "date"],
+      ["returnDate", "İşe Dönüş Tarihi", "date"],
+      ["qualityStatus", "Nitelik Durumu"],
+      ["qualityEndDate", "Nitelik Bitiş Tarihi", "date"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelOvertimePlans",
+    title: "Fazla Mesai Planlama",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Personeller", "Fazla Çalışma Planlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel"],
+      ["requester", "Talep Eden Personel"],
+      ["startDate", "Başlangıç Tarih/Saati", "datetime-local"],
+      ["endDate", "Bitiş Tarih/Saati", "datetime-local"],
+      ["approvalStatus", "Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+      ["approvedStart", "Onaylanan Fazla Mesai Başlangıç", "datetime-local"],
+      ["approvedEnd", "Onaylanan Fazla Mesai Bitiş Tarihi", "datetime-local"],
+      ["approvalDate", "Onay/Red Tarih Saati", "datetime-local"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelOvertimeApprovals",
+    title: "İK Onayı Bekleyen Fazla Mesai",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Personeller", "İK Onayı Bekleyen Fazla Çalışmalar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["person", "Personel Ad Soyad"],
+      ["requestedOvertime", "Talep Edilen Fazla Mesai"],
+      ["requestedEnd", "Talep Edilen Fazla Mesai Bitiş"],
+      ["approvalStatus", "Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+      ["approvedStart", "Onaylanan Başlangıç Tarihi", "datetime-local"],
+      ["approvedEnd", "Onaylanan Bitiş Tarihi", "datetime-local"],
+      ["approvalDate", "Onay/Red Tarih Saati", "datetime-local"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelAdvances",
+    title: "Avans Talebi",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Personeller", "Avans Talepleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["requestInfo", "Talep Bilgisi"],
+      ["advancePerson", "Avans Verilecek Personel"],
+      ["requester", "Talep Eden Personel"],
+      ["advanceType", "Avans Tipi"],
+      ["approvalStatus", "Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+      ["needDate", "İhtiyaç Tarihi", "date"],
+      ["approvedNeedDate", "Onaylanan İhtiyaç Tarihi", "date"],
+      ["amount", "Tutar"],
+      ["approvedAmount", "Onaylanan Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelAdvanceApprovals",
+    title: "İK Onayı Bekleyen Avans",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Personeller", "İK Onayı Bekleyen Avanslar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["requester", "Talep Eden Personel"],
+      ["advancePerson", "Avans Verilecek Personel"],
+      ["type", "Tip"],
+      ["approvalStatus", "Onay Durumu", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]],
+      ["needDate", "İhtiyaç Tarihi", "date"],
+      ["requestedAmount", "Talep Edilen Tutar"],
+      ["approvedAmount", "Onaylanan Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["approvalDate", "Onay-Red Tarihi", "datetime-local"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelSgkEntries",
+    title: "SGK İşe Giriş Bildirgesi",
+    icon: "users",
+    breadcrumb: ["Panel", "Personeller", "İşe Giriş Bildirgeleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["title", "Tanım"],
+      ["description", "Açıklama"],
+      ["createdAt", "Oluşturma Tarihi", "date"],
+      ["notificationStatus", "Bildirim Verildi", "select", ["Tümü", "Evet", "Hayır"]],
+      ["notificationDate", "Bildirim Tarihi", "date"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelSgkExits",
+    title: "SGK İşten Çıkış Bildirgesi",
+    icon: "users",
+    breadcrumb: ["Panel", "Personeller", "İşten Çıkış Bildirgeleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["title", "Tanım"],
+      ["description", "Açıklama"],
+      ["createdAt", "Oluşturma Tarihi", "date"],
+      ["notificationStatus", "Bildirim Verildi", "select", ["Tümü", "Evet", "Hayır"]],
+      ["notificationDate", "Bildirim Tarihi", "date"],
+    ],
+    records: [],
+  },
+  {
+    id: "personnelRoadMealPrepayments",
+    title: "Yol/Yemek Ön Ödeme",
+    icon: "grid",
+    breadcrumb: ["Panel", "Personeller", "Yol/Yemek Ön Ödeme"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["workplace", "İşyeri"],
+      ["person", "Ad Soyad"],
+      ["identityNo", "TC Kimlik No"],
+      ["paymentType", "Yol/Yemek"],
+      ["advanceType", "Ödeme Tipi"],
+      ["dailyAmount", "Günlük Ücret"],
+      ["dayCount", "Gün Sayısı"],
+      ["totalAmount", "Toplam Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["date", "Tarih", "date"],
+      ["paymentStatus", "Ödemesi Yapıldı", "select", ["Tümü", "Evet", "Hayır"]],
+      ["payrollStatus", "Bordrolaşma Durumu", "select", ["Bekliyor", "Bordrolaştı"]],
+    ],
     records: [],
   },
   {
@@ -953,6 +1230,7 @@ let prozonWorkplaceCardOpen = false;
 let prozonWorkplaceCardTab = "general";
 let prozonEditingWorkplaceId = "";
 let prozonWorkplaceDraft = {};
+const prozonColumnFilters = {};
 const prozonNaceRows = [
   ["01", "Bitkisel ve hayvansal üretim ile avcılık ve ilgili hizmet faaliyetleri", ""],
   ["01.1", "Tek yıllık (uzun ömürlü olmayan) bitkisel ürünlerin yetiştirilmesi", ""],
@@ -988,6 +1266,11 @@ const prozonNaceRows = [
   ["86.21.01", "Genel hekimlik uygulama faaliyetleri", "Az Tehlikeli"],
   ["95.11.01", "Bilgisayar ve çevre birimlerinin onarımı", "Az Tehlikeli"],
 ];
+
+function prozonFilterKey(moduleId, key) {
+  return `${moduleId || "table"}:${key}`;
+}
+
 const prozonPanoChartDefinitions = [
   ["workplacePersonnel", "İşyeri/Personel Sayısı", "İşyerlerine Göre Personel Sayısı Dağılımı", "donut"],
   ["workplacePayroll", "İşyeri/Bordro Sayıları", "İşyerlerine Göre Bordro Sayısı", "donut"],
@@ -4992,13 +5275,30 @@ function renderPayrollCenter() {
     if (key === "__blank") return "";
     return record[key] ?? "";
   };
-  const prozonFilterCell = (type = "search") => {
-    if (type === "date") return `<span class="prozon-filter-date"><span data-icon="search"></span><input type="date" aria-label="${escapeHtml(trText("Tarih"))}" /></span>`;
-    if (type === "select") return `<span class="prozon-filter-select">${escapeHtml(trText("Tümü"))}<span data-icon="chevron"></span></span>`;
-    return `<span class="prozon-filter-search"><span data-icon="search"></span></span>`;
+  const prozonFilterKey = (moduleId, key) => `${moduleId || "table"}:${key}`;
+  const getColumnFilterValue = (moduleId, key) => prozonColumnFilters[prozonFilterKey(moduleId, key)] || "";
+  const prozonFilterCell = ([key, label, type = "search", options = []], moduleId) => {
+    if (key.startsWith("__")) return `<span class="prozon-filter-search"><span data-icon="search"></span></span>`;
+    const value = getColumnFilterValue(moduleId, key);
+    const common = `data-prozon-filter-module="${escapeHtml(moduleId || "")}" data-prozon-filter-key="${escapeHtml(key)}" aria-label="${escapeHtml(trText(label))}"`;
+    if (type === "date" || type === "datetime-local") return `<span class="prozon-filter-date"><span data-icon="search"></span><input ${common} type="date" value="${escapeHtml(value)}" /></span>`;
+    if (type === "select") {
+      const selectOptions = Array.from(new Set(["", ...options, "Aktif", "Pasif", "Bekliyor", "Onaylandı", "Reddedildi", "TL", "EUR", "USD"]));
+      return `<span class="prozon-filter-select"><select ${common}>${selectOptions.map((option) => `<option value="${escapeHtml(option)}" ${value === option ? "selected" : ""}>${escapeHtml(trText(option || "Tümü"))}</option>`).join("")}</select><span data-icon="chevron"></span></span>`;
+    }
+    return `<span class="prozon-filter-search"><span data-icon="search"></span><input ${common} value="${escapeHtml(value)}" /></span>`;
   };
   const renderProzonTable = (columns, records, moduleId) => {
     const canEdit = canManageRecords();
+    const filteredRecords = records.filter((record, index) =>
+      columns.every(([key, , type = "search"]) => {
+        const filter = getColumnFilterValue(moduleId, key).trim();
+        if (!filter || key.startsWith("__")) return true;
+        const value = String(prozonValue(record, key, index) || "");
+        if (type === "date" || type === "datetime-local") return toInputDate(value) === filter || value.includes(filter);
+        return normalizeText(value).includes(normalizeText(filter));
+      }),
+    );
     return `
       <div class="prozon-grid-shell">
         <aside class="prozon-grid-rail">
@@ -5009,15 +5309,15 @@ function renderPayrollCenter() {
           <table class="prozon-data-grid">
             <thead>
               <tr>${columns.map(([, label]) => `<th>${escapeHtml(trText(label))}<span data-icon="filter"></span></th>`).join("")}</tr>
-              <tr>${columns.map(([, , type]) => `<td>${prozonFilterCell(type)}</td>`).join("")}</tr>
+              <tr>${columns.map((column) => `<td>${prozonFilterCell(column, moduleId)}</td>`).join("")}</tr>
             </thead>
             <tbody>
               ${
-                records.length
-                  ? records
+                filteredRecords.length
+                  ? filteredRecords
                       .map(
                         (record, index) => `
-                          <tr data-row-id="${escapeHtml(record.id || String(index))}" ${moduleId === "companies" ? `data-prozon-workplace-id="${escapeHtml(record.id || String(index))}"` : ""}>
+                          <tr data-row-id="${escapeHtml(record.id || String(index))}" ${moduleId === "companies" ? `data-prozon-workplace-id="${escapeHtml(record.id || String(index))}"` : moduleId ? `data-prozon-record-module="${escapeHtml(moduleId)}" data-prozon-record-id="${escapeHtml(record.id || String(index))}"` : ""}>
                             ${columns.map(([key]) => `<td>${escapeHtml(String(prozonValue(record, key, index) || ""))}</td>`).join("")}
                           </tr>
                         `,
@@ -5433,7 +5733,7 @@ function renderPayrollCenter() {
                     <h3>${escapeHtml(trText(card.title))}</h3>
                     <p>${escapeHtml(trText(card.text))}</p>
                     <small>${escapeHtml(`${card.source} · ${card.date || todayLabel}`)}</small>
-                    <button type="button" data-payroll-center-tab="managementTop">${escapeHtml(trText("Devamı İçin Tıklayınız."))}</button>
+                    <a class="prozon-news-video" href="${youtubeUrl(`${card.title} ${card.source} mevzuat video`)}" target="_blank" rel="noreferrer">${escapeHtml(trText("Videoyu İzle"))}</a>
                   </div>
                 </article>
               `,
@@ -5818,9 +6118,16 @@ function renderPayrollCenter() {
       ["extraPayments", "Ek Ödeme Listesi"],
       ["benefits", "Yan Haklar"],
       ["deductions", "Kesintiler"],
-      ["sickReports", "Hastalık Raporları"],
-      ["overtime", "Fazla Çalışmalar"],
-      ["advances", "Avanslar"],
+      ["healthReports", "Hastalık Raporları"],
+      ["visitReports", "Vizite Raporları"],
+      ["manualWork", "Manuel Çalışmazlık Bildirimleri"],
+      ["overtime", "Fazla Çalışma Planlamaları"],
+      ["overtimeApprovals", "İK Onayı Bekleyen Fazla Çalışmalar"],
+      ["advances", "Avans Talepleri"],
+      ["advanceApprovals", "İK Onayı Bekleyen Avanslar"],
+      ["sgkEntries", "İşe Giriş Bildirgeleri"],
+      ["sgkExits", "İşten Çıkış Bildirgeleri"],
+      ["roadMealAdvance", "Yol/Yemek Ön Ödeme"],
     ],
     leaveTop: [
       ["leaveRequests", "İzin Talepleri"],
@@ -5877,21 +6184,161 @@ function renderPayrollCenter() {
   ];
   const screenFactories = {
     companyTop: () => prozonWorkplaceListScreen(),
-    personnelTop: () =>
-      prozonListScreen({
-        title: activeSubTab === "preRegister" ? "Personel Ön Kayıt Listesi" : activeSubTab === "advances" ? "Avanslar" : "Personel Listesi",
-        subtitle: "Personeller ile ilgili işlemlere bu ekrandan erişebilirsiniz",
-        icon: "users",
-        moduleId: activeSubTab === "advances" ? "payroll" : "personnel",
-        primaryLabel: activeSubTab === "preRegister" ? "Yeni Ön Kayıt" : activeSubTab === "advances" ? "Yeni Avans" : "Yeni Personel",
-        helpQuery: "personel yönetimi ön kayıt yan hak kesinti avans",
+    personnelTop: () => {
+      const personnelScreens = {
+        personnel: {
+          title: "Personel Listesi",
+          subtitle: "Personeller ile ilgili işlemlere bu ekrandan erişebilirsiniz",
+          moduleId: "personnel",
+          icon: "users",
+          primaryLabel: "Yeni Personel",
+          columns: [
+            ["__row", "PERSONEL ID"],
+            ["status", "DURUM", "select", ["AKTİF", "PASİF"]],
+            ["registryNo", "SİCİL NO"],
+            ["name", "AD SOYAD"],
+            ["identityNo", "TCKİMLİKNO"],
+            ["role", "ROL"],
+            ["employmentType", "PERSONEL TİPİ", "select", ["Normal Çalışan", "Stajyer", "Taşeron", "Geçici"]],
+            ["professionCode", "MESLEK KODU"],
+            ["title", "ÜNVAN"],
+            ["companyName", "SON ÇALIŞILAN İŞYERİ"],
+          ],
+          toolbar: `<label>${escapeHtml(trText("İşyeri"))}: <select><option>${escapeHtml(trText("TÜM İŞYERLERİ"))}</option>${companies.map((company) => `<option>${escapeHtml(company.name || "")}</option>`).join("")}</select></label><label><input type="checkbox" /> ${escapeHtml(trText("İşten Çıkanları da Getir"))}</label>`,
+        },
+        preRegister: {
+          title: "Personel Ön Kayıt Listesi",
+          subtitle: "Personeller ile ilgili işlemlere bu ekrandan erişebilirsiniz",
+          moduleId: "personnelPreRegistrations",
+          icon: "users",
+          primaryLabel: "Yeni Ön Kayıt",
+          columns: [["status", "DURUM", "select", ["Yeni", "Görüşüldü", "Onaylandı", "Reddedildi"]], ["name", "AD"], ["surname", "SOYAD"], ["email", "EPOSTA"], ["phone", "GSM"], ["definition", "ÖN KAYIT TANIM"], ["pageInfo", "SAYFA BİLGİSİ"]],
+        },
+        extraPayments: {
+          title: "Personel Ek Ödeme Listesi",
+          subtitle: "Personel Ek Ödemeleri",
+          moduleId: "personnelExtraPayments",
+          icon: "wallet",
+          primaryLabel: "Yeni Ek Ödeme",
+          columns: [["person", "AD SOYAD"], ["identityNo", "TC KİMLİK NO"], ["workplace", "İŞYERİ"], ["benefitType", "YAN HAK ÇEŞİDİ"], ["paymentDate", "ÖDEME TARİHİ", "date"], ["netGross", "NET/BRÜT", "select", ["Net", "Brüt"]], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["payrollStatus", "BORDRO", "select", ["Bekliyor", "Bordrolaştı"]]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        benefits: {
+          title: "Personel Yan Hak Listesi",
+          subtitle: "Personel Yan Hakları",
+          moduleId: "personnelBenefits",
+          icon: "wallet",
+          primaryLabel: "Yeni Yan Hak",
+          columns: [["active", "AKTİF", "select", ["Aktif", "Pasif"]], ["person", "AD SOYAD"], ["identityNo", "TC KİMLİK NO"], ["workplace", "İŞYERİ TANIM"], ["benefitName", "YAN HAK TANIMI"], ["netGross", "NET/BRÜT", "select", ["Net", "Brüt"]], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["duration", "SÜRELİ", "select", ["Evet", "Hayır"]], ["startDate", "BAŞLANGIÇ TARİHİ", "date"], ["endDate", "BİTİŞ TARİHİ", "date"]],
+        },
+        deductions: {
+          title: "Kesinti Listesi",
+          subtitle: "Kesintileri bu ekrandan yönetebilirsiniz.",
+          moduleId: "personnelDeductions",
+          icon: "invoice",
+          primaryLabel: "Yeni Kesinti",
+          columns: [["registryNo", "SİCİL NO"], ["identityNo", "TCKİMLİKNO"], ["person", "AD SOYAD"], ["deductionName", "KESİNTİ TANIMI"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["deductionDate", "KESİNTİ TARİHİ", "date"], ["amount", "PERSONELDEN KESİLECEK TUTAR"], ["description", "AÇIKLAMA"]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        healthReports: {
+          title: "Sağlık Raporları Listesi",
+          subtitle: "Sağlık raporları listesi",
+          moduleId: "personnelHealthReports",
+          icon: "calendar",
+          primaryLabel: "Yeni Rapor",
+          columns: [["person", "PERSONEL"], ["reportStart", "RAPOR BAŞLANGIÇ TARİHİ", "date"], ["reportEnd", "RAPOR BİTİŞ TARİHİ", "date"], ["reportDay", "RAPOR GÜNÜ"], ["missingReason", "EKSİK GÜN NEDENİ"], ["reportType", "RAPOR TİPİ"], ["description", "RAPOR AÇIKLAMASI"], ["approvalStatus", "SAĞLIK RAPORU ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-07-05" />`,
+        },
+        visitReports: {
+          title: "Vizite Raporu",
+          subtitle: "Vizite raporlarını bu ekrandan görebilirsiniz.",
+          moduleId: "personnelVisitReports",
+          icon: "calendar",
+          primaryLabel: "Yeni Vizite",
+          columns: [["approvalStatus", "ONAY DURUMU", "select", ["Tümü", "Bekliyor", "Onaylandı"]], ["activationStatus", "SAĞLIK RAPORLARINA AKTARIM", "select", ["Tümü", "Aktarıldı", "Bekliyor"]], ["archive", "ARŞİV", "select", ["Tümü", "Evet", "Hayır"]], ["queryDate", "SORGULANDIĞI TARİH", "date"], ["trackingNo", "RAPOR TAKİP NO"], ["sequenceNo", "RAPOR SIRA NO"], ["name", "AD"], ["surname", "SOYAD"], ["identityNo", "TCKİMLİK NO"]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        manualWork: {
+          title: "Manuel Çalışmazlık Bildirimi",
+          subtitle: "Bu ekranda manuel çalışmazlık bildirimini yapabilir, silebilir ve görüntüleyebilirsiniz.",
+          moduleId: "personnelManualWorkReports",
+          icon: "note",
+          primaryLabel: "Yeni Bildirim",
+          columns: [["workplace", "SORGULANDIĞI İŞYERİ"], ["name", "AD"], ["surname", "SOYAD"], ["identityNo", "TCKNO"], ["exitDate", "İŞTEN AYRILMA TARİHİ", "date"], ["returnDate", "İŞE DÖNÜŞ TARİHİ", "date"], ["qualityStatus", "NİTELİK DURUMU"], ["qualityEndDate", "NİTELİK BİTİŞ TARİHİ", "date"]],
+          toolbar: `<input type="date" value="2026-05-05" /><input type="date" value="2026-06-05" />`,
+        },
+        overtime: {
+          title: "Fazla Mesai Planlama Listesi",
+          subtitle: "Personel fazla mesai tanımlama işlemlerini bu formdan yönetebilirsiniz.",
+          moduleId: "personnelOvertimePlans",
+          icon: "calendar",
+          primaryLabel: "Toplu Fazla Mesai",
+          columns: [["person", "PERSONEL"], ["requester", "TALEP EDEN PERSONEL"], ["startDate", "BAŞLANGIÇ TARİH/SAATİ", "date"], ["endDate", "BİTİŞ TARİH/SAATİ", "date"], ["approvalStatus", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["approvedStart", "ONAYLANAN FAZLA MESAİ BAŞLANGIÇ", "date"], ["approvedEnd", "ONAYLANAN FAZLA MESAİ BİTİŞ TARİHİ", "date"], ["approvalDate", "ONAY/RED TARİHİ", "date"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option></select><input type="date" value="2026-05-05" /><input type="date" value="2026-07-05" />`,
+        },
+        overtimeApprovals: {
+          title: "Fazla Mesai Listesi - İK Onayı Bekleyenler",
+          subtitle: "İK Onayı bekleyen fazla mesailer listesi",
+          moduleId: "personnelOvertimeApprovals",
+          icon: "calendar",
+          primaryLabel: "Yeni Onay Kaydı",
+          columns: [["person", "PERSONEL AD SOYAD"], ["requestedOvertime", "TALEP EDİLEN FAZLA MESAİ"], ["requestedEnd", "TALEP EDİLEN FAZLA MESAİ BİTİŞ"], ["approvalStatus", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["approvedStart", "ONAYLANAN BAŞLANGIÇ TARİHİ", "date"], ["approvedEnd", "ONAYLANAN BİTİŞ TARİHİ", "date"], ["approvalDate", "ONAY/RED TARİH SAATİ", "date"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option></select><input type="date" value="2026-05-05" /><input type="date" value="2026-07-05" />`,
+        },
+        advances: {
+          title: "Avanslar",
+          subtitle: "Personel avanslarını bu listede görebilirsiniz.",
+          moduleId: "personnelAdvances",
+          icon: "wallet",
+          primaryLabel: "Yeni Avans",
+          columns: [["requestInfo", "TALEP BİLGİSİ"], ["advancePerson", "AVANS VERİLECEK PERSONEL"], ["requester", "TALEP EDEN PERSONEL"], ["advanceType", "AVANS TİPİ"], ["approvalStatus", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["needDate", "İHTİYAÇ TARİHİ", "date"], ["approvedNeedDate", "ONAYLANAN İHTİYAÇ TARİHİ", "date"], ["amount", "TUTAR"], ["approvedAmount", "ONAYLANAN TUTAR"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option></select><input type="date" value="2026-05-05" />`,
+        },
+        advanceApprovals: {
+          title: "İK Onayı Bekleyen Avanslar",
+          subtitle: "İK onayı bekleyen personel avanslarını bu listede görebilirsiniz.",
+          moduleId: "personnelAdvanceApprovals",
+          icon: "wallet",
+          primaryLabel: "Yeni Avans Onayı",
+          columns: [["requester", "TALEP EDEN PERSONEL"], ["advancePerson", "AVANS VERİLECEK PERSONEL"], ["type", "TİP"], ["approvalStatus", "ONAY DURUMU", "select", ["Bekliyor", "Onaylandı", "Reddedildi"]], ["needDate", "İHTİYAÇ TARİHİ", "date"], ["requestedAmount", "TALEP EDİLEN TUTAR"], ["approvedAmount", "ONAYLANAN TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["approvalDate", "ONAY-RED TARİHİ", "date"]],
+          toolbar: `<select><option>${escapeHtml(trText("Tümü"))}</option></select><input type="date" value="2026-05-05" />`,
+        },
+        sgkEntries: {
+          title: "SGK İşe Giriş Bildirgeleri",
+          subtitle: "Bu formda sistem üzerinden verdiğiniz SGK işe giriş bildirgelerini görüntüleyebilirsiniz.",
+          moduleId: "personnelSgkEntries",
+          icon: "users",
+          primaryLabel: "İşe Giriş Sorgulama",
+          columns: [["title", "TANIM"], ["description", "AÇIKLAMA"], ["createdAt", "OLUŞTURMA TARİHİ", "date"], ["notificationStatus", "BİLDİRİM VERİLDİ", "select", ["Tümü", "Evet", "Hayır"]], ["notificationDate", "BİLDİRİM TARİHİ", "date"]],
+          toolbar: `<input type="date" value="2026-06-05" /><input type="date" value="2026-07-05" />`,
+        },
+        sgkExits: {
+          title: "SGK İşten Çıkış Bildirgeleri",
+          subtitle: "Bu formda SGK işten çıkış bildirgelerinizi yönetebilirsiniz.",
+          moduleId: "personnelSgkExits",
+          icon: "users",
+          primaryLabel: "İşten Çıkış Sorgulama",
+          columns: [["title", "TANIM"], ["description", "AÇIKLAMA"], ["createdAt", "OLUŞTURMA TARİHİ", "date"], ["notificationStatus", "BİLDİRİM VERİLDİ", "select", ["Tümü", "Evet", "Hayır"]], ["notificationDate", "BİLDİRİM TARİHİ", "date"]],
+          toolbar: `<input type="date" value="2026-06-05" /><input type="date" value="2026-07-05" />`,
+        },
+        roadMealAdvance: {
+          title: "Personel Yol Yemek Ön Ödemeleri",
+          subtitle: "Personel yol yemek ön ödemelerini ilk sekmede görüntüleyebilir, ikinci sekmede oluşturabilirsiniz.",
+          moduleId: "personnelRoadMealPrepayments",
+          icon: "grid",
+          primaryLabel: "Yeni Ön Ödeme",
+          columns: [["workplace", "İŞYERİ"], ["person", "AD SOYAD"], ["identityNo", "TC KİMLİK NO"], ["paymentType", "YOL/YEMEK", "select", ["Yol", "Yemek"]], ["advanceType", "ÖDEME TİPİ"], ["dailyAmount", "GÜNLÜK ÜCRET"], ["dayCount", "GÜN SAYISI"], ["totalAmount", "TOPLAM TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]], ["date", "TARİH", "date"], ["paymentStatus", "ÖDEMESİ YAPILDI", "select", ["Tümü", "Evet", "Hayır"]], ["payrollStatus", "BORDROLAŞMA DURUMU", "select", ["Bekliyor", "Bordrolaştı"]]],
+        },
+      };
+      const screen = personnelScreens[activeSubTab] || personnelScreens.personnel;
+      const module = getModule(screen.moduleId);
+      return prozonListScreen({
+        ...screen,
+        helpQuery: `${screen.title} personel bordro insan kaynakları`,
         groupable: true,
-        columns:
-          activeSubTab === "advances"
-            ? [["person", "AD SOYAD"], ["period", "DÖNEM"], ["advance", "AVANS"], ["deduction", "KESİNTİ"], ["netPayable", "NET ÖDENECEK"], ["payrollStatus", "DURUM", "select"]]
-            : [["status", "DURUM", "select"], ["__firstName", "AD"], ["__lastName", "SOYAD"], ["email", "EPOSTA"], ["phone", "GSM"], ["department", "ÖN KAYIT TANIM"], ["__page", "SAYFA BİLGİSİ"]],
-        records: activeSubTab === "advances" ? payroll : personnel,
-      }),
+        records: getScopedRecords(module),
+      });
+    },
     leaveTop: () =>
       prozonListScreen({
         title: "İzin Talep Listesi",
@@ -8214,6 +8661,14 @@ function openDialog(recordId = "", moduleId = activeModuleId) {
           </label>
         `;
       }
+      if (type === "datetime-local") {
+        return `
+          <label>
+            ${escapeHtml(trText(label))}
+            <input name="${key}" type="datetime-local" value="${escapeHtml(String(value || ""))}" ${required ? "required" : ""} />
+          </label>
+        `;
+      }
       if (type === "select") {
         return `
           <label>
@@ -8516,6 +8971,12 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const prozonRecordRow = event.target.closest("[data-prozon-record-id]");
+  if (prozonRecordRow && !event.target.closest("input, select, button, a")) {
+    openDialog(prozonRecordRow.dataset.prozonRecordId, prozonRecordRow.dataset.prozonRecordModule);
+    return;
+  }
+
   const messageThreadButton = event.target.closest("[data-message-thread]");
   if (messageThreadButton) {
     selectedMessageThreadId = messageThreadButton.dataset.messageThread;
@@ -8787,6 +9248,14 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("input", (event) => {
+  if (event.target.matches("[data-prozon-filter-key]")) {
+    const key = prozonFilterKey(event.target.dataset.prozonFilterModule, event.target.dataset.prozonFilterKey);
+    prozonColumnFilters[key] = event.target.value;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   if (event.target.id === "calcGrossSalary") {
     updateSalaryCalculator("gross");
     return;
@@ -8862,6 +9331,14 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("change", (event) => {
+  if (event.target.matches("[data-prozon-filter-key]")) {
+    const key = prozonFilterKey(event.target.dataset.prozonFilterModule, event.target.dataset.prozonFilterKey);
+    prozonColumnFilters[key] = event.target.value;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   if (event.target?.id === "attendanceBulkFile") {
     importAttendanceBulkFile(event.target.files?.[0]);
     event.target.value = "";
