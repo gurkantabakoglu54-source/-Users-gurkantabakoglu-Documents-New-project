@@ -9717,6 +9717,12 @@ document.addEventListener("click", (event) => {
   const prozonSubTabButton = event.target.closest("[data-prozon-subtab]");
   if (prozonSubTabButton) {
     prozonActiveSubTabs[payrollCenterTab] = prozonSubTabButton.dataset.prozonSubtab;
+    if (payrollCenterTab === "payrollTop" && prozonSubTabButton.dataset.prozonSubtab === "quickPayroll") {
+      payrollCalculatorView = "quick";
+    }
+    if (payrollCenterTab === "payrollTop" && prozonSubTabButton.dataset.prozonSubtab === "severance") {
+      payrollCalculatorView = "severanceTool";
+    }
     activeModuleId = "payrollCenter";
     prozonWorkplaceCardOpen = false;
     renderPayrollCenter();
@@ -10102,7 +10108,10 @@ document.addEventListener("click", (event) => {
 
   if (action === "currency-fetch") {
     const currencyModule = getModule("currencyRates");
-    const upsertRates = (rows, date = new Date().toISOString().slice(0, 10)) => {
+    const selectedDate =
+      manageButton.closest(".prozon-list-screen")?.querySelector('input[type="date"]')?.value ||
+      new Date().toISOString().slice(0, 10);
+    const upsertRates = (rows, date = selectedDate) => {
       rows.forEach((row) => {
         const existing = currencyModule.records.find((record) => record.date === date && record.currency === row.currency);
         if (existing) Object.assign(existing, row);
@@ -10117,6 +10126,7 @@ document.addEventListener("click", (event) => {
       { currency: "EUR", buying: "35,10", selling: "35,23", effectiveBuying: "35,08", effectiveSelling: "35,28" },
       { currency: "GBP", buying: "41,20", selling: "41,38", effectiveBuying: "41,17", effectiveSelling: "41,44" },
     ];
+    upsertRates(fallbackRates, selectedDate);
     fetch("https://www.tcmb.gov.tr/kurlar/today.xml")
       .then((response) => {
         if (!response.ok) throw new Error("TCMB kur servisine ulaşılamadı");
@@ -10136,9 +10146,9 @@ document.addEventListener("click", (event) => {
             effectiveSelling: valueOf("BanknoteSelling"),
           };
         }).filter(Boolean);
-        upsertRates(rows.length ? rows : fallbackRates);
+        upsertRates(rows.length ? rows : fallbackRates, selectedDate);
       })
-      .catch(() => upsertRates(fallbackRates, "2026-06-05"));
+      .catch(() => {});
     return;
   }
 

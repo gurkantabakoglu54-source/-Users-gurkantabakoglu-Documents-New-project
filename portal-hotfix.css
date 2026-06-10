@@ -503,44 +503,6 @@
   min-width: 180px;
 }
 
-@media (max-width: 1200px) {
-  .prozon-param-grid,
-  .payroll-calc-grid,
-  .severance-form-grid,
-  .payroll-calc-results,
-  .quick-payroll-layout {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .payroll-graph-row {
-    grid-template-columns: 1fr;
-    margin: 24px 42px;
-  }
-}
-
-.prozon-row-actions {
-  white-space: nowrap;
-  min-width: 76px;
-  text-align: center;
-}
-
-.prozon-row-actions button {
-  display: inline-grid;
-  width: 28px;
-  height: 28px;
-  margin: 0 2px;
-  padding: 0;
-  place-items: center;
-  border: 1px solid #d7dce3;
-  border-radius: 4px;
-  background: #fff;
-  color: #2563eb;
-  cursor: pointer;
-}
-
-.prozon-row-actions button:last-child {
-  color: #d11f1f;
-}
 
 .payroll-tool-screen {
   padding: 26px 38px;
@@ -7317,3 +7279,45 @@ body.sidebar-collapsed .content {
   margin-top: 10px;
   min-width: 180px;
 }
+
+/* Final Prozon-fit overrides: actual file end. */
+.prozon-dashboard-shell { font-size: 13px; }
+.prozon-pano-layout { display: grid !important; grid-template-columns: minmax(0, 1fr) 360px !important; gap: 14px !important; align-items: start; }
+.prozon-pano-layout > .prozon-stat-board,
+.prozon-pano-layout > .prozon-chart-card { grid-column: 1; }
+.prozon-pano-layout > .prozon-news-stack { grid-column: 2; grid-row: 1 / span 2; }
+.prozon-stat-grid { gap: 12px !important; }
+.prozon-stat-card { min-height: 102px !important; padding: 14px 18px !important; }
+.prozon-stat-card b { font-size: 15px !important; line-height: 1.25; }
+.prozon-chart-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; margin-top: 14px !important; }
+.prozon-chart-card { min-height: 250px !important; grid-template-rows: auto 1fr !important; padding: 14px !important; }
+.prozon-chart-card.is-featured { min-height: 270px !important; }
+.prozon-chart-card h3 { font-size: 14px !important; margin-bottom: 8px !important; }
+.prozon-empty-donut { width: 116px !important; height: 116px !important; font-size: 12px !important; }
+.prozon-news-card { grid-template-columns: 86px minmax(0, 1fr) !important; min-height: 118px !important; padding: 12px !important; }
+.prozon-news-thumb { height: 82px !important; }
+.prozon-news-thumb img { width: 100%; height: 100%; object-fit: contain; }
+.prozon-news-card h3 { font-size: 16px !important; line-height: 1.2; }
+.prozon-news-card p,
+.prozon-news-card small { font-size: 12px !important; line-height: 1.35; }
+.payroll-calc-results,
+.quick-payroll-layout .payroll-calc-results { display: grid !important; grid-template-columns: 1fr !important; gap: 18px !important; max-width: 920px; margin: 18px 42px !important; }
+.payroll-result-panel { min-height: 0 !important; padding: 20px 22px !important; overflow: hidden; }
+.payroll-mini-table { width: 100%; table-layout: fixed; }
+.payroll-mini-table th:first-child,
+.payroll-mini-table td:first-child { width: 62%; }
+.payroll-mini-table th:last-child,
+.payroll-mini-table td:last-child { width: 38%; text-align: right; white-space: nowrap; }
+.payroll-graph-row { grid-template-columns: 280px 440px !important; gap: 48px !important; margin: 24px 80px !important; }
+.attendance-prozon-screen .prozon-grid-scroll { overflow-x: auto !important; }
+.attendance-prozon-screen .prozon-data-grid { min-width: 2350px !important; table-layout: fixed !important; }
+.attendance-prozon-screen .prozon-data-grid th,
+.attendance-prozon-screen .prozon-data-grid td { overflow: visible !important; white-space: nowrap !important; }
+.attendance-prozon-screen .prozon-data-grid th:nth-child(1),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(1) { width: 120px !important; }
+.attendance-prozon-screen .prozon-data-grid th:nth-child(2),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(2) { width: 220px !important; }
+.attendance-prozon-screen .prozon-data-grid th:nth-child(3),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(3) { width: 150px !important; }
+.attendance-prozon-screen .prozon-data-grid th:nth-child(n + 4),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(n + 4) { width: 58px !important; text-align: center; }
