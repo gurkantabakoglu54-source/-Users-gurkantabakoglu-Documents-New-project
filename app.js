@@ -6567,7 +6567,7 @@ function renderPayrollCenter() {
           <div class="payroll-calc-grid prozon-param-grid">
             ${selectField("Dönem", "payrollCalcYear", ["2026", "2025"], "2026")}
             ${compactMoneyInput("Ücret", "payrollCalcAmount", payrollMoney(defaultPayrollTaxRates.minimumWageGross))}
-            ${selectField("", "payrollCalcMode", ["Net", "Brüt"], "Net")}
+            ${selectField("", "payrollCalcMode", ["Brüt", "Net"], "Brüt")}
             ${selectField("Eğitim Seviyesi", "payrollCalcEducation", ["Diğer", "Lise", "Ön Lisans", "Lisans"], "Diğer")}
             ${selectField("Belge Türü", "payrollCalcDocType", ["1", "2", "4", "5", "29"], "1")}
             ${compactMoneyInput("Kümülatif G.V.M.", "payrollCalcCumulative", "0,00")}
@@ -6647,11 +6647,10 @@ function renderPayrollCenter() {
   const prozonPayrollCalculatorScreen = () => `
     <section class="prozon-list-screen payroll-tool-screen">
       <div class="prozon-list-heading">
-        <span data-icon="${payrollCalculatorView === "severanceTool" ? "wallet" : "invoice"}"></span>
-        <div><h2>${escapeHtml(trText(payrollCalculatorView === "quick" ? "Hızlı Bordro Hesaplama" : payrollCalculatorView === "severanceTool" ? "Kıdem İhbar Hesaplama Aracı" : "Bordro Hesaplama"))}</h2><p>${escapeHtml(trText("2026 bordro, SGK, gelir vergisi, damga vergisi ve işveren maliyeti hesabı."))}</p></div>
+        <span data-icon="invoice"></span>
+        <div><h2>${escapeHtml(trText("Bordro Hesaplama"))}</h2><p>${escapeHtml(trText("2026 bordro, SGK, gelir vergisi, damga vergisi ve işveren maliyeti hesabı."))}</p></div>
       </div>
-      ${calculatorNav()}
-      ${payrollCalculatorView === "quick" ? prozonQuickPayrollScreen() : payrollCalculatorView === "severanceTool" ? prozonSeveranceToolScreen() : prozonPayrollMainCalculator()}
+      ${prozonPayrollMainCalculator()}
     </section>
   `;
   const prozonSeveranceScreen = () => `
@@ -7021,9 +7020,21 @@ function renderPayrollCenter() {
       });
     },
     payrollTop: () => {
-      if (activeSubTab === "calculators") return prozonPayrollCalculatorScreen();
-      if (activeSubTab === "severance") return prozonSeveranceScreen();
-      if (activeSubTab === "quickPayroll") return prozonQuickPayrollScreen();
+      if (activeSubTab === "calculators") {
+        payrollCalculatorView = "payroll";
+        payrollCalculatorDetail = "";
+        return prozonPayrollCalculatorScreen();
+      }
+      if (activeSubTab === "severance") {
+        payrollCalculatorView = "severanceTool";
+        payrollCalculatorDetail = "";
+        return prozonSeveranceScreen();
+      }
+      if (activeSubTab === "quickPayroll") {
+        payrollCalculatorView = "quick";
+        payrollCalculatorDetail = "";
+        return prozonQuickPayrollScreen();
+      }
       if (activeSubTab === "payrollExcel") return prozonPayrollExcelScreen();
       if (activeSubTab === "attendanceSchedule") return prozonAttendanceScreen();
       const attendanceColumns = [

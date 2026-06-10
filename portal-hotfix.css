@@ -7423,3 +7423,162 @@ body.sidebar-collapsed .content {
 .attendance-prozon-screen .prozon-data-grid td:nth-last-child(1) {
   width: 86px !important;
 }
+
+/* Final pass: keep Bordro/Pano screens compact, readable and clickable. */
+.prozon-dashboard-shell,
+.prozon-dashboard-shell button,
+.prozon-dashboard-shell input,
+.prozon-dashboard-shell select,
+.prozon-dashboard-shell textarea {
+  font-size: 13px !important;
+}
+
+.prozon-pano-layout {
+  grid-template-columns: minmax(0, 1fr) 340px !important;
+  gap: 14px !important;
+}
+
+.prozon-pano-layout > .prozon-stat-board,
+.prozon-pano-layout > .prozon-chart-card {
+  grid-column: 1 !important;
+}
+
+.prozon-pano-layout > .prozon-news-stack {
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+}
+
+.prozon-chart-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.prozon-pano-layout > .prozon-chart-card,
+.prozon-chart-grid .prozon-chart-card,
+.prozon-pano-layout > .prozon-chart-card.is-featured,
+.prozon-chart-grid .prozon-chart-card.is-featured {
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
+  padding: 12px !important;
+  overflow: hidden !important;
+}
+
+.prozon-chart-card h3 {
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+}
+
+.prozon-empty-donut {
+  width: 90px !important;
+  height: 90px !important;
+  font-size: 11px !important;
+}
+
+.prozon-news-stack {
+  max-height: calc(100vh - 195px) !important;
+  overflow-y: auto !important;
+}
+
+.prozon-news-card {
+  grid-template-columns: 78px minmax(0, 1fr) !important;
+  min-height: 104px !important;
+}
+
+.prozon-news-thumb {
+  height: 72px !important;
+}
+
+.prozon-news-thumb img {
+  object-fit: contain !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid {
+  min-width: 3200px !important;
+  table-layout: fixed !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th,
+.attendance-prozon-screen .prozon-data-grid td {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(1),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(1) {
+  width: 220px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(2),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(2) {
+  width: 280px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(3),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(3) {
+  width: 180px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(n + 4),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(n + 4) {
+  width: 82px !important;
+  text-align: center !important;
+}
+
+.payroll-calc-page {
+  padding-bottom: 28px !important;
+}
+
+.payroll-calc-results,
+.quick-payroll-layout .payroll-calc-results {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1040px) !important;
+  gap: 14px !important;
+  max-width: 1080px !important;
+  margin: 16px 0 18px 18px !important;
+}
+
+.payroll-result-panel {
+  overflow: visible !important;
+  padding: 18px 20px !important;
+}
+
+.payroll-mini-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.payroll-mini-table th,
+.payroll-mini-table td {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.payroll-mini-table th:first-child,
+.payroll-mini-table td:first-child {
+  width: auto !important;
+}
+
+.payroll-mini-table th:last-child,
+.payroll-mini-table td:last-child {
+  width: 180px !important;
+  text-align: right !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.payroll-tool-screen > .payroll-tool-screen {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.prozon-sub-nav button,
+.prozon-list-actions button,
+.payroll-side-buttons button,
+.payroll-calc-grid button,
+.prozon-list-screen button {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
