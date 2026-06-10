@@ -6473,8 +6473,6 @@ function renderPayrollCenter() {
       ["absenceForm", "Devamsızlık Formu"],
       ["rules", "Kurlar"],
       ["payrollExcel", "Bordro Excel Alımları"],
-      ["severance", "Kıdem/İhbar Hesapla"],
-      ["quickPayroll", "Hızlı Bordro"],
       ["pdks", "PDKS"],
       ["fixedAttendance", "Sabit Puantaj Cetveli"],
       ["calculators", "Hesap Makineleri"],
@@ -7024,16 +7022,6 @@ function renderPayrollCenter() {
         payrollCalculatorView = "payroll";
         payrollCalculatorDetail = "";
         return prozonPayrollCalculatorScreen();
-      }
-      if (activeSubTab === "severance") {
-        payrollCalculatorView = "severanceTool";
-        payrollCalculatorDetail = "";
-        return prozonSeveranceScreen();
-      }
-      if (activeSubTab === "quickPayroll") {
-        payrollCalculatorView = "quick";
-        payrollCalculatorDetail = "";
-        return prozonQuickPayrollScreen();
       }
       if (activeSubTab === "payrollExcel") return prozonPayrollExcelScreen();
       if (activeSubTab === "attendanceSchedule") return prozonAttendanceScreen();
@@ -9723,8 +9711,6 @@ document.addEventListener("click", (event) => {
       "absenceForm",
       "rules",
       "payrollExcel",
-      "severance",
-      "quickPayroll",
       "pdks",
       "fixedAttendance",
       "calculators",
@@ -9732,8 +9718,6 @@ document.addEventListener("click", (event) => {
     if (payrollTopSubtabs.includes(targetTab)) {
       payrollCenterTab = "payrollTop";
       prozonActiveSubTabs.payrollTop = targetTab;
-      if (targetTab === "quickPayroll") payrollCalculatorView = "quick";
-      if (targetTab === "severance") payrollCalculatorView = "severanceTool";
       if (targetTab === "calculators") payrollCalculatorView = "payroll";
     } else {
       payrollCenterTab = targetTab;
@@ -9755,16 +9739,12 @@ document.addEventListener("click", (event) => {
       "absenceForm",
       "rules",
       "payrollExcel",
-      "severance",
-      "quickPayroll",
       "pdks",
       "fixedAttendance",
       "calculators",
     ];
     if (payrollTopSubtabs.includes(targetSubtab)) payrollCenterTab = "payrollTop";
     prozonActiveSubTabs[payrollCenterTab] = targetSubtab;
-    if (payrollCenterTab === "payrollTop" && targetSubtab === "quickPayroll") payrollCalculatorView = "quick";
-    if (payrollCenterTab === "payrollTop" && targetSubtab === "severance") payrollCalculatorView = "severanceTool";
     if (payrollCenterTab === "payrollTop" && targetSubtab === "calculators") payrollCalculatorView = "payroll";
     activeModuleId = "payrollCenter";
     prozonWorkplaceCardOpen = false;
