@@ -20,6 +20,504 @@
   letter-spacing: 0;
 }
 
+/* Prozon-style compact payroll pass */
+.prozon-dashboard-shell {
+  font-size: 13px;
+}
+
+.prozon-mainbar {
+  min-height: 78px;
+  gap: 16px;
+}
+
+.prozon-logo-img {
+  width: 150px;
+  max-height: 72px;
+  object-fit: contain;
+}
+
+.prozon-mainbar h2 {
+  font-size: 24px;
+}
+
+.prozon-horizontal-nav {
+  gap: 18px;
+  padding: 8px 0 10px;
+}
+
+.prozon-horizontal-nav button {
+  min-height: 54px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.prozon-horizontal-nav span[data-icon],
+.prozon-horizontal-nav svg {
+  width: 28px;
+  height: 28px;
+}
+
+.prozon-content {
+  padding-top: 18px;
+}
+
+.prozon-top-tabs,
+.payroll-subnav,
+.prozon-inner-tabs.tight {
+  min-height: 40px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.prozon-top-tabs button,
+.payroll-subnav button,
+.prozon-inner-tabs.tight button {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.prozon-list-screen {
+  gap: 8px;
+  padding: 14px 18px 18px;
+  font-size: 13px;
+}
+
+.prozon-list-heading {
+  min-height: 58px;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.prozon-list-heading h2 {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.prozon-list-heading p {
+  font-size: 13px;
+}
+
+.prozon-title-block,
+.prozon-list-heading {
+  align-items: center;
+}
+
+.prozon-list-heading span[data-icon],
+.prozon-title-block span[data-icon] {
+  width: 42px;
+  height: 42px;
+}
+
+.prozon-list-actions {
+  gap: 6px;
+}
+
+.prozon-list-actions input,
+.prozon-list-actions select,
+.prozon-list-actions button,
+.prozon-list-actions a,
+.prozon-filter-search input,
+.prozon-filter-select select,
+.prozon-filter-date input {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.prozon-grid-shell {
+  min-height: 520px;
+}
+
+.prozon-data-grid th,
+.prozon-data-grid td {
+  height: 32px;
+  padding: 5px 8px;
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.prozon-grid-rail {
+  width: 36px;
+}
+
+.prozon-grid-rail button {
+  width: 32px;
+  min-height: 32px;
+  font-size: 22px;
+}
+
+.prozon-filter-search span[data-icon],
+.prozon-filter-date span[data-icon],
+.prozon-data-grid th span[data-icon] {
+  width: 16px;
+  height: 16px;
+}
+
+.prozon-pano-layout {
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+}
+
+.prozon-stat-board {
+  padding: 14px;
+}
+
+.prozon-stat-card {
+  min-height: 118px;
+  padding: 18px 20px;
+}
+
+.prozon-stat-card b {
+  font-size: 17px;
+}
+
+.prozon-chart-card {
+  min-height: 300px;
+  padding: 16px;
+}
+
+.prozon-chart-card.is-featured {
+  min-height: 330px;
+}
+
+.prozon-chart-card h3 {
+  font-size: 16px;
+}
+
+.prozon-empty-donut {
+  width: 150px;
+  height: 150px;
+  font-size: 14px;
+}
+
+.prozon-news-column {
+  gap: 12px;
+}
+
+.prozon-news-card {
+  grid-template-columns: 112px minmax(0, 1fr);
+  min-height: 150px;
+  padding: 14px;
+}
+
+.prozon-news-thumb {
+  height: 92px;
+  overflow: hidden;
+}
+
+.prozon-news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+}
+
+.prozon-news-card h3 {
+  font-size: 19px;
+  line-height: 1.18;
+}
+
+.prozon-news-card p {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.payroll-calc-page,
+.payroll-tool-screen {
+  font-size: 13px;
+}
+
+.payroll-subnav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 14px;
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.payroll-subnav button {
+  border: 0;
+  background: #f7f7f7;
+  color: #333;
+  cursor: pointer;
+}
+
+.payroll-subnav button.active {
+  color: #2f7dcc;
+  box-shadow: inset 0 -3px 0 #2f7dcc;
+}
+
+.prozon-purple-box {
+  position: relative;
+  max-width: 1440px;
+  margin: 16px 42px 12px;
+  padding: 32px 44px 28px;
+  border: 2px solid #8950c7;
+  border-radius: 18px;
+}
+
+.prozon-purple-box > b,
+.payroll-result-panel.stamp > b {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: #8950c7;
+  color: #fff;
+  font-size: 15px;
+}
+
+.prozon-param-grid,
+.payroll-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 10px 18px;
+  align-items: center;
+}
+
+.prozon-param-grid label,
+.quick-payroll-layout label,
+.severance-form-grid label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #333;
+  font-size: 13px;
+}
+
+.prozon-param-grid input,
+.prozon-param-grid select,
+.quick-payroll-layout input,
+.quick-payroll-layout select,
+.severance-form-grid input,
+.severance-form-grid select,
+.payroll-deduction-select {
+  min-height: 32px;
+  border: 1px solid #d7d7d7;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+}
+
+.payroll-check {
+  justify-content: flex-start !important;
+}
+
+.payroll-check input {
+  width: 22px;
+  height: 22px;
+}
+
+.payroll-side-buttons {
+  display: grid;
+  gap: 6px;
+}
+
+.payroll-side-buttons button {
+  min-height: 34px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+}
+
+.payroll-deduction-select {
+  width: 300px;
+  margin: 0 0 14px 52px;
+  padding: 0 12px;
+}
+
+.payroll-inline-detail {
+  margin: 10px 42px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.payroll-inline-detail header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.payroll-calc-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  gap: 14px;
+  margin: 18px 42px;
+}
+
+.payroll-result-panel {
+  position: relative;
+  padding: 22px 18px;
+  border: 2px solid #61bea2;
+  border-radius: 18px;
+}
+
+.payroll-result-panel.stamp > b {
+  background: #61bea2;
+}
+
+.payroll-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payroll-mini-table th,
+.payroll-mini-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #a7a7a7;
+  font-size: 13px;
+}
+
+.payroll-graph-row {
+  display: grid;
+  grid-template-columns: 360px 560px;
+  gap: 64px;
+  align-items: start;
+  margin: 28px 100px;
+}
+
+.payroll-graph-row article h3 {
+  text-align: center;
+  font-size: 14px;
+}
+
+.prozon-axis-chart {
+  position: relative;
+  height: 260px;
+  border-left: 1px solid #8a929b;
+  border-bottom: 1px solid #8a929b;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 50px, #d8d8d8 51px);
+}
+
+.prozon-axis-chart em {
+  position: absolute;
+  top: 16px;
+  right: -70px;
+  font-style: normal;
+  color: #777;
+}
+
+.payroll-exceptions {
+  margin: 10px 100px;
+  color: red;
+  font-size: 14px;
+}
+
+.quick-payroll-layout {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 24px;
+  margin: 20px 42px;
+}
+
+.payroll-form-panel,
+.severance-form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.severance-form-grid {
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  max-width: 1380px;
+  margin: 18px 70px;
+}
+
+.severance-meta {
+  display: flex;
+  gap: 180px;
+  margin: 10px 330px 24px;
+  font-size: 13px;
+}
+
+.severance-result {
+  width: 740px;
+  margin: 0 auto 20px;
+}
+
+.severance-detail-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  margin: 24px 70px;
+}
+
+.severance-detail-row article {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 12px;
+}
+
+.bottom-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 8px;
+  background: #fff;
+}
+
+.bottom-actions button,
+.close-like {
+  min-width: 170px;
+  min-height: 38px;
+}
+
+.attendance-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.attendance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #333;
+  font-size: 12px;
+}
+
+.attendance-legend b {
+  color: #061eff;
+  font-weight: 600;
+}
+
+.prozon-select-all {
+  margin-top: 10px;
+  min-width: 180px;
+}
+
+@media (max-width: 1200px) {
+  .prozon-param-grid,
+  .payroll-calc-grid,
+  .severance-form-grid,
+  .payroll-calc-results,
+  .quick-payroll-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .payroll-graph-row {
+    grid-template-columns: 1fr;
+    margin: 24px 42px;
+  }
+}
+
 .prozon-row-actions {
   white-space: nowrap;
   min-width: 76px;
@@ -6355,4 +6853,467 @@ body.sidebar-collapsed .content {
     width: 22px;
     height: 22px;
   }
+}
+
+/* Final compact overrides: keep Prozon-like scale after legacy styles. */
+.prozon-dashboard-shell {
+  font-size: 13px;
+}
+
+.prozon-mainbar {
+  min-height: 78px;
+  gap: 16px;
+}
+
+.prozon-logo-img {
+  width: 150px !important;
+  max-height: 72px !important;
+  object-fit: contain;
+}
+
+.prozon-mainbar h2 {
+  font-size: 24px;
+}
+
+.prozon-horizontal-nav {
+  gap: 18px;
+  padding: 8px 0 10px;
+}
+
+.prozon-horizontal-nav button {
+  min-height: 54px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.prozon-horizontal-nav span[data-icon],
+.prozon-horizontal-nav svg {
+  width: 28px;
+  height: 28px;
+}
+
+.prozon-content {
+  padding-top: 18px;
+}
+
+.prozon-top-tabs,
+.payroll-subnav,
+.prozon-inner-tabs.tight {
+  min-height: 40px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.prozon-top-tabs button,
+.payroll-subnav button,
+.prozon-inner-tabs.tight button {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.prozon-list-screen {
+  gap: 8px;
+  padding: 14px 18px 18px;
+  font-size: 13px;
+}
+
+.prozon-list-heading {
+  min-height: 58px;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.prozon-list-heading h2 {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.prozon-list-heading p {
+  font-size: 13px;
+}
+
+.prozon-list-heading span[data-icon],
+.prozon-title-block span[data-icon] {
+  width: 42px;
+  height: 42px;
+}
+
+.prozon-list-actions input,
+.prozon-list-actions select,
+.prozon-list-actions button,
+.prozon-list-actions a,
+.prozon-filter-search input,
+.prozon-filter-select select,
+.prozon-filter-date input {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.prozon-grid-shell {
+  min-height: 520px;
+}
+
+.prozon-data-grid th,
+.prozon-data-grid td {
+  height: 32px;
+  padding: 5px 8px;
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.prozon-grid-rail {
+  width: 36px;
+}
+
+.prozon-grid-rail button {
+  width: 32px;
+  min-height: 32px;
+  font-size: 22px;
+}
+
+.prozon-pano-layout {
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+}
+
+.prozon-stat-board {
+  padding: 14px;
+}
+
+.prozon-stat-card {
+  min-height: 118px;
+  padding: 18px 20px;
+}
+
+.prozon-stat-card b {
+  font-size: 17px;
+}
+
+.prozon-chart-card {
+  min-height: 300px;
+  padding: 16px;
+}
+
+.prozon-chart-card.is-featured {
+  min-height: 330px;
+}
+
+.prozon-chart-card h3 {
+  font-size: 16px;
+}
+
+.prozon-empty-donut {
+  width: 150px;
+  height: 150px;
+  font-size: 14px;
+}
+
+.prozon-news-card {
+  grid-template-columns: 112px minmax(0, 1fr);
+  min-height: 150px;
+  padding: 14px;
+}
+
+.prozon-news-thumb {
+  height: 92px;
+  overflow: hidden;
+}
+
+.prozon-news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+}
+
+.prozon-news-card h3 {
+  font-size: 19px;
+  line-height: 1.18;
+}
+
+.prozon-news-card p {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.payroll-calc-page,
+.payroll-tool-screen {
+  font-size: 13px;
+}
+
+.payroll-subnav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 14px;
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.payroll-subnav button {
+  border: 0;
+  background: #f7f7f7;
+  color: #333;
+  cursor: pointer;
+}
+
+.payroll-subnav button.active {
+  color: #2f7dcc;
+  box-shadow: inset 0 -3px 0 #2f7dcc;
+}
+
+.prozon-purple-box {
+  position: relative;
+  max-width: 1440px;
+  margin: 16px 42px 12px;
+  padding: 32px 44px 28px;
+  border: 2px solid #8950c7;
+  border-radius: 18px;
+}
+
+.prozon-purple-box > b,
+.payroll-result-panel.stamp > b {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: #8950c7;
+  color: #fff;
+  font-size: 15px;
+}
+
+.prozon-param-grid,
+.payroll-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
+  gap: 10px 18px;
+  align-items: center;
+}
+
+.prozon-param-grid label,
+.quick-payroll-layout label,
+.severance-form-grid label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #333;
+  font-size: 13px;
+}
+
+.prozon-param-grid input,
+.prozon-param-grid select,
+.quick-payroll-layout input,
+.quick-payroll-layout select,
+.severance-form-grid input,
+.severance-form-grid select,
+.payroll-deduction-select {
+  min-height: 32px;
+  border: 1px solid #d7d7d7;
+  border-radius: 5px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+}
+
+.payroll-check {
+  justify-content: flex-start !important;
+}
+
+.payroll-check input {
+  width: 22px;
+  height: 22px;
+}
+
+.payroll-side-buttons {
+  display: grid;
+  gap: 6px;
+}
+
+.payroll-side-buttons button {
+  min-height: 34px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+}
+
+.payroll-deduction-select {
+  width: 300px;
+  margin: 0 0 14px 52px;
+  padding: 0 12px;
+}
+
+.payroll-inline-detail {
+  margin: 10px 42px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.payroll-inline-detail header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.payroll-calc-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
+  gap: 14px;
+  margin: 18px 42px;
+}
+
+.payroll-result-panel {
+  position: relative;
+  padding: 22px 18px;
+  border: 2px solid #61bea2;
+  border-radius: 18px;
+}
+
+.payroll-result-panel.stamp > b {
+  background: #61bea2;
+}
+
+.payroll-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payroll-mini-table th,
+.payroll-mini-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #a7a7a7;
+  font-size: 13px;
+}
+
+.payroll-graph-row {
+  display: grid;
+  grid-template-columns: 360px 560px;
+  gap: 64px;
+  align-items: start;
+  margin: 28px 100px;
+}
+
+.payroll-graph-row article h3 {
+  text-align: center;
+  font-size: 14px;
+}
+
+.prozon-axis-chart {
+  position: relative;
+  height: 260px;
+  border-left: 1px solid #8a929b;
+  border-bottom: 1px solid #8a929b;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent 50px, #d8d8d8 51px);
+}
+
+.prozon-axis-chart em {
+  position: absolute;
+  top: 16px;
+  right: -70px;
+  font-style: normal;
+  color: #777;
+}
+
+.payroll-exceptions {
+  margin: 10px 100px;
+  color: red;
+  font-size: 14px;
+}
+
+.quick-payroll-layout {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 24px;
+  margin: 20px 42px;
+}
+
+.payroll-form-panel,
+.severance-form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.severance-form-grid {
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  max-width: 1380px;
+  margin: 18px 70px;
+}
+
+.severance-meta {
+  display: flex;
+  gap: 180px;
+  margin: 10px 330px 24px;
+  font-size: 13px;
+}
+
+.severance-result {
+  width: 740px;
+  margin: 0 auto 20px;
+}
+
+.severance-detail-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 34px;
+  margin: 24px 70px;
+}
+
+.severance-detail-row article {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 12px;
+}
+
+.bottom-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 8px;
+  background: #fff;
+}
+
+.bottom-actions button,
+.close-like {
+  min-width: 170px;
+  min-height: 38px;
+}
+
+.attendance-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.attendance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #333;
+  font-size: 12px;
+}
+
+.attendance-legend b {
+  color: #061eff;
+  font-weight: 600;
+}
+
+.prozon-select-all {
+  margin-top: 10px;
+  min-width: 180px;
 }

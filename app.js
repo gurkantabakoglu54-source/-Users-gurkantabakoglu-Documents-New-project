@@ -1462,6 +1462,74 @@ const modules = [
       { id: "kur2", date: "2026-06-05", currency: "EUR", buying: "35,10", selling: "35,23", effectiveBuying: "35,08", effectiveSelling: "35,28" },
     ],
   },
+  {
+    id: "payrollExcelBenefitDefaults",
+    title: "Excel Ek Ödeme Varsayılanları",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Bordro", "Excel Ek Ödeme Varsayılanları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["selected", "Seç", "select", ["Evet", "Hayır"]],
+      ["benefitDefinition", "Yan Hak Tanımlamaları Tanım"],
+      ["code", "Kod"],
+      ["definition", "Tanım"],
+      ["netGross", "Excelden Alırken Net Brüt", "select", ["Tanımlanmamış", "Net", "Brüt"]],
+      ["workType", "Excelden Alırken Hakediş Çalışma Tipi", "select", ["Normal Çalışma", "Fazla Mesai", "İzin"]],
+      ["excelPeriod", "Excel Dönem", "select", ["Tümü", "Ay", "Yıl"]],
+    ],
+    records: [
+      { id: "pex1", selected: "Hayır", benefitDefinition: "Yemek Yardımı Nakit", code: "001", definition: "Yemek Yardımı Nakit", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex2", selected: "Hayır", benefitDefinition: "Yemek Yardımı (Kart)", code: "002", definition: "Yemek Yardımı (Kart)", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex3", selected: "Hayır", benefitDefinition: "Yol Yardımı Nakit", code: "003", definition: "Yol Yardımı Nakit", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex4", selected: "Hayır", benefitDefinition: "Yol Yardımı (Akbil, Bilet)", code: "004", definition: "Yol Yardımı (Akbil, Bilet)", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex5", selected: "Hayır", benefitDefinition: "Fazla Mesai Ücretleri", code: "005", definition: "Fazla Mesai Ücretleri", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex6", selected: "Hayır", benefitDefinition: "Hakedilmiş İzinlerin Ücreti", code: "006", definition: "Hakedilmiş İzinlerin Ücreti", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex7", selected: "Hayır", benefitDefinition: "Kıdem Tazminatı", code: "007", definition: "Kıdem Tazminatı", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex8", selected: "Hayır", benefitDefinition: "İhbar Tazminatı", code: "008", definition: "İhbar Tazminatı", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+      { id: "pex9", selected: "Hayır", benefitDefinition: "Yemek Kart (Sgk muaf)", code: "002.1", definition: "Yemek Kart (Sgk muaf)", netGross: "Tanımlanmamış", workType: "Normal Çalışma", excelPeriod: "Tümü" },
+    ],
+  },
+  {
+    id: "payrollInsurances",
+    title: "Bordro Sigortaları",
+    icon: "shield",
+    breadcrumb: ["Panel", "Bordro", "Sigortalar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["insuranceName", "Sigorta Tanımı"],
+      ["employeeRate", "İşçi Oranı"],
+      ["employerRate", "İşveren Oranı"],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["status", "Durum", "select", ["Aktif", "Pasif"]],
+    ],
+    records: [
+      { id: "psi1", insuranceName: "SGK Uzun Vadeli Sigorta", employeeRate: "%14", employerRate: "%20,75", amount: "0,00", currency: "TL", status: "Aktif" },
+      { id: "psi2", insuranceName: "İşsizlik Sigortası", employeeRate: "%1", employerRate: "%2", amount: "0,00", currency: "TL", status: "Aktif" },
+    ],
+  },
+  {
+    id: "payrollCalculatorExtras",
+    title: "Bordro Ek Ödemeleri",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Bordro", "Ek Ödemeler"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["extraName", "Ek Ödeme Tanımı"],
+      ["code", "Kod"],
+      ["netGross", "Net/Brüt", "select", ["Net", "Brüt"]],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD"]],
+      ["workType", "Çalışma Tipi", "select", ["Normal Çalışma", "Fazla Mesai", "İzin"]],
+    ],
+    records: [
+      { id: "pce1", extraName: "Yemek Yardımı Nakit", code: "001", netGross: "Net", amount: "0,00", currency: "TL", workType: "Normal Çalışma" },
+      { id: "pce2", extraName: "Fazla Mesai Ücretleri", code: "005", netGross: "Brüt", amount: "0,00", currency: "TL", workType: "Fazla Mesai" },
+    ],
+  },
 ];
 
 const storageKey = "global-kalite-clone-v6";
@@ -1484,6 +1552,10 @@ let dashboardRange = "month";
 let selectedPersonnel360Id = "";
 let payrollCenterTab = "home";
 const prozonActiveSubTabs = {};
+let payrollCalculatorView = "payroll";
+let payrollCalculatorDetail = "";
+let payrollExcelView = "imports";
+let severanceInnerTab = "seniority";
 let prozonWorkplaceCardOpen = false;
 let prozonWorkplaceCardTab = "general";
 let prozonEditingWorkplaceId = "";
@@ -5345,27 +5417,20 @@ function renderPayrollCenter() {
     const key = icon === "contact" ? (index === 2 ? "entry" : "exit") : icon;
     return `<i class="prozon-stat-art ${escapeHtml(key)}">${art[key] || art.users}</i>`;
   };
-  const prozonNewsCards = (legislationRecords.length
-    ? legislationRecords.map((record) => ({
-        title: record.title,
-        date: record.validUntil || record.period,
-        source: record.source || "Mevzuat",
-        text: `${record.value || trText("Güncel mevzuat kaydı")} · ${record.status || trText("Kontrol Edilecek")}`,
-      }))
-    : [
-        {
-          title: "7582 Sayılı Kanun Yayımlandı",
-          date: todayLabel,
-          source: "Resmi Gazete",
-          text: "Vergi ve SGK takibi için mevzuat parametreleri kontrol edilmelidir.",
-        },
-        {
-          title: "Beyanname ve Bildirge Hatırlatmaları",
-          date: todayLabel,
-          source: "İK & Bordro",
-          text: "Muhtasar, SGK ve maaş ödeme takvimi aylık bazda takip edilmelidir.",
-        },
-      ]).slice(0, 6);
+  const fallbackVideoCards = [
+    { title: "SGK Prim Günü", date: "31.12.2026", source: "SGK", text: "30 gün · Güncel" },
+    { title: "Fazla Mesai Katsayısı", date: "31.12.2026", source: "İş Kanunu", text: "1,5 · Güncel" },
+    { title: "Asgari Ücret Parametresi", date: "31.12.2026", source: "Resmi Gazete", text: "Kontrol edilecek · Kontrol Edilecek" },
+    { title: "Yıllık İzin Hakedişi", date: "31.12.2026", source: "İzin Yönetimi", text: "Kıdem yılına göre hakediş kontrolü" },
+    { title: "Kıdem ve İhbar Tazminatı", date: "31.12.2026", source: "Bordro", text: "Tavan, damga vergisi ve ihbar süresi kontrolü" },
+  ];
+  const legislationVideoCards = legislationRecords.map((record) => ({
+    title: record.title,
+    date: record.validUntil || record.period,
+    source: record.source || "Mevzuat",
+    text: `${record.value || trText("Güncel mevzuat kaydı")} · ${record.status || trText("Kontrol Edilecek")}`,
+  }));
+  const prozonNewsCards = [...legislationVideoCards, ...fallbackVideoCards].slice(0, 8);
   const workplaceDistribution = companies.length
     ? companies.map((company) => {
         const count = personnel.filter((person) => normalizeText(person.companyName) === normalizeText(company.name)).length;
@@ -5987,8 +6052,7 @@ function renderPayrollCenter() {
               (card) => `
                 <article class="prozon-news-card">
                   <div class="prozon-news-thumb">
-                    <strong>AD</strong>
-                    <span>${escapeHtml(trText("mevzuat"))}</span>
+                    <img src="assets/arti-destek-logo.png" alt="Artı Destek" />
                   </div>
                   <div>
                     <h3>${escapeHtml(trText(card.title))}</h3>
@@ -6410,6 +6474,7 @@ function renderPayrollCenter() {
       ["rules", "Kurlar"],
       ["payrollExcel", "Bordro Excel Alımları"],
       ["severance", "Kıdem/İhbar Hesapla"],
+      ["quickPayroll", "Hızlı Bordro"],
       ["pdks", "PDKS"],
       ["fixedAttendance", "Sabit Puantaj Cetveli"],
       ["calculators", "Hesap Makineleri"],
@@ -6462,59 +6527,234 @@ function renderPayrollCenter() {
       <select id="${escapeHtml(id)}">${options.map((option) => `<option ${option === selected ? "selected" : ""}>${escapeHtml(trText(option))}</option>`).join("")}</select>
     </label>
   `;
-  const prozonPayrollCalculatorScreen = () => {
-    const result = grossToNet(defaultPayrollTaxRates.minimumWageGross, { useEmployerDiscount: true });
+  const calculatorNav = () => `
+    <nav class="payroll-subnav">
+      ${[
+        ["payroll", "Bordro Hesaplama"],
+        ["quick", "Hızlı Bordro Hesaplama"],
+        ["severanceTool", "Kıdem İhbar Hesaplama Aracı"],
+      ]
+        .map(([view, label]) => `<button type="button" class="${payrollCalculatorView === view ? "active" : ""}" data-action="payroll-calculator-view" data-view="${view}">${escapeHtml(trText(label))}</button>`)
+        .join("")}
+    </nav>
+  `;
+  const payrollDetailPanel = () => {
+    if (!payrollCalculatorDetail) return "";
+    const isInsurance = payrollCalculatorDetail === "insurances";
+    const detailModule = getModule(isInsurance ? "payrollInsurances" : "payrollCalculatorExtras");
     return `
-      <section class="prozon-list-screen payroll-tool-screen">
-        <div class="prozon-list-heading">
-          <span data-icon="invoice"></span>
-          <div><h2>${escapeHtml(trText("Hesap Makineleri"))}</h2><p>${escapeHtml(trText("2026 bordro, SGK, gelir vergisi, damga vergisi ve işveren maliyeti hesabı."))}</p></div>
-        </div>
-        <div class="payroll-calc-box">
-          <b>${escapeHtml(trText("Parametreler"))}</b>
-          <div class="payroll-calc-grid">
-            ${selectField("Dönem", "payrollCalcYear", ["2026", "2025"], "2026")}
-            ${compactMoneyInput("Ücret", "payrollCalcAmount", payrollMoney(defaultPayrollTaxRates.minimumWageGross))}
-            ${selectField("Net/Brüt", "payrollCalcMode", ["Brüt", "Net"], "Brüt")}
-            ${selectField("Belge Türü", "payrollCalcDocType", ["1", "2", "4", "5"], "1")}
-            ${selectField("Kanun No", "payrollCalcLaw", ["5510", "6111", "7103", "17256"], "5510")}
-            ${compactMoneyInput("Kümülatif G.V.M.", "payrollCalcCumulative", "0,00")}
-            ${selectField("Eğitim Seviyesi", "payrollCalcEducation", ["Diğer", "Lise", "Ön Lisans", "Lisans"], "Diğer")}
-            ${compactMoneyInput("Çalışılan Gün", "payrollCalcDays", "30")}
-            <label class="payroll-check"><input id="payrollCalcDiscount" type="checkbox" checked /> ${escapeHtml(trText("5510 işveren indirimi uygula"))}</label>
-            <button class="primary" type="button" data-action="payroll-calc">${escapeHtml(trText("Hesapla"))}</button>
-          </div>
-        </div>
-        <div id="payrollCalcResult" class="payroll-calc-results">
-          ${payrollCalculationResultHtml(result)}
-        </div>
+      <section class="payroll-inline-detail">
+        <header>
+          <b>${escapeHtml(trText(isInsurance ? "Sigortalar" : "Ek Ödemeler"))}</b>
+          <button type="button" data-action="add" data-module="${detailModule.id}">+ ${escapeHtml(trText("Yeni Kayıt"))}</button>
+        </header>
+        ${renderProzonTable(detailModule.columns, getScopedRecords(detailModule), detailModule.id)}
       </section>
     `;
   };
-  const payrollCalculationResultHtml = (result) => `
-    <section class="payroll-result-panel sgk"><b>SGK</b><div>${compactRows(["Kalem", "Tutar"], [["Prime Tabi Brüt Kazanç", payrollMoney(result.sgkBase)], ["İşçi Payı", payrollMoney(result.sgk)], ["İşçi İşsizlik Payı", payrollMoney(result.unemployment)], ["İşveren Payı", payrollMoney(result.employerSgk)], ["İşveren İşsizlik Payı", payrollMoney(result.employerUnemployment)]])}</div></section>
-    <section class="payroll-result-panel tax"><b>${escapeHtml(trText("Gelir / Damga Vergisi"))}</b><div>${compactRows(["Kalem", "Tutar"], [["Gelir Vergisi Matrahı", payrollMoney(result.incomeTaxBase)], ["Gelir Vergisi", payrollMoney(result.incomeTax)], ["Damga Vergisi", payrollMoney(result.stampTax)], ["Vergi Dilimi", `%${Math.round((result.taxRate || 0) * 100)}`]])}</div></section>
-    <section class="payroll-result-panel cost"><b>${escapeHtml(trText("Maliyet"))}</b><div>${compactRows(["Kalem", "Tutar"], [["Brüt Kazanç", payrollMoney(result.gross)], ["Net Kazanç", payrollMoney(result.net)], ["İşveren Maliyeti", payrollMoney(result.employerCost)], ["Yeni Kümülatif G.V.M.", payrollMoney(result.cumulativeAfter)]])}</div></section>
+  const payrollGraphs = () => `
+    <div class="payroll-graph-row">
+      <article><h3>${escapeHtml(trText("Brüt Dağılım Grafiği"))}</h3>${emptyDonut(0)}</article>
+      <article><h3>${escapeHtml(trText("İşveren Maliyet Grafiği"))}</h3><div class="prozon-axis-chart"><span></span><span></span><span></span><span></span><em>TUTAR/TİP</em></div></article>
+    </div>
   `;
-  const prozonSeveranceScreen = () => `
+  const prozonPayrollMainCalculator = () => {
+    const result = grossToNet(defaultPayrollTaxRates.minimumWageGross, { useEmployerDiscount: true });
+    return `
+      <section class="payroll-calc-page">
+        <div class="payroll-calc-box prozon-purple-box">
+          <b>${escapeHtml(trText("Parametreler"))}</b>
+          <div class="payroll-calc-grid prozon-param-grid">
+            ${selectField("Dönem", "payrollCalcYear", ["2026", "2025"], "2026")}
+            ${compactMoneyInput("Ücret", "payrollCalcAmount", payrollMoney(defaultPayrollTaxRates.minimumWageGross))}
+            ${selectField("", "payrollCalcMode", ["Net", "Brüt"], "Net")}
+            ${selectField("Eğitim Seviyesi", "payrollCalcEducation", ["Diğer", "Lise", "Ön Lisans", "Lisans"], "Diğer")}
+            ${selectField("Belge Türü", "payrollCalcDocType", ["1", "2", "4", "5", "29"], "1")}
+            ${compactMoneyInput("Kümülatif G.V.M.", "payrollCalcCumulative", "0,00")}
+            ${compactMoneyInput("Devir Matrah (1.Ay)", "payrollCalcCarry1", "0,00")}
+            ${compactMoneyInput("Devir Matrah (2.Ay)", "payrollCalcCarry2", "0,00")}
+            ${selectField("Kanun No", "payrollCalcLaw", ["5510", "6111", "7103", "17256"], "5510")}
+            ${compactMoneyInput("A.Ü. Kümülatif G.V.M.", "payrollCalcMinCumulative", "0,00")}
+            ${selectField("Kaç Aylık Bordro?", "payrollCalcMonths", ["12", "6", "1"], "12")}
+            ${selectField("Başlangıç Ayı", "payrollCalcStartMonth", ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran"], "Ocak")}
+            ${selectField("Engel Seviyesi", "payrollCalcDisability", ["Yok", "1. Derece", "2. Derece", "3. Derece"], "Yok")}
+            <label class="payroll-check"><span>${escapeHtml(trText("5510 İndirimi"))}</span><input id="payrollCalcDiscount" type="checkbox" checked /></label>
+            <label class="payroll-check"><span>${escapeHtml(trText("BES Kesintisi"))}</span><input id="payrollCalcBes" type="checkbox" /></label>
+            ${compactMoneyInput("Çalışılan Gün", "payrollCalcDays", "30")}
+            <div class="payroll-side-buttons">
+              <button type="button" data-action="payroll-detail-panel" data-panel="insurances">${escapeHtml(trText("SİGORTALAR"))}</button>
+              <button type="button" data-action="payroll-detail-panel" data-panel="extras">${escapeHtml(trText("EK ÖDEMELER"))}</button>
+            </div>
+            ${selectField("Engelli Destek Tipi", "payrollCalcDisabledSupport", ["Brüt Ücreti Azalt", "Brüt Ücreti Arttır"], "Brüt Ücreti Azalt")}
+            <button class="primary" type="button" data-action="payroll-calc">${escapeHtml(trText("Hesapla"))}</button>
+          </div>
+        </div>
+        <select class="payroll-deduction-select"><option>${escapeHtml(trText("Tüm Kesintilere Tabi"))}</option><option>${escapeHtml(trText("Sadece SGK"))}</option></select>
+        ${payrollDetailPanel()}
+        <div id="payrollCalcResult" class="payroll-calc-results">
+          ${payrollCalculationResultHtml(result)}
+        </div>
+        ${payrollGraphs()}
+        <p class="payroll-exceptions">${escapeHtml(trText("Uygulanan İstisnalar"))}: &lt;YOK&gt;</p>
+      </section>
+    `;
+  };
+  const prozonQuickPayrollScreen = () => `
     <section class="prozon-list-screen payroll-tool-screen">
       <div class="prozon-list-heading">
-        <span data-icon="wallet"></span>
-        <div><h2>${escapeHtml(trText("Kıdem/İhbar Tazminatı"))}</h2><p>${escapeHtml(trText("Başlangıç, ayrılış ve brüt ücret girerek kıdem ve ihbarı hesaplayabilirsiniz."))}</p></div>
+        <span data-icon="invoice"></span>
+        <div><h2>${escapeHtml(trText("Hızlı Bordro"))}</h2><p>${escapeHtml(trText("Personel seçip dönem bilgileri ile hızlı bordro oluşturabilirsiniz."))}</p></div>
+        <div class="prozon-list-actions"><button class="primary" type="button" data-action="payroll-calc">${escapeHtml(trText("Hızlı Hesapla"))}</button><button type="button" data-action="add" data-module="payroll">${escapeHtml(trText("Bordro Kaydı Oluştur"))}</button></div>
       </div>
-      <div class="payroll-calc-box severance">
-        <b>${escapeHtml(trText("Kıdem Bilgileri"))}</b>
-        <div class="payroll-calc-grid">
-          <label><span>${escapeHtml(trText("Başlangıç Tarihi"))}</span><input id="severanceStart" type="date" value="2025-01-01" /></label>
-          <label><span>${escapeHtml(trText("Ayrılış Tarihi"))}</span><input id="severanceEnd" type="date" value="2026-06-05" /></label>
-          ${compactMoneyInput("Brüt Ücret", "severanceGross", payrollMoney(defaultPayrollTaxRates.minimumWageGross))}
-          ${compactMoneyInput("Kümülatif Gelir Vergisi Matrahı", "severanceCumulative", "0,00")}
-          <button class="primary" type="button" data-action="severance-calc">${escapeHtml(trText("Hesapla"))}</button>
+      <div class="quick-payroll-layout">
+        <div class="payroll-form-panel">
+          ${selectField("Dönem", "quickPayrollMonth", ["Haziran 2026", "Mayıs 2026"], "Haziran 2026")}
+          ${selectField("İşyeri", "quickPayrollCompany", ["Tüm İşyerleri", ...companies.map((company) => company.name || "")], "Tüm İşyerleri")}
+          ${selectField("Personel", "quickPayrollPerson", ["Seçiniz...", ...personnelRecords.map((person) => person.name || "")], "Seçiniz...")}
+          ${compactMoneyInput("Brüt Ücret", "payrollCalcAmount", payrollMoney(defaultPayrollTaxRates.minimumWageGross))}
+          ${compactMoneyInput("Çalışılan Gün", "payrollCalcDays", "30")}
+          <input id="payrollCalcCumulative" type="hidden" value="0,00" />
+          <select id="payrollCalcMode"><option>Brüt</option><option>Net</option></select>
+          <label class="payroll-check"><input id="payrollCalcDiscount" type="checkbox" checked /> ${escapeHtml(trText("5510 indirimi"))}</label>
         </div>
+        <div id="payrollCalcResult" class="payroll-calc-results compact">${payrollCalculationResultHtml(grossToNet(defaultPayrollTaxRates.minimumWageGross, { useEmployerDiscount: true }))}</div>
       </div>
-      <div id="severanceCalcResult" class="payroll-result-panel cost">${compactRows(["Kalem", "Sonuç"], [["Çalışma Süresi", "-"], ["Kıdem Net", "0,00"], ["İhbar Net", "0,00"], ["Toplam Net", "0,00"]])}</div>
     </section>
   `;
+  const severanceResultTable = () => `<div id="severanceCalcResult" class="severance-result">${payrollMiniRows(["", "KIDEM", "İHBAR", "TOPLAM"], [["Brüt Tazminat", "0,00", "0,00", "0,00"], ["Damga Vergisi", "0,00", "0,00", "0,00"], ["Gelir Vergisi", "-", "0,00", "0,00"], ["Net Tazminat", "0,00", "0,00", "0,00"]])}</div>`;
+  const severanceMainForm = (tool = false) => `
+    <div class="severance-form-grid">
+      <label><span>${escapeHtml(trText(tool ? "Başlangıç Tarihi" : "Personel"))}</span>${tool ? `<input id="severanceStart" type="date" />` : `<select><option>${escapeHtml(trText("Seçiniz..."))}</option>${personnelRecords.map((person) => `<option>${escapeHtml(person.name || "")}</option>`).join("")}</select>`}</label>
+      <label><span>${escapeHtml(trText("Brüt Ücret"))}</span><input id="severanceGross" value="${payrollMoney(defaultPayrollTaxRates.minimumWageGross)}" /></label>
+      ${tool ? `<label><span>${escapeHtml(trText("Bitiş Tarihi"))}</span><input id="severanceEnd" type="date" value="2026-06-05" /></label>` : `<label><span>${escapeHtml(trText("Başlangıç Tarihi"))}</span><select><option>${escapeHtml(trText("Kıdem Referans Tarihini Getir"))}</option></select><input id="severanceStart" type="date" value="2025-01-01" /></label>`}
+      <label><span>${escapeHtml(trText("Kümülatif GVM"))}</span><input id="severanceCumulative" value="0,00" /></label>
+      ${tool ? "" : `<label><span>${escapeHtml(trText("Ayrılış Tarihi"))}</span><select><option>${escapeHtml(trText("İşten Ayrılış Tarihini Getir"))}</option></select><input id="severanceEnd" type="date" value="2026-06-05" /></label>`}
+      <button class="primary" type="button" data-action="severance-calc">${escapeHtml(trText("Hesapla"))}</button>
+    </div>
+    <div class="severance-meta"><span>${escapeHtml(trText("Çalışma Süresi"))}:</span><span>${escapeHtml(trText("İhbar Süresi"))}:</span></div>
+    ${severanceResultTable()}
+  `;
+  const prozonSeveranceToolScreen = () => `
+    <section class="prozon-list-screen payroll-tool-screen severance-tool">
+      <div class="prozon-list-heading">
+        <span data-icon="wallet"></span>
+        <div><h2>${escapeHtml(trText("Kıdem/İhbar Tazminatı Hesaplama Aracı"))}</h2><p>${escapeHtml(trText("Bu formda kıdem ve ihbar tazminatını hesaplayabilirsiniz."))}</p></div>
+      </div>
+      ${severanceMainForm(true)}
+      <button class="outline close-like" type="button" data-action="prozon-refresh">${escapeHtml(trText("Kapat"))}</button>
+    </section>
+  `;
+  const prozonPayrollCalculatorScreen = () => `
+    <section class="prozon-list-screen payroll-tool-screen">
+      <div class="prozon-list-heading">
+        <span data-icon="${payrollCalculatorView === "severanceTool" ? "wallet" : "invoice"}"></span>
+        <div><h2>${escapeHtml(trText(payrollCalculatorView === "quick" ? "Hızlı Bordro Hesaplama" : payrollCalculatorView === "severanceTool" ? "Kıdem İhbar Hesaplama Aracı" : "Bordro Hesaplama"))}</h2><p>${escapeHtml(trText("2026 bordro, SGK, gelir vergisi, damga vergisi ve işveren maliyeti hesabı."))}</p></div>
+      </div>
+      ${calculatorNav()}
+      ${payrollCalculatorView === "quick" ? prozonQuickPayrollScreen() : payrollCalculatorView === "severanceTool" ? prozonSeveranceToolScreen() : prozonPayrollMainCalculator()}
+    </section>
+  `;
+  const prozonSeveranceScreen = () => `
+    <section class="prozon-list-screen payroll-tool-screen severance-card">
+      <div class="prozon-list-heading">
+        <span data-icon="wallet"></span>
+        <div><h2>${escapeHtml(trText("Kıdem/İhbar Tazminatı"))}</h2><p>${escapeHtml(trText("Bu formda personelin kıdem ve ihbar tazminatını hesaplayabilirsiniz."))}</p></div>
+      </div>
+      <nav class="prozon-inner-tabs tight">
+        ${[
+          ["seniority", "Kıdem Bilgileri"],
+          ["extras12", "12 Aylık Ek Ödemeleri"],
+          ["average12", "12 Aylık ÖSS"],
+        ].map(([key, label]) => `<button type="button" class="${severanceInnerTab === key ? "active" : ""}" data-action="severance-tab" data-tab="${key}">${escapeHtml(trText(label))}</button>`).join("")}
+      </nav>
+      ${
+        severanceInnerTab === "seniority"
+          ? `${severanceMainForm(false)}<div class="severance-detail-row"><article><h3>${escapeHtml(trText("İhbar Tazminatı Detayları"))}</h3>${payrollMiniRows(["Kalem", "Tutar"], [["Brüt Ücret", "0,00"], ["Net Ücret", "0,00"], ["Damga Vergisi", "0,00"], ["Gelir Vergisi", "0,00"], ["İhbar Süresi", "-"]])}</article><article><h3>${escapeHtml(trText("Kıdem Tazminatı Detayları"))}</h3>${payrollMiniRows(["Kalem", "Tutar"], [["Brüt Ücret", "0,00"], ["Net Ücret", "0,00"], ["Damga Vergisi", "0,00"]])}</article></div><div class="bottom-actions"><button class="primary" data-action="add" data-module="personnelExtraPayments">${escapeHtml(trText("Ek Ödeme Kaydı Yap"))}</button><button class="outline" data-action="prozon-refresh">${escapeHtml(trText("Kapat"))}</button></div>`
+          : renderProzonTable(severanceInnerTab === "extras12" ? [["month", "AY"], ["benefit", "EK ÖDEME"], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD"]]] : [["month", "AY"], ["base", "ÖSS MATRAHI"], ["day", "GÜN"], ["description", "AÇIKLAMA"]], [], "")
+      }
+    </section>
+  `;
+  const prozonPayrollExcelScreen = () => {
+    const activeModule = payrollExcelView === "benefits" ? getModule("payrollExcelBenefitDefaults") : getModule("payrollExcelImports");
+    const columns =
+      payrollExcelView === "benefits"
+        ? activeModule.columns
+        : [["type", "TİP", "select", ["Puantaj", "Ek Ödeme", "Kesinti", "Bordro"]], ["code", "KOD"], ["definition", "TANIM"], ["date", "TARİH", "date"], ["periodMonth", "DÖNEM AY", "select", ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran"]], ["periodYear", "DÖNEM YIL"], ["transferred", "AKTARILDI", "select", ["Tümü", "Evet", "Hayır"]], ["documentInfo", "DÖKÜMAN BİLGİSİ"]];
+    return `
+      <section class="prozon-list-screen">
+        <header class="prozon-list-heading">
+          <div class="prozon-title-block">
+            <span data-icon="${payrollExcelView === "benefits" ? "wallet" : "invoice"}"></span>
+            <div>
+              <h2>${escapeHtml(trText(payrollExcelView === "benefits" ? "Excel Ek Ödeme Varsayılanları" : "Excel'den İcmal Aktarım Listesi"))}</h2>
+              <p>${escapeHtml(trText(payrollExcelView === "benefits" ? "Excelden içeri aktarımlarda ek ödemelerin varsayılan tiplerini seçiniz." : "Bu formda belirli formattaki excellerinizi sisteme yükleyebilir, revizelerini gerçekleştirebilirsiniz."))}</p>
+            </div>
+          </div>
+          <div class="prozon-list-actions">
+            ${payrollExcelView === "imports" ? `<a class="primary" href="assets/bordro-aktarim-sablonu-sgk-09062026.xlsx" download="Bordro Aktarım Şablonu SGK - 09062026.xlsx"><span data-icon="download"></span>${escapeHtml(trText("Excel Aktarım Formatı Oluştur"))}</a>` : ""}
+            <button type="button" data-action="prozon-refresh">?</button>
+          </div>
+        </header>
+        <nav class="prozon-inner-tabs tight">
+          <button type="button" class="${payrollExcelView === "imports" ? "active" : ""}" data-action="payroll-excel-view" data-view="imports">${escapeHtml(trText("Excel'den İcmal Aktarım Listesi"))}</button>
+          <button type="button" class="${payrollExcelView === "benefits" ? "active" : ""}" data-action="payroll-excel-view" data-view="benefits">${escapeHtml(trText("Excel Ek Ödeme Varsayılanları"))}</button>
+        </nav>
+        ${renderProzonTable(columns, getScopedRecords(activeModule), activeModule.id)}
+        <button class="outline prozon-select-all" type="button">${escapeHtml(trText("Hepsini Seç"))}</button>
+      </section>
+    `;
+  };
+  const prozonAttendanceScreen = () => {
+    const attendanceModule = getModule("attendance");
+    const attendanceColumns = [
+      ["__code", "SİCİL NO"],
+      ["person", "PERSONEL ADI"],
+      ["identityNo", "TC NO"],
+      ...dayColumns.map(([key], index) => [key, String(index + 1).padStart(2, "0")]),
+    ];
+    return `
+      <section class="prozon-list-screen attendance-prozon-screen">
+        <header class="prozon-list-heading">
+          <div class="prozon-title-block">
+            <span data-icon="invoice"></span>
+            <div>
+              <h2>${escapeHtml(trText("Puantaj Cetveli"))}</h2>
+              <p>${escapeHtml(trText("Genel Puantaj Cetveli"))}</p>
+            </div>
+          </div>
+          <div class="prozon-list-actions">
+            <label>${escapeHtml(trText("Dönem"))}: <select id="attendanceMonthSelect"><option>Haziran</option><option>Mayıs</option><option>Temmuz</option></select></label>
+            <select id="attendanceYearSelect"><option>2026</option><option>2025</option></select>
+            <label>${escapeHtml(trText("İşyeri"))}: <select><option>${escapeHtml(trText("Tüm İşyerleri"))}</option>${companies.map((company) => `<option>${escapeHtml(company.name || "")}</option>`).join("")}</select></label>
+            <button type="button" data-action="prozon-refresh"><span data-icon="search"></span></button>
+            <button type="button" data-action="prozon-refresh">?</button>
+          </div>
+        </header>
+        ${renderProzonTable(attendanceColumns, getScopedRecords(attendanceModule), attendanceModule.id)}
+        <footer class="attendance-footer">
+          <div class="attendance-legend">
+            ${[
+              ["Çalışıldı", "X"],
+              ["Kısmi Çalışıldı", "/"],
+              ["Devamsızlık", "0"],
+              ["Genel Tatil", "GT"],
+              ["Raporlu", "RP"],
+              ["Ücretsiz İşareti", "'"],
+              ["Puantaj Kayıtları", "PK"],
+              ["İzinli", "İ"],
+              ["Başka İşyerinde", "Bİ"],
+              ["Kısmi İzinli", "Kİ"],
+              ["Hafta Tatili", "HT"],
+              ["Yıllık İzin", "Yİ"],
+              ["Çalışılmıyor", "-"],
+              ["Raporlu (Robot)", "RB"],
+            ].map(([label, value]) => `<span>${escapeHtml(trText(label))}: <b>${escapeHtml(value)}</b></span>`).join("")}
+          </div>
+          <button class="outline" type="button" data-action="attendance-renew">${escapeHtml(trText("Puantaj Yenileme"))}</button>
+        </footer>
+      </section>
+    `;
+  };
   const screenFactories = {
     companyTop: () => prozonWorkplaceListScreen(),
     personnelTop: () => {
@@ -6783,6 +7023,9 @@ function renderPayrollCenter() {
     payrollTop: () => {
       if (activeSubTab === "calculators") return prozonPayrollCalculatorScreen();
       if (activeSubTab === "severance") return prozonSeveranceScreen();
+      if (activeSubTab === "quickPayroll") return prozonQuickPayrollScreen();
+      if (activeSubTab === "payrollExcel") return prozonPayrollExcelScreen();
+      if (activeSubTab === "attendanceSchedule") return prozonAttendanceScreen();
       const attendanceColumns = [
         ["__code", "SİCİL NO"],
         ["person", "PERSONEL ADI"],
@@ -6806,7 +7049,7 @@ function renderPayrollCenter() {
           moduleId: "attendance",
           primaryLabel: "Yeni Puantaj",
           columns: attendanceColumns,
-          toolbar: `<label>${escapeHtml(trText("Dönem"))}: <select id="attendanceMonthSelect"><option>Haziran</option><option>Mayıs</option><option>Temmuz</option></select></label><select id="attendanceYearSelect"><option>2026</option><option>2025</option></select><label>${escapeHtml(trText("İşyeri"))}: <select><option>${escapeHtml(trText("Tüm İşyerleri"))}</option>${companies.map((company) => `<option>${escapeHtml(company.name || "")}</option>`).join("")}</select></label><button type="button" data-action="attendance-renew">${escapeHtml(trText("Puantaj Yenileme"))}</button>`,
+          toolbar: `<label>${escapeHtml(trText("Dönem"))}: <select id="attendanceMonthSelect"><option>Haziran</option><option>Mayıs</option><option>Temmuz</option></select></label><select id="attendanceYearSelect"><option>2026</option><option>2025</option></select><label>${escapeHtml(trText("İşyeri"))}: <select><option>${escapeHtml(trText("Tüm İşyerleri"))}</option>${companies.map((company) => `<option>${escapeHtml(company.name || "")}</option>`).join("")}</select></label>`,
         },
         absenceForm: {
           title: "Devamsızlık Formu",
@@ -6825,14 +7068,6 @@ function renderPayrollCenter() {
           primaryLabel: "Yeni Kur",
           columns: [["date", "TARİH", "date"], ["currency", "DÖVİZ", "select", ["USD", "EUR", "GBP"]], ["buying", "ALIŞ"], ["selling", "SATIŞ"], ["effectiveBuying", "EFEKTİF ALIŞ"], ["effectiveSelling", "EFEKTİF SATIŞ"]],
           toolbar: `<label>${escapeHtml(trText("Tarih"))}: <input type="date" value="2026-06-05" /></label><button type="button" data-action="currency-fetch"><span data-icon="download"></span>${escapeHtml(trText("TC Merkez Bankasından Kurları Al"))}</button>`,
-        },
-        payrollExcel: {
-          title: "Excel'den İcmal Aktarım Listesi",
-          subtitle: "Bu formda belirli formattaki excellerinizi sisteme yükleyebilir, revizelerini gerçekleştirebilirsiniz.",
-          icon: "invoice",
-          moduleId: "payrollExcelImports",
-          primaryLabel: "Excel Aktarım Formatı Oluştur",
-          columns: [["type", "TİP", "select", ["Puantaj", "Ek Ödeme", "Kesinti", "Bordro"]], ["code", "KOD"], ["definition", "TANIM"], ["date", "TARİH", "date"], ["periodMonth", "DÖNEM AY", "select", ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran"]], ["periodYear", "DÖNEM YIL"], ["transferred", "AKTARILDI", "select", ["Tümü", "Evet", "Hayır"]], ["documentInfo", "DÖKÜMAN BİLGİSİ"]],
         },
         pdks: {
           title: "PDKS",
@@ -7432,6 +7667,24 @@ function netToGross(netAmount, customRates = {}) {
     else high = mid;
   }
   return grossToNet(high, customRates);
+}
+
+function payrollMiniRows(headers, rows) {
+  return `
+    <table class="mini-table payroll-mini-table">
+      <thead><tr>${headers.map((header) => `<th>${escapeHtml(trText(header))}</th>`).join("")}</tr></thead>
+      <tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(String(cell ?? ""))}</td>`).join("")}</tr>`).join("")}</tbody>
+    </table>
+  `;
+}
+
+function payrollCalculationResultHtml(result) {
+  return `
+    <section class="payroll-result-panel sgk"><b>SGK</b><div>${payrollMiniRows(["Kalem", "Tutar"], [["Prime Tabi Brüt Kazanç", formatMoney(result.sgkBase)], ["İşçi Payı", formatMoney(result.sgk)], ["İşçi İşsizlik Payı", formatMoney(result.unemployment)], ["İşveren Payı", formatMoney(result.employerSgk)], ["İşveren İşsizlik Payı", formatMoney(result.employerUnemployment)]])}</div></section>
+    <section class="payroll-result-panel tax"><b>${escapeHtml(trText("Gelir Vergisi"))}</b><div>${payrollMiniRows(["Kalem", "Tutar"], [["Gelir Vergisine Tabi Kazanç", formatMoney(result.gross)], ["Sigorta Primleri", formatMoney(result.sgk + result.unemployment)], ["Gelir Vergisi Matrahı", formatMoney(result.incomeTaxBase)], ["Gelir Vergisi", formatMoney(result.incomeTax)], ["Yeni Kümülatif G.V. Matrahı", formatMoney(result.cumulativeAfter)]])}</div></section>
+    <section class="payroll-result-panel stamp"><b>${escapeHtml(trText("Damga Vergisi"))}</b><div>${payrollMiniRows(["Kalem", "Tutar"], [["Damga Vergisine Tabi Kazanç", formatMoney(result.gross)], ["Damga Vergisi", formatMoney(result.stampTax)], ["İndirim", "0,00"]])}</div></section>
+    <section class="payroll-result-panel cost"><b>${escapeHtml(trText("Maliyet"))}</b><div>${payrollMiniRows(["Kalem", "Tutar"], [["Yasal Kesintiler Toplamı", formatMoney(result.sgk + result.unemployment + result.incomeTax + result.stampTax)], ["Brüt Kazanç", formatMoney(result.gross)], ["İşveren Payı", formatMoney(result.employerSgk + result.employerUnemployment)], ["Net Kazanç", formatMoney(result.net)], ["İşveren Maliyeti", formatMoney(result.employerCost)]])}</div></section>
+  `;
 }
 
 function formatPayrollAmount(value) {
@@ -9716,6 +9969,35 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (action === "payroll-calculator-view") {
+    payrollCalculatorView = manageButton.dataset.view || "payroll";
+    payrollCalculatorDetail = "";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "payroll-detail-panel") {
+    payrollCalculatorDetail = payrollCalculatorDetail === manageButton.dataset.panel ? "" : manageButton.dataset.panel || "";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "payroll-excel-view") {
+    payrollExcelView = manageButton.dataset.view || "imports";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "severance-tab") {
+    severanceInnerTab = manageButton.dataset.tab || "seniority";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   const module = getModule(manageButton.dataset.module || activeModuleId);
   const recordId = manageButton.dataset.id || selectedRecordId;
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete", "notification-read"];
@@ -9820,18 +10102,43 @@ document.addEventListener("click", (event) => {
 
   if (action === "currency-fetch") {
     const currencyModule = getModule("currencyRates");
-    const today = "2026-06-05";
-    [
+    const upsertRates = (rows, date = new Date().toISOString().slice(0, 10)) => {
+      rows.forEach((row) => {
+        const existing = currencyModule.records.find((record) => record.date === date && record.currency === row.currency);
+        if (existing) Object.assign(existing, row);
+        else currencyModule.records.push({ id: createId("currencyRates"), date, ...row });
+      });
+      saveRecords();
+      renderPayrollCenter();
+      renderIcons();
+    };
+    const fallbackRates = [
       { currency: "USD", buying: "32,25", selling: "32,34", effectiveBuying: "32,23", effectiveSelling: "32,39" },
       { currency: "EUR", buying: "35,10", selling: "35,23", effectiveBuying: "35,08", effectiveSelling: "35,28" },
-    ].forEach((row) => {
-      const existing = currencyModule.records.find((record) => record.date === today && record.currency === row.currency);
-      if (existing) Object.assign(existing, row);
-      else currencyModule.records.push({ id: createId("currencyRates"), date: today, ...row });
-    });
-    saveRecords();
-    renderPayrollCenter();
-    renderIcons();
+      { currency: "GBP", buying: "41,20", selling: "41,38", effectiveBuying: "41,17", effectiveSelling: "41,44" },
+    ];
+    fetch("https://www.tcmb.gov.tr/kurlar/today.xml")
+      .then((response) => {
+        if (!response.ok) throw new Error("TCMB kur servisine ulaşılamadı");
+        return response.text();
+      })
+      .then((xmlText) => {
+        const doc = new DOMParser().parseFromString(xmlText, "application/xml");
+        const rows = ["USD", "EUR", "GBP"].map((currency) => {
+          const node = Array.from(doc.querySelectorAll("Currency")).find((item) => item.getAttribute("CurrencyCode") === currency);
+          if (!node) return null;
+          const valueOf = (tag) => (node.querySelector(tag)?.textContent || "0").replace(".", ",");
+          return {
+            currency,
+            buying: valueOf("ForexBuying"),
+            selling: valueOf("ForexSelling"),
+            effectiveBuying: valueOf("BanknoteBuying"),
+            effectiveSelling: valueOf("BanknoteSelling"),
+          };
+        }).filter(Boolean);
+        upsertRates(rows.length ? rows : fallbackRates);
+      })
+      .catch(() => upsertRates(fallbackRates, "2026-06-05"));
     return;
   }
 
