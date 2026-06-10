@@ -6707,7 +6707,7 @@ function renderPayrollCenter() {
   const prozonAttendanceScreen = () => {
     const attendanceModule = getModule("attendance");
     const attendanceColumns = [
-      ["__code", "SİCİL NO"],
+      ["registryNo", "SİCİL NO"],
       ["person", "PERSONEL ADI"],
       ["identityNo", "TC NO"],
       ...dayColumns.map(([key], index) => [key, String(index + 1).padStart(2, "0")]),
@@ -7027,7 +7027,7 @@ function renderPayrollCenter() {
       if (activeSubTab === "payrollExcel") return prozonPayrollExcelScreen();
       if (activeSubTab === "attendanceSchedule") return prozonAttendanceScreen();
       const attendanceColumns = [
-        ["__code", "SİCİL NO"],
+        ["registryNo", "SİCİL NO"],
         ["person", "PERSONEL ADI"],
         ["identityNo", "TC NO"],
         ...dayColumns.map(([key], index) => [key, String(index + 1).padStart(2, "0")]),
@@ -7067,7 +7067,7 @@ function renderPayrollCenter() {
           moduleId: "currencyRates",
           primaryLabel: "Yeni Kur",
           columns: [["date", "TARİH", "date"], ["currency", "DÖVİZ", "select", ["USD", "EUR", "GBP"]], ["buying", "ALIŞ"], ["selling", "SATIŞ"], ["effectiveBuying", "EFEKTİF ALIŞ"], ["effectiveSelling", "EFEKTİF SATIŞ"]],
-          toolbar: `<label>${escapeHtml(trText("Tarih"))}: <input type="date" value="2026-06-05" /></label><button type="button" data-action="currency-fetch"><span data-icon="download"></span>${escapeHtml(trText("TC Merkez Bankasından Kurları Al"))}</button>`,
+          toolbar: `<label>${escapeHtml(trText("Tarih"))}: <input type="date" value="2026-06-05" /></label><button class="primary" type="button" data-action="currency-fetch"><span data-icon="download"></span>${escapeHtml(trText("TC Merkez Bankasından Kurları Al"))}</button>`,
         },
         pdks: {
           title: "PDKS",
@@ -9705,7 +9705,28 @@ document.addEventListener("click", (event) => {
 
   const payrollCenterButton = event.target.closest("[data-payroll-center-tab]");
   if (payrollCenterButton) {
-    payrollCenterTab = payrollCenterButton.dataset.payrollCenterTab;
+    const targetTab = payrollCenterButton.dataset.payrollCenterTab;
+    const payrollTopSubtabs = [
+      "payrollList",
+      "attendanceSchedule",
+      "absenceForm",
+      "rules",
+      "payrollExcel",
+      "severance",
+      "quickPayroll",
+      "pdks",
+      "fixedAttendance",
+      "calculators",
+    ];
+    if (payrollTopSubtabs.includes(targetTab)) {
+      payrollCenterTab = "payrollTop";
+      prozonActiveSubTabs.payrollTop = targetTab;
+      if (targetTab === "quickPayroll") payrollCalculatorView = "quick";
+      if (targetTab === "severance") payrollCalculatorView = "severanceTool";
+      if (targetTab === "calculators") payrollCalculatorView = "payroll";
+    } else {
+      payrollCenterTab = targetTab;
+    }
     activeModuleId = "payrollCenter";
     renderSideNav();
     renderPayrollCenter();
@@ -9716,13 +9737,24 @@ document.addEventListener("click", (event) => {
 
   const prozonSubTabButton = event.target.closest("[data-prozon-subtab]");
   if (prozonSubTabButton) {
-    prozonActiveSubTabs[payrollCenterTab] = prozonSubTabButton.dataset.prozonSubtab;
-    if (payrollCenterTab === "payrollTop" && prozonSubTabButton.dataset.prozonSubtab === "quickPayroll") {
-      payrollCalculatorView = "quick";
-    }
-    if (payrollCenterTab === "payrollTop" && prozonSubTabButton.dataset.prozonSubtab === "severance") {
-      payrollCalculatorView = "severanceTool";
-    }
+    const targetSubtab = prozonSubTabButton.dataset.prozonSubtab;
+    const payrollTopSubtabs = [
+      "payrollList",
+      "attendanceSchedule",
+      "absenceForm",
+      "rules",
+      "payrollExcel",
+      "severance",
+      "quickPayroll",
+      "pdks",
+      "fixedAttendance",
+      "calculators",
+    ];
+    if (payrollTopSubtabs.includes(targetSubtab)) payrollCenterTab = "payrollTop";
+    prozonActiveSubTabs[payrollCenterTab] = targetSubtab;
+    if (payrollCenterTab === "payrollTop" && targetSubtab === "quickPayroll") payrollCalculatorView = "quick";
+    if (payrollCenterTab === "payrollTop" && targetSubtab === "severance") payrollCalculatorView = "severanceTool";
+    if (payrollCenterTab === "payrollTop" && targetSubtab === "calculators") payrollCalculatorView = "payroll";
     activeModuleId = "payrollCenter";
     prozonWorkplaceCardOpen = false;
     renderPayrollCenter();
@@ -10061,6 +10093,7 @@ document.addEventListener("click", (event) => {
       if (existing) return;
       attendanceModule.records.push({
         id: createId("attendance"),
+        registryNo: person.registryNo || person.sicilNo || person.employeeNo || "",
         person: person.name,
         identityNo: person.identityNo || "",
         period,

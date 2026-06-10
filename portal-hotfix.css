@@ -7321,3 +7321,105 @@ body.sidebar-collapsed .content {
 .attendance-prozon-screen .prozon-data-grid td:nth-child(3) { width: 150px !important; }
 .attendance-prozon-screen .prozon-data-grid th:nth-child(n + 4),
 .attendance-prozon-screen .prozon-data-grid td:nth-child(n + 4) { width: 58px !important; text-align: center; }
+
+/* Final Bordro/Pano interaction and sizing fixes. */
+.prozon-sub-nav,
+.prozon-topbar,
+.prozon-list-actions,
+.payroll-subnav {
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.prozon-sub-nav button,
+.prozon-topbar button,
+.prozon-list-actions button,
+.prozon-list-actions a,
+.payroll-subnav button {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.prozon-pano-layout {
+  grid-template-columns: minmax(0, 1fr) 320px !important;
+  gap: 12px !important;
+}
+
+.prozon-pano-layout > .prozon-chart-card,
+.prozon-chart-grid .prozon-chart-card {
+  height: 224px !important;
+  min-height: 224px !important;
+  max-height: 224px !important;
+  overflow: hidden !important;
+}
+
+.prozon-pano-layout > .prozon-chart-card.is-featured,
+.prozon-chart-grid .prozon-chart-card.is-featured {
+  height: 232px !important;
+  min-height: 232px !important;
+  max-height: 232px !important;
+}
+
+.prozon-pano-layout .prozon-empty-donut {
+  width: 92px !important;
+  height: 92px !important;
+  font-size: 11px !important;
+}
+
+.prozon-news-stack {
+  max-height: calc(100vh - 210px) !important;
+  overflow-y: auto !important;
+  padding-right: 4px !important;
+}
+
+.prozon-news-card {
+  grid-template-columns: 74px minmax(0, 1fr) !important;
+  min-height: 102px !important;
+  padding: 10px !important;
+}
+
+.prozon-news-thumb {
+  height: 70px !important;
+}
+
+.prozon-news-card h3 {
+  font-size: 14px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid {
+  min-width: 3000px !important;
+  table-layout: fixed !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th,
+.attendance-prozon-screen .prozon-data-grid td {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(1),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(1) {
+  width: 170px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(2),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(2) {
+  width: 260px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(3),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(3) {
+  width: 180px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-child(n + 4),
+.attendance-prozon-screen .prozon-data-grid td:nth-child(n + 4) {
+  width: 72px !important;
+}
+
+.attendance-prozon-screen .prozon-data-grid th:nth-last-child(1),
+.attendance-prozon-screen .prozon-data-grid td:nth-last-child(1) {
+  width: 86px !important;
+}
