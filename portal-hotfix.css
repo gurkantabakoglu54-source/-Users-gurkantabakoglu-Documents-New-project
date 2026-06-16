@@ -7747,3 +7747,111 @@ body.sidebar-collapsed .content {
     align-items: stretch !important;
   }
 }
+
+.prozon-search-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 80 !important;
+  background: rgba(15, 23, 42, 0.18) !important;
+  display: grid !important;
+  place-items: start center !important;
+  padding-top: 72px !important;
+}
+
+.prozon-search-box {
+  width: min(760px, calc(100vw - 28px)) !important;
+  background: #fff !important;
+  border: 1px solid #d7deed !important;
+  border-radius: 8px !important;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.prozon-search-box header {
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) 42px !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid #e5e9f2 !important;
+}
+
+.prozon-search-box input {
+  border: 0 !important;
+  outline: 0 !important;
+  min-height: 38px !important;
+  font-size: 16px !important;
+}
+
+.prozon-search-results {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  padding: 14px !important;
+  max-height: 460px !important;
+  overflow-y: auto !important;
+}
+
+.prozon-search-results button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  justify-content: flex-start !important;
+  min-height: 50px !important;
+  border: 1px solid #dbe2f0 !important;
+  background: #fff !important;
+  color: #2f3a4a !important;
+  border-radius: 6px !important;
+  padding: 10px 12px !important;
+}
+
+.prozon-settings-screen .settings-tile-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  padding: 18px 26px !important;
+}
+
+.settings-tile-grid button {
+  min-height: 108px !important;
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  gap: 6px 12px !important;
+  align-items: start !important;
+  text-align: left !important;
+  border: 1px solid #d8dde8 !important;
+  background: #fff !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  color: #293241 !important;
+}
+
+.settings-tile-grid button > span {
+  grid-row: 1 / span 2 !important;
+  color: #315dff !important;
+}
+
+.settings-tile-grid strong,
+.settings-tile-grid small {
+  overflow-wrap: anywhere !important;
+}
+
+.settings-main-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  padding: 0 26px 28px !important;
+}
+
+.settings-main-grid .bordro-panel {
+  min-width: 0 !important;
+}
+
+@media (max-width: 980px) {
+  .prozon-search-results,
+  .prozon-settings-screen .settings-tile-grid,
+  .settings-main-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

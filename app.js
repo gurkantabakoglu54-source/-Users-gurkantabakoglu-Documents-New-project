@@ -2011,6 +2011,8 @@ let personDefinitionTab = "workCalendars";
 let benefitDefinitionTab = "benefitTypes";
 let accountingDefinitionTab = "accountingChart";
 let definitionExcelImportType = "Personel Aktarımı (Basit)";
+let prozonSearchOpen = false;
+let prozonSearchValue = "";
 const prozonColumnFilters = {};
 const prozonNaceRows = [
   ["01", "Bitkisel ve hayvansal üretim ile avcılık ve ilgili hizmet faaliyetleri", ""],
@@ -7731,6 +7733,82 @@ function renderPayrollCenter() {
       </section>
     `;
   };
+  const prozonSearchPanel = () =>
+    prozonSearchOpen
+      ? `
+        <section class="prozon-search-overlay">
+          <div class="prozon-search-box">
+            <header>
+              <span data-icon="search"></span>
+              <input id="prozonGlobalSearchInput" value="${escapeHtml(prozonSearchValue)}" placeholder="${escapeHtml(trText("Menü, personel, işyeri veya rapor ara"))}" autofocus />
+              <button type="button" data-action="prozon-search-close"><span data-icon="x"></span></button>
+            </header>
+            <div class="prozon-search-results">
+              ${[
+                ["PANO", "home", "grid"],
+                ["İŞ YERLERİ", "companyTop", "building"],
+                ["PERSONELLER", "personnelTop", "users"],
+                ["İZİN YÖNETİMİ", "leaveTop", "calendar"],
+                ["BORDRO", "payrollTop", "invoice"],
+                ["FİNANS", "financeTop", "wallet"],
+                ["HEDEF BÜTÇE", "budgetTop", "chart"],
+                ["RAPORLAR", "reports", "barChart"],
+                ["TANIMLAMALAR", "definitionsTop", "menu"],
+                ["YÖNETİM", "managementTop", "flag"],
+                ["AYARLAR", "settingsTop", "settings"],
+              ]
+                .filter(([label]) => !prozonSearchValue || normalizeText(label).includes(normalizeText(prozonSearchValue)))
+                .map(([label, tab, icon]) => `<button type="button" data-payroll-center-tab="${tab}"><span data-icon="${icon}"></span><strong>${escapeHtml(trText(label))}</strong></button>`)
+                .join("")}
+            </div>
+          </div>
+        </section>
+      `
+      : "";
+  const prozonSettingsScreen = () => `
+    <section class="prozon-list-screen prozon-settings-screen">
+      <header class="prozon-list-heading">
+        <div class="prozon-title-block">
+          <span data-icon="settings"></span>
+          <div>
+            <h2>${escapeHtml(trText("Ayarlar"))}</h2>
+            <p>${escapeHtml(trText("Kurum, kullanıcı, rol, pano, bildirim ve yedek ayarlarını bu ekrandan yönetebilirsiniz."))}</p>
+          </div>
+        </div>
+        <div class="prozon-list-actions">
+          <button type="button" data-action="pano-chart-manager"><span data-icon="grid"></span>${escapeHtml(trText("Pano Grafik Yönetimi"))}</button>
+          <button type="button">?</button>
+        </div>
+      </header>
+      <section class="settings-tile-grid">
+        ${[
+          ["Şirket Ayarları", "Logo, marka adı, dönem ve kurum tercihleri", "settings", "settings"],
+          ["Kullanıcı Yönetimi", "Kullanıcı, rol ve erişim bilgileri", "users", "users"],
+          ["Rol ve Yetkiler", "Ekleme, düzenleme, silme ve hassas veri erişimi", "shield", "security"],
+          ["Pano Ayarları", "Pano grafik seçimleri ve görünüm tercihleri", "grid", "pano"],
+          ["Bildirim Ayarları", "Duyuru, e-posta ve hatırlatma kuralları", "bell", "notifications"],
+          ["Yedekleme", "Yedek alma ve geri yükleme takipleri", "archive", "backup"],
+        ]
+          .map(
+            ([title, text, icon, key]) => `
+              <button type="button" data-settings-jump="${escapeHtml(key)}">
+                <span data-icon="${icon}"></span>
+                <strong>${escapeHtml(trText(title))}</strong>
+                <small>${escapeHtml(trText(text))}</small>
+              </button>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="settings-main-grid">
+        ${crudPanel("Kurumsal Ayarlar", "settings", ["setting", "value", "description", "status"], getScopedRecords(getModule("settings")))}
+        ${crudPanel("Kullanıcı ve Rol Yönetimi", "users", ["email", "name", "surname", "companyName", "type", "status"], getScopedRecords(getModule("users")))}
+        ${crudPanel("Güvenlik ve Yetkiler", "security", ["role", "scope", "canAdd", "canEdit", "canDelete", "sensitiveAccess"], getScopedRecords(getModule("security")))}
+        ${crudPanel("Bildirim Kuralları", "automationRules", ["rule", "trigger", "target", "owner", "status"], getScopedRecords(getModule("automationRules")))}
+      </section>
+      ${prozonChartManager}
+    </section>
+  `;
   const screenFactories = {
     companyTop: () => prozonWorkplaceListScreen(),
     personnelTop: () => {
@@ -8313,6 +8391,7 @@ function renderPayrollCenter() {
   tabContents.reports = screenFactories.reports();
   tabContents.definitionsTop = screenFactories.definitionsTop();
   tabContents.managementTop = screenFactories.managementTop();
+  tabContents.settingsTop = prozonSettingsScreen();
   const activeContent = tabContents[payrollCenterTab] || tabContents.home;
 
   document.querySelector("#pageContent").innerHTML = `
@@ -8323,8 +8402,8 @@ function renderPayrollCenter() {
         </div>
         <h2>${escapeHtml((currentUser?.companyName || "GLOBAL KALİTEKONTROL").toLocaleUpperCase("tr"))} - (${dashboardYear})</h2>
         <div class="prozon-toolbar">
-          <button type="button" data-payroll-center-tab="assistant" title="${escapeHtml(trText("Ara"))}"><span data-icon="search"></span></button>
-          <button type="button" data-payroll-center-tab="definitionsTop"><span data-icon="grid"></span>${escapeHtml(trText("Ayarlar"))}</button>
+          <button type="button" data-action="prozon-search-open" title="${escapeHtml(trText("Ara"))}"><span data-icon="search"></span></button>
+          <button type="button" data-payroll-center-tab="settingsTop"><span data-icon="grid"></span>${escapeHtml(trText("Ayarlar"))}</button>
           <button class="prozon-avatar" type="button" data-payroll-center-tab="selfService">${escapeHtml((currentUser?.displayName || "GT").split(" ").map((part) => part[0]).join("").slice(0, 2).toLocaleUpperCase("tr"))}</button>
         </div>
       </header>
@@ -8376,6 +8455,7 @@ function renderPayrollCenter() {
         }
         ${activeContent}
       </main>
+      ${prozonSearchPanel()}
     </section>
   `;
 }
@@ -10898,6 +10978,7 @@ document.addEventListener("click", (event) => {
       payrollCenterTab = targetTab;
     }
     activeModuleId = "payrollCenter";
+    prozonSearchOpen = false;
     renderSideNav();
     renderPayrollCenter();
     renderIcons();
@@ -11019,6 +11100,29 @@ document.addEventListener("click", (event) => {
 
   const manageButton = event.target.closest("[data-action]");
   if (!manageButton) {
+    const settingsJumpButton = event.target.closest("[data-settings-jump]");
+    if (settingsJumpButton) {
+      const target = settingsJumpButton.dataset.settingsJump || "";
+      const map = {
+        settings: "settings",
+        users: "users",
+        security: "security",
+        notifications: "automationRules",
+        backup: "backupCenter",
+      };
+      const moduleId = map[target];
+      if (target === "pano") {
+        prozonChartManagerOpen = true;
+        renderPayrollCenter();
+        renderIcons();
+        return;
+      }
+      if (moduleId) {
+        document.querySelector(`[data-module="${CSS.escape(moduleId)}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
+
     const quickButton = event.target.closest("[data-quick-filter]");
     if (quickButton) {
       quickFilters[activeModuleId] = quickButton.dataset.quickFilter;
@@ -11037,6 +11141,22 @@ document.addEventListener("click", (event) => {
   }
 
   const action = manageButton.dataset.action;
+  if (action === "prozon-search-open") {
+    prozonSearchOpen = true;
+    renderPayrollCenter();
+    renderIcons();
+    setTimeout(() => document.querySelector("#prozonGlobalSearchInput")?.focus(), 0);
+    return;
+  }
+
+  if (action === "prozon-search-close") {
+    prozonSearchOpen = false;
+    prozonSearchValue = "";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
   if (action === "prozon-refresh") {
     renderPayrollCenter();
     renderIcons();
@@ -11604,6 +11724,18 @@ document.addEventListener("input", (event) => {
     selectedReportPerson = event.target.value;
     renderPayrollCenter();
     renderIcons();
+    return;
+  }
+
+  if (event.target.id === "prozonGlobalSearchInput") {
+    prozonSearchValue = event.target.value;
+    renderPayrollCenter();
+    renderIcons();
+    setTimeout(() => {
+      const input = document.querySelector("#prozonGlobalSearchInput");
+      input?.focus();
+      input?.setSelectionRange(input.value.length, input.value.length);
+    }, 0);
     return;
   }
 
