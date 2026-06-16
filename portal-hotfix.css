@@ -7582,3 +7582,168 @@ body.sidebar-collapsed .content {
   pointer-events: auto !important;
   cursor: pointer !important;
 }
+
+.definition-form-area {
+  padding: 18px 26px 88px !important;
+}
+
+.definition-card-row,
+.withholding-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+  max-width: 1480px !important;
+}
+
+.prozon-form-card.two-pane,
+.prozon-form-card.dashboard-checks {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px 28px !important;
+}
+
+.prozon-form-card.narrow-form,
+.prozon-form-card.pdks-form,
+.prozon-form-card.integration-form {
+  max-width: 1180px !important;
+}
+
+.withholding-logo-card {
+  width: 290px !important;
+  border: 1px solid #d9dee8 !important;
+  border-radius: 4px !important;
+  padding: 18px !important;
+  background: #fff !important;
+}
+
+.withholding-logo-card div {
+  height: 240px !important;
+  margin-top: 8px !important;
+  border: 1px solid #aeb4bf !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.withholding-logo-card img {
+  width: 190px !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+.definition-fixed-save {
+  position: sticky !important;
+  bottom: 0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  padding: 14px 26px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-top: 1px solid #e5e7eb !important;
+}
+
+.definition-fixed-save .primary {
+  min-width: 180px !important;
+  background: #315dff !important;
+  color: #fff !important;
+}
+
+.org-chart-panel {
+  margin: 18px 26px !important;
+  border: 1px solid #d9dee8 !important;
+  background: #fff !important;
+  padding: 16px !important;
+}
+
+.org-chart-panel header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+}
+
+.org-chart {
+  overflow-x: auto !important;
+  padding: 12px !important;
+}
+
+.org-chart ul {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 18px !important;
+  padding: 22px 0 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+.org-chart li {
+  min-width: 180px !important;
+  text-align: center !important;
+}
+
+.org-node {
+  border: 1px solid #b9c5dd !important;
+  border-radius: 4px !important;
+  background: #f8fbff !important;
+  padding: 10px 12px !important;
+  display: grid !important;
+  gap: 4px !important;
+}
+
+.org-node strong,
+.org-node span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.definition-import-grid {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(150px, 1fr)) !important;
+  gap: 12px 24px !important;
+  padding: 18px 26px !important;
+}
+
+.definition-import-grid button {
+  min-height: 64px !important;
+  border: 1px solid #d8dde8 !important;
+  background: #fff !important;
+  border-radius: 4px !important;
+  color: #333 !important;
+  white-space: normal !important;
+}
+
+.definition-import-grid button.active {
+  border-color: #315dff !important;
+  color: #1f55c8 !important;
+  box-shadow: inset 0 0 0 1px #315dff !important;
+}
+
+.definition-import-panel {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 26px 18px !important;
+  padding: 14px !important;
+  border: 1px solid #d9dee8 !important;
+  background: #fbfcff !important;
+}
+
+.file-import-control {
+  border: 1px dashed #b7c0d4 !important;
+  border-radius: 4px !important;
+  padding: 9px 12px !important;
+  background: #fff !important;
+}
+
+@media (max-width: 1100px) {
+  .definition-import-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr)) !important;
+  }
+
+  .prozon-form-card.two-pane,
+  .prozon-form-card.dashboard-checks,
+  .definition-import-panel {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}

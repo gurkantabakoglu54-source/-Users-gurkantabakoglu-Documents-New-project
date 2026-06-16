@@ -1357,6 +1357,338 @@ const modules = [
     ],
   },
   {
+    id: "companyHierarchyDefinitions",
+    title: "Hiyerarşik Yapılar",
+    icon: "grid",
+    breadcrumb: ["Panel", "Tanımlamalar", "Şirket Hiyerarşisi"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["unitName", "Birim Tanımı"],
+      ["parentUnit", "Üst Birim"],
+      ["hierarchyType", "Hiyerarşik Tanım"],
+      ["calendar", "Takvim"],
+      ["manager", "Yönetici"],
+      ["status", "Durumu", "select", ["Aktif", "Pasif"]],
+    ],
+    records: [
+      { id: "hier1", unitName: "Genel Müdürlük", parentUnit: "", hierarchyType: "Şirket", calendar: "Merkez Takvim", manager: "Gürkan Tabakoğlu", status: "Aktif" },
+      { id: "hier2", unitName: "İK ve Bordro", parentUnit: "Genel Müdürlük", hierarchyType: "Departman", calendar: "Merkez Takvim", manager: "Zehra Battal", status: "Aktif" },
+      { id: "hier3", unitName: "Operasyon", parentUnit: "Genel Müdürlük", hierarchyType: "Departman", calendar: "Saha Takvimi", manager: "Faruk Türker", status: "Aktif" },
+    ],
+  },
+  {
+    id: "workCalendars",
+    title: "Çalışma Takvimleri",
+    icon: "calendar",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["name", "Tanım"], ["weeklyHours", "Haftalık Saat"], ["weekend", "Hafta Tatili"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "wc1", name: "Merkez Takvim", weeklyHours: "45", weekend: "Cumartesi-Pazar", description: "Standart çalışma takvimi", status: "Aktif" },
+      { id: "wc2", name: "Saha Takvimi", weeklyHours: "45", weekend: "Pazar", description: "Operasyon saha takvimi", status: "Aktif" },
+    ],
+  },
+  {
+    id: "personParameterDefinitions",
+    title: "Personel Parametre Tanımlamaları",
+    icon: "settings",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["type", "Tip", "select", ["Sicil", "Özlük", "Bordro", "İzin"]], ["defaultValue", "Varsayılan"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "ppd1", code: "P01", name: "Deneme Süresi", type: "Özlük", defaultValue: "60", status: "Aktif" },
+      { id: "ppd2", code: "P02", name: "Varsayılan Dil", type: "Özlük", defaultValue: "Türkçe", status: "Aktif" },
+    ],
+  },
+  {
+    id: "preRegistrationDefinitions",
+    title: "Ön Kayıt Tanımlamaları",
+    icon: "users",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["pageInfo", "Sayfa Bilgisi"], ["requiredDocuments", "Zorunlu Evrak"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "prd1", code: "OK01", name: "Standart Ön Kayıt", pageInfo: "Personel Bilgileri", requiredDocuments: "Kimlik, IBAN, SGK", status: "Aktif" }],
+  },
+  {
+    id: "personGroups",
+    title: "Personel Grupları",
+    icon: "users",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "pg1", code: "IK", name: "İK", description: "İnsan kaynakları personeli", status: "Aktif" },
+      { id: "pg2", code: "OPR", name: "Operasyon", description: "Saha operasyon personeli", status: "Aktif" },
+    ],
+  },
+  {
+    id: "roleDefinitions",
+    title: "Görev Tanımları",
+    icon: "checklist",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Görev Tanımı"], ["department", "Departman"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "rd1", code: "BRD", name: "Bordro Uzmanı", department: "İK ve Bordro", description: "Bordro kapanış ve raporlama", status: "Aktif" },
+      { id: "rd2", code: "OPR", name: "Operasyon Sorumlusu", department: "Operasyon", description: "Saha operasyon takibi", status: "Aktif" },
+    ],
+  },
+  {
+    id: "competencyDefinitions",
+    title: "Mesleki Yeterlilik Tanımlamaları",
+    icon: "shield",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Yeterlilik Tanımı"], ["validityMonth", "Geçerlilik Ayı"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "cmp1", code: "MYK01", name: "İş Güvenliği Temel Eğitim", validityMonth: "12", description: "Yıllık yenileme", status: "Aktif" }],
+  },
+  {
+    id: "unionDefinitions",
+    title: "Sendika Tanımlamaları",
+    icon: "flag",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Sendika Tanımı"], ["agreement", "TİS"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "un1", code: "SND01", name: "Genel Sendika", agreement: "2026 TİS", status: "Aktif" }],
+  },
+  {
+    id: "foreignLanguages",
+    title: "Yabancı Dil Listesi",
+    icon: "message",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Dil"], ["level", "Seviye", "select", ["Başlangıç", "Orta", "İleri"]], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "fl1", code: "EN", name: "İngilizce", level: "Orta", status: "Aktif" },
+      { id: "fl2", code: "DE", name: "Almanca", level: "Başlangıç", status: "Aktif" },
+    ],
+  },
+  {
+    id: "clothingParameters",
+    title: "Giyim Parametreleri",
+    icon: "archive",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Giyim Tanımı"], ["period", "Periyot"], ["amount", "Tutar"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "cp1", code: "GYM01", name: "Saha Kıyafet Seti", period: "Yıllık", amount: "0,00", status: "Aktif" }],
+  },
+  {
+    id: "collectiveAgreementDefinitions",
+    title: "TİS Tanımlamaları",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Tanımlamalar", "Personel Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "TİS Tanımı"], ["startDate", "Başlangıç", "date"], ["endDate", "Bitiş", "date"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "tis1", code: "TIS2026", name: "2026 Toplu İş Sözleşmesi", startDate: "2026-01-01", endDate: "2026-12-31", status: "Aktif" }],
+  },
+  {
+    id: "specialInsuranceSubtitles",
+    title: "Özel Sigorta Alt Başlık Listesi",
+    icon: "shield",
+    breadcrumb: ["Panel", "Tanımlamalar", "Bordro Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["insuranceType", "Özel Sigorta Tipi"], ["subtitle", "Alt Başlık Tanım"], ["excelTransfer", "Excel Aktarımında Eşleşsin", "select", ["Evet", "Hayır"]], ["systemRecord", "Sistem Kaydı", "select", ["Evet", "Hayır"]], ["calculation", "Hesaplanma"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "sis1", insuranceType: "Bireysel Emeklilik Sistemi", subtitle: "BES", excelTransfer: "Evet", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis2", insuranceType: "Hayat Sigortası", subtitle: "Birikimli Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis3", insuranceType: "Hayat Sigortası", subtitle: "Grup Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis4", insuranceType: "Hayat Sigortası", subtitle: "Karma Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis5", insuranceType: "Hayat Sigortası", subtitle: "Kredili Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis6", insuranceType: "Hayat Sigortası", subtitle: "Uzun Süreli Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis7", insuranceType: "Hayat Sigortası", subtitle: "Yıllık Hayat Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis8", insuranceType: "Sağlık Sigortası", subtitle: "Bireysel Sağlık Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis9", insuranceType: "Sağlık Sigortası", subtitle: "Riskli Hastalıklar Sigortası", excelTransfer: "Evet", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+      { id: "sis10", insuranceType: "Sağlık Sigortası", subtitle: "Tamamlayıcı Sağlık Sigortası", excelTransfer: "Hayır", systemRecord: "Evet", calculation: "0", status: "Aktif" },
+    ],
+  },
+  {
+    id: "benefitTypes",
+    title: "Personel Yan Hak Çeşitleri Listesi",
+    icon: "plus",
+    breadcrumb: ["Panel", "Tanımlamalar", "Yan Hak / Kesinti"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["definitionName", "Yan Hak Tanımlamaları Tanım"], ["payType", "Ücretlendirme"], ["amountType", "Tutar Tipi"], ["amount", "Tutar"], ["currency", "Döviz", "select", ["TL", "EUR", "USD"]], ["netGross", "Net/Brüt", "select", ["Net", "Brüt", "<YOK>"]]],
+    records: [
+      { id: "bt1", code: "001", name: "Yemek Yardımı Nakit", definitionName: "Yemek Yardımı Nakit", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt2", code: "002", name: "Yemek Yardımı (Kart)", definitionName: "Yemek Yardımı (Kart)", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt3", code: "003", name: "Yol Yardımı Nakit", definitionName: "Yol Yardımı Nakit", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt4", code: "004", name: "Yol Yardımı (Akbil, Bilet)", definitionName: "Yol Yardımı (Akbil, Bilet)", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt5", code: "005", name: "Fazla Mesai Ücretleri", definitionName: "Fazla Mesai Ücretleri", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt6", code: "006", name: "Hakedilmiş İzinlerin Ücreti", definitionName: "Hakedilmiş İzinlerin Ücreti", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt7", code: "007", name: "Kıdem Tazminatı", definitionName: "Kıdem Tazminatı", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+      { id: "bt8", code: "008", name: "İhbar Tazminatı", definitionName: "İhbar Tazminatı", payType: "Özel", amountType: "<YOK>", amount: "<YOK>", currency: "<YOK>", netGross: "<YOK>" },
+    ],
+  },
+  {
+    id: "benefitDefinitions",
+    title: "Yan Hak Tanım Listesi",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Tanımlamalar", "Yan Hak / Kesinti"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["payType", "Ücretlendirme"], ["defaultAmount", "Varsayılan Tutar"], ["currency", "Döviz", "select", ["TL", "EUR", "USD"]], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "bdn1", code: "YMK", name: "Yemek Yardımı", payType: "Özel", defaultAmount: "0,00", currency: "TL", status: "Aktif" },
+      { id: "bdn2", code: "YOL", name: "Yol Yardımı", payType: "Özel", defaultAmount: "0,00", currency: "TL", status: "Aktif" },
+    ],
+  },
+  {
+    id: "deductionDefinitions",
+    title: "Kesinti Tanımlamaları Listesi",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Tanımlamalar", "Yan Hak / Kesinti"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Kesinti Tanımı"], ["deductionType", "Kesinti Tipi"], ["amount", "Tutar"], ["currency", "Döviz", "select", ["TL", "EUR", "USD"]], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "dd1", code: "AVN", name: "Avans Kesintisi", deductionType: "Bordro", amount: "0,00", currency: "TL", status: "Aktif" },
+      { id: "dd2", code: "BES", name: "BES Kesintisi", deductionType: "Yasal", amount: "0,00", currency: "TL", status: "Aktif" },
+    ],
+  },
+  {
+    id: "incentiveProjects",
+    title: "Ar-ge ve Teknopark Proje Listesi",
+    icon: "checklist",
+    breadcrumb: ["Panel", "Tanımlamalar", "Teşvik Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["incentiveType", "Teşvik Tipi"], ["projectCode", "Proje Kodu"], ["projectName", "Proje Adı"], ["startDate", "Başlangıç Tarihi", "date"], ["endDate", "Bitiş Tarihi", "date"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [],
+  },
+  {
+    id: "accountingChart",
+    title: "Muhasebe Hesap Planı",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Tanımlamalar", "Muhasebe Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["accountNo", "Hesap No"], ["accountName", "Hesap Adı"], ["accountType", "Hesap Tipi", "select", ["Tümü", "Ana Hesap", "Yardımcı Hesap"]], ["accountClass", "Hesap Cinsi"], ["parentAccount", "Üst Hesap"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "acc1", accountNo: "335", accountName: "Personele Borçlar", accountType: "Ana Hesap", accountClass: "Pasif", parentAccount: "", status: "Aktif" },
+      { id: "acc2", accountNo: "770", accountName: "Genel Yönetim Giderleri", accountType: "Ana Hesap", accountClass: "Gider", parentAccount: "", status: "Aktif" },
+    ],
+  },
+  {
+    id: "accountingConnections",
+    title: "Muhasebe Bağlantıları",
+    icon: "grid",
+    breadcrumb: ["Panel", "Tanımlamalar", "Muhasebe Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["moduleName", "Modül"], ["transactionType", "İşlem Tipi"], ["debitAccount", "Borç Hesabı"], ["creditAccount", "Alacak Hesabı"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "acn1", moduleName: "Bordro", transactionType: "Maaş Tahakkuku", debitAccount: "770", creditAccount: "335", description: "Varsayılan bordro bağlantısı", status: "Aktif" }],
+  },
+  {
+    id: "costCenters",
+    title: "Masraf Merkezleri",
+    icon: "presentation",
+    breadcrumb: ["Panel", "Tanımlamalar", "Muhasebe Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Masraf Merkezi"], ["parentCenter", "Üst Masraf Merkezi"], ["responsible", "Sorumlu"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "cc1", code: "MM-IK", name: "İK ve Bordro", parentCenter: "Genel Müdürlük", responsible: "Zehra Battal", status: "Aktif" },
+      { id: "cc2", code: "MM-OPR", name: "Operasyon", parentCenter: "Genel Müdürlük", responsible: "Faruk Türker", status: "Aktif" },
+    ],
+  },
+  {
+    id: "excelImportLogs",
+    title: "Excel Aktarım Geçmişi",
+    icon: "download",
+    breadcrumb: ["Panel", "Tanımlamalar", "Excel'den Aktarımlar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["type", "Aktarım Tipi"], ["fileName", "Dosya Adı"], ["date", "Tarih"], ["rowCount", "Satır"], ["status", "Durumu", "select", ["Aktarıldı", "Bekliyor", "Hatalı"]], ["note", "Not"]],
+    records: [],
+  },
+  {
+    id: "managementDocumentTypes",
+    title: "Belge Türleri Listesi",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Yönetim", "Belge Türleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["no", "Belge No"], ["title", "Tanım"], ["default", "Varsayılan", "select", ["Evet", "Hayır"]], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "mdt1", no: "1", title: "HİZMET AKDİ İLE TÜM SİGORTA KOLLARINA TABİ ÇALIŞANLAR", default: "Evet", status: "Aktif" },
+      { id: "mdt2", no: "2", title: "SOSYAL GÜVENLİK DESTEK PRİMİNE TABİ ÇALIŞANLAR", default: "Hayır", status: "Aktif" },
+      { id: "mdt4", no: "4", title: "YER ALTINDA SÜREKLİ ÇALIŞANLAR", default: "Hayır", status: "Aktif" },
+      { id: "mdt5", no: "5", title: "YER ALTINDA GRUPLU ÇALIŞANLAR", default: "Hayır", status: "Aktif" },
+    ],
+  },
+  {
+    id: "managementLaws",
+    title: "Kanunlar",
+    icon: "shield",
+    breadcrumb: ["Panel", "Yönetim", "Kanunlar"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["lawNo", "Kanun No"], ["name", "Tanım"], ["startDate", "Başlangıç", "date"], ["endDate", "Bitiş", "date"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "ml1", lawNo: "5510", name: "Beş Puanlık SGK İndirimi", startDate: "2026-01-01", endDate: "", status: "Aktif" },
+      { id: "ml2", lawNo: "6111", name: "İstihdam Teşviki", startDate: "2026-01-01", endDate: "", status: "Aktif" },
+    ],
+  },
+  {
+    id: "minimumWageParams",
+    title: "Asgari Ücret Parametreleri",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Yönetim", "Asgari Ücret"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["year", "Yıl"], ["period", "Dönem"], ["gross", "Brüt"], ["net", "Net"], ["employerCost", "İşveren Maliyeti"], ["status", "Durumu", "select", ["Güncel", "Pasif"]]],
+    records: [{ id: "mwp1", year: "2026", period: "01-12", gross: "26.005,50", net: "22.104,67", employerCost: "30.621,48", status: "Güncel" }],
+  },
+  {
+    id: "sgkParameterDefinitions",
+    title: "SGK Parametreleri",
+    icon: "shield",
+    breadcrumb: ["Panel", "Yönetim", "SGK Parametreleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["employeeRate", "İşçi Oranı"], ["employerRate", "İşveren Oranı"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "sgkp1", code: "UVS", name: "Uzun Vadeli Sigorta", employeeRate: "%14", employerRate: "%20,75", status: "Aktif" },
+      { id: "sgkp2", code: "ISS", name: "İşsizlik Sigortası", employeeRate: "%1", employerRate: "%2", status: "Aktif" },
+    ],
+  },
+  {
+    id: "managementPayrollParams",
+    title: "Bordro Parametreleri",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Yönetim", "Bordro Parametreleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Parametre"], ["value", "Değer"], ["period", "Dönem"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [
+      { id: "mpp1", code: "GV", name: "Gelir Vergisi Dilimi", value: "2026 tarifesi", period: "2026", status: "Aktif" },
+      { id: "mpp2", code: "DV", name: "Damga Vergisi Oranı", value: "0,00759", period: "2026", status: "Aktif" },
+    ],
+  },
+  {
+    id: "managementOtherParams",
+    title: "Diğer Parametreler",
+    icon: "settings",
+    breadcrumb: ["Panel", "Yönetim", "Diğer"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [["code", "Kod"], ["name", "Tanım"], ["value", "Değer"], ["description", "Açıklama"], ["status", "Durumu", "select", ["Aktif", "Pasif"]]],
+    records: [{ id: "mop1", code: "LANG", name: "Varsayılan Dil", value: "Türkçe", description: "Portal varsayılan dili", status: "Aktif" }],
+  },
+  {
     id: "matbuForms",
     title: "Matbu Formlar",
     icon: "invoice",
@@ -1674,6 +2006,11 @@ let prozonWorkplaceCardOpen = false;
 let prozonWorkplaceCardTab = "general";
 let prozonEditingWorkplaceId = "";
 let prozonWorkplaceDraft = {};
+let companyParameterTab = "roadMeal";
+let personDefinitionTab = "workCalendars";
+let benefitDefinitionTab = "benefitTypes";
+let accountingDefinitionTab = "accountingChart";
+let definitionExcelImportType = "Personel Aktarımı (Basit)";
 const prozonColumnFilters = {};
 const prozonNaceRows = [
   ["01", "Bitkisel ve hayvansal üretim ile avcılık ve ilgili hizmet faaliyetleri", ""],
@@ -6392,6 +6729,105 @@ function renderPayrollCenter() {
       ${renderProzonTable(columns, records, moduleId)}
     </section>
   `;
+  const definitionInnerTabs = (items, active, action) => `
+    <nav class="prozon-inner-tabs">
+      ${items.map(([id, label]) => `<button class="${id === active ? "active" : ""}" type="button" data-action="${escapeHtml(action)}" data-tab="${escapeHtml(id)}">${escapeHtml(trText(label))}</button>`).join("")}
+    </nav>
+  `;
+  const definitionField = (label, value = "", options = null, type = "text") => `
+    <label>
+      <span>${escapeHtml(trText(label))}</span>
+      ${
+        options
+          ? `<select>${options.map((option) => `<option ${option === value ? "selected" : ""}>${escapeHtml(trText(option))}</option>`).join("")}</select>`
+          : `<input type="${escapeHtml(type)}" value="${escapeHtml(value)}" />`
+      }
+    </label>
+  `;
+  const companyParameterTabs = [
+    ["roadMeal", "Yol/Yemek Parametreleri"],
+    ["general", "Genel Parametreler"],
+    ["payroll", "Bordro Parametreleri"],
+    ["overtime", "FM Tanımlamaları"],
+    ["pdks", "PDKS Tanımlamaları"],
+    ["withholding", "Muhtasar Bilgileri"],
+    ["integrations", "Entegrasyonlar"],
+  ];
+  const companyParameterContent = () => {
+    const contents = {
+      roadMeal: `
+        <div class="definition-card-row">
+          <article class="prozon-form-card">${definitionField("Varsayılan Yemek Hizmeti Tipi", "Yok", ["Yok", "Nakit", "Kart/Akbil"])} </article>
+          <article class="prozon-form-card">${definitionField("Varsayılan Yol Hizmet Tipi", "Yok", ["Yok", "Nakit", "Kart/Akbil"])}</article>
+          <article class="prozon-form-card">
+            <h3>${escapeHtml(trText("İşten çıkma veya personelin yol/yemek hakkının sonlandırılması durumunda"))}</h3>
+            <label><input type="checkbox" /> ${escapeHtml(trText("Nakit verilen ödemelerin fazlasını maaştan kes"))}</label>
+            <label><input type="checkbox" /> ${escapeHtml(trText("Kart/Akbil ile verilen ödemelerin fazlasını maaştan kes"))}</label>
+            <label><input type="checkbox" /> ${escapeHtml(trText("Arge-Teknopark için Kanun Numaralarını Mevzuata Uygun Yönet"))}</label>
+          </article>
+        </div>
+      `,
+      general: `
+        <article class="prozon-form-card">
+          <h3>${escapeHtml(trText("Sağlık Raporu Genel Prensipleri"))}:</h3>
+          <div class="prozon-form-row">${definitionField("Ödeme Tipi", "Raporlu Günler İçin Ödeme Yapma", ["Raporlu Günler İçin Ödeme Yapma", "Raporlu Günleri Öde"])}<label><input type="checkbox" /> ${escapeHtml(trText("Ücretli Raporlu Günleri Teşviklendir"))}</label><label><input type="checkbox" /> ${escapeHtml(trText("Oto. Vizite RP. Çek"))}</label></div>
+          <div class="prozon-form-row">${definitionField("Avans Varsayılan Onaylama Tipi", "Sadece Üst Yönetici ve İK Onaylar", ["Sadece Üst Yönetici ve İK Onaylar", "Sadece İK Onaylar"])}<label><input type="checkbox" /> ${escapeHtml(trText("İK'nın Avans Atamasında Personel Onayı Gerekli"))}</label></div>
+          <div class="prozon-form-row">${definitionField("Bordro Hesaplama Tipi", "Dinamik Puantajlı", ["Dinamik Puantajlı", "Sabit Puantajlı"])}${definitionField("Deneme Süresi(Gün)", "60")}${definitionField("Alınan İzin Telafisi İçin Süre Sınırı(Gün)", "120")}${definitionField("Varsayılan Dil", "Türkçe", ["Türkçe", "English"])}</div>
+          <div class="prozon-form-row"><label><input type="checkbox" /> ${escapeHtml(trText("Otomatik Puantaj Oluştur"))}</label><label><input type="checkbox" /> ${escapeHtml(trText("Otomatik Doğum Günü Mesajı İlet"))}</label><label><input type="checkbox" /> ${escapeHtml(trText("Otomatik İzin Hakediş Oluştur"))}</label></div>
+        </article>
+      `,
+      payroll: `
+        <article class="prozon-form-card two-pane">
+          <div>${definitionField("Genel Tatil Çalışma Hakediş Tipi", "Saatlik Ücretlendirme", ["Saatlik Ücretlendirme", "Günlük Ücretlendirme"])}${definitionField("31 Günü Olan Aylarda", "1 Eksik Gün İçin Ücret Kesme (Yasal)", ["1 Eksik Gün İçin Ücret Kesme (Yasal)", "Kesinti Yapma"])}${definitionField("31 Günü Olan Ay da Nakil", "30 günlük ücret ver", ["30 günlük ücret ver", "Çalışılan günü baz al"])}${definitionField("Prime Tabi Gün Olmayan Aylarda SGK Kesintisi", "SGK Kesintisi Yok", ["SGK Kesintisi Yok", "SGK Kesintisi Var"])}</div>
+          <div>${definitionField("Net Ücretli Engelli Matrah İndirim Tipi", "Brüt Ücreti Azalt", ["Brüt Ücreti Azalt", "Brütü Arttır"])}${definitionField("Net Ücretli Devir PEK Uygulama Tipi", "Brütü Arttır", ["Brütü Arttır", "Brütü Azalt"])}${definitionField("Baz Alınacak Döviz Tipi", "Alış", ["Alış", "Satış"])}${definitionField("Bordro Kapama Dönemi", "Ay Sonu", ["Ay Sonu", "Ay Başı"])}</div>
+        </article>
+      `,
+      overtime: `
+        <article class="prozon-form-card narrow-form">
+          <h3>${escapeHtml(trText("Excelden İcmal Aktarımında Fazla Mesai Varsayılan Tanımları"))}</h3>
+          ${["Gündüz Fazla Mesai Tanımı", "Gece Fazla Mesai Tanımı", "Hafta Tatili Mesai Tanımı", "Genel Tatil Mesai Tanımı", "Sözleşme Üzeri Mesai Tanımı", "45 Saat Üzeri Mesai Tanımı", "Part Time Hafta Tatili Ücreti Tanımı"].map((label) => definitionField(label, label.replace(" Tanımı", "").toLocaleUpperCase("tr"))).join("")}
+          <h3>${escapeHtml(trText("Puantajdan"))}:</h3>
+          <label><input type="checkbox" /> ${escapeHtml(trText("Haftalık Fazla Mesai Süreleri Hesapla"))}</label>
+          <label><input type="checkbox" /> ${escapeHtml(trText("Gün İçi Fazla Mesai Süreleri Hesapla"))}</label>
+        </article>
+      `,
+      pdks: `
+        <article class="prozon-form-card pdks-form">
+          ${["PDKS Giriş Saati Gecikme İstisna Tipi", "PDKS Erken Çıkma İstisna Tipi", "PDKS Mola Süresi Aşma İstisna Tipi", "PDKS Yemek Süresi Aşma İstisna Tipi", "PDKS Günlük Eksik Çalışma İstisna Tipi"].map((label) => `<div class="prozon-form-row">${definitionField(label, "Süre", ["Süre", "Yok"])}${definitionField("Dakika", "0")}</div>`).join("")}
+          <div class="prozon-form-row">${definitionField("Eksik Çalışma Kontrol Türü", "Mesai Saatini Kontrol Et", ["Mesai Saatini Kontrol Et", "Giriş Çıkış Kontrol Et"])}${definitionField("Eksik Çalışma Hesaplama Tipi", "Giriş Çıkış Saatleri", ["Giriş Çıkış Saatleri", "Toplam Saat"])}</div>
+          <label><input type="checkbox" /> ${escapeHtml(trText("Mobilden PDKS Girişi"))}</label>
+          ${definitionField("Puantaj/PDKS Saatleri Eşleştirme Tavan Dakika Farkı", "180")}
+        </article>
+      `,
+      withholding: `
+        <div class="withholding-layout">
+          <aside class="withholding-logo-card">
+            <strong>${escapeHtml(trText("Şirket Logosu"))}</strong>
+            <small>(200px*200px önerilir)</small>
+            <div><img src="assets/arti-destek-logo.png" alt="Artı Destek" /></div>
+          </aside>
+          <article class="prozon-form-card">
+            ${definitionField("İşveren Ünvanı", currentUser?.companyName || "ARTI DESTEK")}
+            ${definitionField("Mersis No", "")}
+            ${definitionField("Ticaret Sicil Müdürlüğü", "<YOK>", ["<YOK>", "İstanbul", "Sakarya", "Kocaeli"])}
+            ${definitionField("Ticaret Sicil No", "")}
+          </article>
+          <article class="prozon-form-card two-pane">${definitionField("Vergi Dairesi Kullanıcı Kodu", "")}${definitionField("Vergi Dairesi Şifre", "")}${definitionField("Vergi Dairesi TC Kimlik No", "")}${definitionField("Vergi No", "")}</article>
+          <article class="prozon-form-card dashboard-checks">
+            <h3>${escapeHtml(trText("Personel Dashboard Görünümleri"))}</h3>
+            ${["Son Bordroları Göster", "İzin Hakedişleri Göster", "Son İzinleri Göster", "Köprü İzinleri Göster", "Son Fazla Mesaileri Göster", "Yaklaşan Resmi Tatilleri Göster"].map((label) => `<label><input type="checkbox" checked /> ${escapeHtml(trText(label))}</label>`).join("")}
+          </article>
+        </div>
+      `,
+      integrations: `
+        <article class="prozon-form-card integration-form">
+          ${definitionField("Vinter Api Key", "")}
+          <div class="prozon-form-row">${definitionField("ÜBYS Username", "")}${definitionField("ÜBYS Password", "")}</div>
+        </article>
+      `,
+    };
+    return contents[companyParameterTab] || contents.roadMeal;
+  };
   const prozonParameterScreen = () => `
     <section class="prozon-list-screen prozon-parameter-screen">
       <header class="prozon-list-heading">
@@ -6407,28 +6843,9 @@ function renderPayrollCenter() {
           <button type="button">?</button>
         </div>
       </header>
-      <nav class="prozon-inner-tabs">
-        ${["Yol/Yemek Parametreleri", "Genel Parametreler", "Bordro Parametreleri", "FM Tanımlamaları", "PDKS Tanımlamaları", "Muhtasar Bilgileri", "Entegrasyonlar"]
-          .map((label, index) => `<button class="${index === 1 ? "active" : ""}" type="button">${escapeHtml(trText(label))}</button>`)
-          .join("")}
-      </nav>
-      <div class="prozon-form-card">
-        <h3>${escapeHtml(trText("Sağlık Raporu Genel Prensipleri"))}:</h3>
-        <div class="prozon-form-row">
-          <label>${escapeHtml(trText("Ödeme Tipi"))}: <select><option>${escapeHtml(trText("Raporlu Günler İçin Ödeme Yapma"))}</option><option>${escapeHtml(trText("Raporlu Günleri Öde"))}</option></select></label>
-          <label><input type="checkbox" /> ${escapeHtml(trText("Ücretli Raporlu Günleri Teşviklendir"))}</label>
-          <label><input type="checkbox" /> ${escapeHtml(trText("Oto. Vizite RP. Çek"))}</label>
-        </div>
-        <div class="prozon-form-row">
-          <label>${escapeHtml(trText("Avans Varsayılan Onaylama Tipi"))}: <select><option>${escapeHtml(trText("Sadece Üst Yönetici ve İK Onaylar"))}</option></select></label>
-          <label><input type="checkbox" /> ${escapeHtml(trText("İK'nın Avans Atamasında Personel Onayı Gerekli"))}</label>
-        </div>
-        <div class="prozon-form-row">
-          <label>${escapeHtml(trText("Bordro Hesaplama Tipi"))}: <select><option>${escapeHtml(trText("Dinamik Puantajlı"))}</option></select></label>
-          <label>${escapeHtml(trText("Deneme Süresi(Gün)"))}: <input value="60" /></label>
-          <label>${escapeHtml(trText("Varsayılan Dil"))}: <select><option>${escapeHtml(trText("Türkçe"))}</option><option>English</option></select></label>
-        </div>
-      </div>
+      ${definitionInnerTabs(companyParameterTabs, companyParameterTab, "company-param-tab")}
+      <div class="definition-form-area">${companyParameterContent()}</div>
+      <footer class="definition-fixed-save"><button class="primary" type="button" data-action="definition-save">${escapeHtml(trText("Kaydet"))}</button></footer>
     </section>
   `;
   const tabContents = {
@@ -6902,6 +7319,8 @@ function renderPayrollCenter() {
       ["payrollDefs", "Bordro Tanımlamaları"],
       ["benefitDeductionDefs", "Yan Hak / Kesinti Tanımlamaları"],
       ["incentiveDefs", "Teşvik Tanımlamaları"],
+      ["accountingDefs", "Muhasebe Tanımlamaları"],
+      ["excelImports", "Excel'den Aktarımlar"],
     ],
     managementTop: [["documentTypes", "Belge Türleri"], ["laws", "Kanunlar"], ["minimumWage", "Asgari Ücret Parametreleri"], ["sgkParams", "SGK Parametreleri"], ["payrollParams", "Bordro Parametreleri"], ["other", "Diğer"]],
   };
@@ -7157,6 +7576,158 @@ function renderPayrollCenter() {
           </div>
           <button class="outline" type="button" data-action="attendance-renew">${escapeHtml(trText("Puantaj Yenileme"))}</button>
         </footer>
+      </section>
+    `;
+  };
+  const personDefinitionScreens = {
+    workCalendars: ["Çalışma Takvimleri", "Çalışma Takvimi Bilgileri", "calendar", "workCalendars", "Yeni Takvim"],
+    personParameters: ["Personel Parametre Tanımlamaları", "Personel parametrelerini listeleyebilir ve düzenleyebilirsiniz.", "settings", "personParameterDefinitions", "Yeni Parametre"],
+    preRegistration: ["Ön Kayıt Tanımlamaları", "Ön kayıt ekranı tanımlarını yönetebilirsiniz.", "users", "preRegistrationDefinitions", "Yeni Ön Kayıt Tanımı"],
+    personGroups: ["Personel Grupları", "Personel gruplarını bu ekrandan yönetebilirsiniz.", "users", "personGroups", "Yeni Grup"],
+    roles: ["Görev Tanımları", "Görev tanımlarını listeleyebilir ve düzenleyebilirsiniz.", "checklist", "roleDefinitions", "Yeni Görev"],
+    competencies: ["Mesleki Yeterlilik Tanımlamaları", "Mesleki yeterlilik tanımlarını yönetebilirsiniz.", "shield", "competencyDefinitions", "Yeni Yeterlilik"],
+    unions: ["Sendika Tanımlamaları", "Sendika tanımlarını yönetebilirsiniz.", "flag", "unionDefinitions", "Yeni Sendika"],
+    languages: ["Yabancı Dil Listesi", "Yabancı dil kayıtlarını listeleyebilirsiniz.", "message", "foreignLanguages", "Yeni Dil"],
+    clothing: ["Giyim Parametreleri", "Giyim parametrelerini yönetebilirsiniz.", "archive", "clothingParameters", "Yeni Giyim"],
+    tis: ["TİS Tanımlamaları", "Toplu iş sözleşmesi tanımlarını yönetebilirsiniz.", "invoice", "collectiveAgreementDefinitions", "Yeni TİS"],
+  };
+  const personDefinitionTabs = [
+    ["workCalendars", "Çalışma Takvimleri"],
+    ["personParameters", "Personel Parametre Tanımlamaları"],
+    ["preRegistration", "Ön Kayıt Tanımlamaları"],
+    ["personGroups", "Personel Grupları"],
+    ["roles", "Görev Tanımları"],
+    ["competencies", "Mesleki Yeterlilik Tanımlamaları"],
+    ["unions", "Sendika Tanımlamaları"],
+    ["languages", "Yabancı Dil Listesi"],
+    ["clothing", "Giyim Parametreleri"],
+    ["tis", "TİS Tanımlamaları"],
+  ];
+  const benefitDefinitionTabs = [
+    ["benefitTypes", "Yan Hak Çeşitleri"],
+    ["benefitDefinitions", "Yan Hak Tanım Listesi"],
+    ["deductions", "Kesinti Tanımlamaları Listesi"],
+  ];
+  const accountingDefinitionTabs = [
+    ["accountingChart", "Muhasebe Hesap Planı"],
+    ["accountingConnections", "Muhasebe Bağlantıları"],
+    ["costCenters", "Masraf Merkezleri"],
+  ];
+  const orgChartNodes = (rows, parent = "") => {
+    const children = rows.filter((row) => normalizeText(row.parentUnit || "") === normalizeText(parent || ""));
+    return children.length
+      ? `<ul>${children
+          .map(
+            (row) => `
+              <li>
+                <div class="org-node"><strong>${escapeHtml(row.unitName || "Birim")}</strong><span>${escapeHtml(row.hierarchyType || row.manager || "")}</span></div>
+                ${orgChartNodes(rows, row.unitName)}
+              </li>
+            `,
+          )
+          .join("")}</ul>`
+      : "";
+  };
+  const prozonCompanyHierarchyScreen = () => {
+    const hierarchyModule = getModule("companyHierarchyDefinitions");
+    const rows = getScopedRecords(hierarchyModule);
+    const rootRows = rows.some((row) => !row.parentUnit) ? rows : [{ id: "root", unitName: currentUser?.companyName || "GLOBAL KALİTEKONTROL", parentUnit: "", hierarchyType: "Şirket", manager: "", status: "Aktif" }, ...rows];
+    return `
+      <section class="prozon-list-screen hierarchy-definition-screen">
+        <header class="prozon-list-heading">
+          <div class="prozon-title-block">
+            <span data-icon="grid"></span>
+            <div>
+              <h2>${escapeHtml(trText("Hiyerarşik Yapılar"))}</h2>
+              <p>${escapeHtml(trText("Hiyerarşi tanımını girdikten sonra organizasyon şeması otomatik oluşur."))}</p>
+            </div>
+          </div>
+          <div class="prozon-list-actions">
+            <button class="primary" type="button" data-action="add" data-module="companyHierarchyDefinitions"><span data-icon="grid"></span>${escapeHtml(trText("Hiyerarşi Tanımla"))}</button>
+            <button type="button">?</button>
+          </div>
+        </header>
+        <nav class="prozon-inner-tabs tight"><button class="active" type="button">${escapeHtml(trText("Hiyerarşik Yapılar"))}</button><button class="active-soft" type="button">${escapeHtml(trText("Organizasyon Şeması"))}</button></nav>
+        ${renderProzonTable(hierarchyModule.columns, rows, hierarchyModule.id)}
+        <section class="org-chart-panel">
+          <header><h3>${escapeHtml(trText("Organizasyon Şeması"))}</h3><button type="button" data-action="definition-export-module" data-module="companyHierarchyDefinitions"><span data-icon="download"></span>${escapeHtml(trText("Excel'e Aktar"))}</button></header>
+          <div class="org-chart">${orgChartNodes(rootRows)}</div>
+        </section>
+      </section>
+    `;
+  };
+  const prozonPersonDefinitionsScreen = () => {
+    const [title, subtitle, icon, moduleId, primaryLabel] = personDefinitionScreens[personDefinitionTab] || personDefinitionScreens.workCalendars;
+    const module = getModule(moduleId);
+    return `
+      <section class="prozon-list-screen">
+        <header class="prozon-list-heading">
+          <div class="prozon-title-block"><span data-icon="${icon}"></span><div><h2>${escapeHtml(trText(title))}</h2><p>${escapeHtml(trText(subtitle))}</p></div></div>
+          <div class="prozon-list-actions"><button type="button">?</button></div>
+        </header>
+        ${definitionInnerTabs(personDefinitionTabs, personDefinitionTab, "person-def-tab")}
+        ${prozonListScreen({ title, subtitle, icon, moduleId, primaryLabel, records: getScopedRecords(module), columns: module.columns, groupable: true })}
+      </section>
+    `;
+  };
+  const prozonBenefitDeductionScreen = () => {
+    const map = {
+      benefitTypes: ["Personel Yan Hak Çeşitleri Listesi", "Yan hak çeşitlerini listeleyebilir ve düzenleyebilirsiniz.", "plus", "benefitTypes", "Yeni Yan Hak"],
+      benefitDefinitions: ["Yan Hak Tanım Listesi", "Yan hak tanımlarını yönetebilirsiniz.", "wallet", "benefitDefinitions", "Yeni Tanım"],
+      deductions: ["Kesinti Tanımlamaları Listesi", "Kesinti tanımlarını yönetebilirsiniz.", "invoice", "deductionDefinitions", "Yeni Kesinti"],
+    };
+    const [title, subtitle, icon, moduleId, primaryLabel] = map[benefitDefinitionTab] || map.benefitTypes;
+    const module = getModule(moduleId);
+    return `
+      <section class="prozon-list-screen">
+        ${definitionInnerTabs(benefitDefinitionTabs, benefitDefinitionTab, "benefit-def-tab")}
+        ${prozonListScreen({ title, subtitle, icon, moduleId, primaryLabel, records: getScopedRecords(module), columns: module.columns, groupable: true })}
+      </section>
+    `;
+  };
+  const prozonAccountingDefinitionsScreen = () => {
+    const map = {
+      accountingChart: ["Muhasebe Hesap Planı", "Bu ekranda hesap planını yönetebilir, yardımcı ve detay hesaplar oluşturabilirsiniz.", "invoice", "accountingChart", "Oluştur"],
+      accountingConnections: ["Muhasebe Bağlantıları", "Bordro ve finans kayıtlarının muhasebe bağlantılarını tanımlayabilirsiniz.", "grid", "accountingConnections", "Yeni Bağlantı"],
+      costCenters: ["Masraf Merkezleri", "Masraf merkezi tanımlarını yönetebilirsiniz.", "presentation", "costCenters", "Yeni Masraf Merkezi"],
+    };
+    const [title, subtitle, icon, moduleId, primaryLabel] = map[accountingDefinitionTab] || map.accountingChart;
+    const module = getModule(moduleId);
+    return `
+      <section class="prozon-list-screen">
+        ${definitionInnerTabs(accountingDefinitionTabs, accountingDefinitionTab, "accounting-def-tab")}
+        ${prozonListScreen({ title, subtitle, icon, moduleId, primaryLabel, records: getScopedRecords(module), columns: module.columns, groupable: true })}
+      </section>
+    `;
+  };
+  const definitionImportCards = [
+    "Personel Aktarımı (Basit)", "KGVM ve AÜKGVM Aktarımı", "Belirlenen Günlü Yol Yemek Aktarımı", "Personel Aktarımı", "Yabancı Dil Aktarımı", "Ek Ödeme Aktarımı",
+    "Yol/Yemek Aktarımı", "Personel Parametre Aktarımı", "E-Posta Aktarımı", "Eski PEK Aktarımı", "Banka Bilgisi Aktarımı", "Adres Bilgileri Aktarımı",
+    "İzin Hakedişleri Aktarımı", "Devir Matrah Aktarımı", "Arge Personel Bağlantısı Aktarımı", "Kulüp Dernek Aktarımı", "Acil Durum Kişileri Aktarımı", "BES Aktarımı",
+    "Meslek Kodu Aktarımı", "Giysi Aktarımı", "Özel Sigorta Aktarımı", "Ücret Aktarımı", "İzin Aktarımı", "Kesinti Aktarımı",
+    "Ek Ödeme Aktarımı (Sabit)", "GSM Aktarımı", "Sağlık Sorunları Aktarımı", "Sözleşme Aktarımı", "Eğitim Bilgileri Aktarımı", "Nace Kodu Aktarımı",
+    "Masraf Merkezi Tanım Aktarımı", "Masraf Merkezi Aktarımı", "Personel Hiyerarşik Konum Aktarımı", "Sağlık Raporu Aktarımı", "İşyeri Aktarımı", "Personellere Ünvan Aktarımı",
+    "Personellere Grup Aktarımı", "Personellere İşyeri Aktarımı", "Muhasebe Hesap Planı Aktarımı", "Kep Delil Aktarımı", "ÜHP PDF Aktarımı", "Fazla Mesai Ek Ödemesi Aktarımı",
+    "Çıkış Bilgileri Aktarımı", "Arge Proje Bağlantı Detayı Aktarımı",
+  ];
+  const prozonExcelImportsScreen = () => {
+    const importModule = getModule("excelImportLogs");
+    return `
+      <section class="prozon-list-screen excel-import-dashboard">
+        <header class="prozon-list-heading">
+          <div class="prozon-title-block"><span data-icon="download"></span><div><h2>${escapeHtml(trText("Excel Aktarım Dashboard"))}</h2><p>${escapeHtml(trText("Bu ekranda excel aktarımlarını gerçekleştirebilirsiniz."))}</p></div></div>
+          <div class="prozon-list-actions"><button type="button">?</button></div>
+        </header>
+        <div class="definition-import-grid">
+          ${definitionImportCards.map((label) => `<button class="${label === definitionExcelImportType ? "active" : ""}" type="button" data-action="definition-import-open" data-type="${escapeHtml(label)}">${escapeHtml(trText(label))}</button>`).join("")}
+        </div>
+        <section class="definition-import-panel">
+          <h3>${escapeHtml(definitionExcelImportType)}</h3>
+          <button class="primary" type="button" data-action="definition-import-template"><span data-icon="download"></span>${escapeHtml(trText("Excel Aktarım Formatı Oluştur"))}</button>
+          <label class="file-import-control"><input id="definitionImportFile" type="file" accept=".xls,.xlsx,.csv" /> ${escapeHtml(trText("Dosya Seç"))}</label>
+          <button type="button" data-action="definition-import-run"><span data-icon="upload"></span>${escapeHtml(trText("Aktar"))}</button>
+        </section>
+        ${renderProzonTable(importModule.columns, getScopedRecords(importModule), importModule.id)}
       </section>
     `;
   };
@@ -7674,17 +8245,64 @@ function renderPayrollCenter() {
       };
       return (reportScreens[activeSubTab] || reportScreens.detailedPersonnel)();
     },
-    definitionsTop: () => prozonParameterScreen(),
-    managementTop: () =>
-      prozonListScreen({
-        title: "Belge Türleri Listesi",
-        subtitle: "Belge Türleri oluşturup, düzenleyebilirsiniz.",
-        icon: "invoice",
-        moduleId: "legislation",
-        helpQuery: "SGK belge türleri kanunlar bordro parametreleri",
-        columns: [["no", "BELGE NO"], ["title", "TANIM"], ["default", "VARSAYILAN", "select"]],
-        records: documentTypeRows,
-      }),
+    definitionsTop: () => {
+      const definitionScreens = {
+        companyParams: () => prozonParameterScreen(),
+        companyHierarchy: () => prozonCompanyHierarchyScreen(),
+        personDefs: () => prozonPersonDefinitionsScreen(),
+        payrollDefs: () =>
+          prozonListScreen({
+            title: "Özel Sigorta Alt Başlık Listesi",
+            subtitle: "Bu formda özel sigorta alt başlıklarınızı listeleyebilirsiniz.",
+            icon: "shield",
+            moduleId: "specialInsuranceSubtitles",
+            primaryLabel: "Yeni Alt Başlık",
+            helpQuery: "özel sigorta alt başlık bordro tanımlamaları",
+            groupable: true,
+            records: getScopedRecords(getModule("specialInsuranceSubtitles")),
+            columns: getModule("specialInsuranceSubtitles").columns,
+          }),
+        benefitDeductionDefs: () => prozonBenefitDeductionScreen(),
+        incentiveDefs: () =>
+          prozonListScreen({
+            title: "Ar-ge ve Teknopark Proje Listesi",
+            subtitle: "Ar-ge ve Teknopark proje listesi",
+            icon: "checklist",
+            moduleId: "incentiveProjects",
+            primaryLabel: "Yeni Proje",
+            helpQuery: "arge teknopark teşvik proje tanımları",
+            groupable: true,
+            records: getScopedRecords(getModule("incentiveProjects")),
+            columns: getModule("incentiveProjects").columns,
+          }),
+        accountingDefs: () => prozonAccountingDefinitionsScreen(),
+        excelImports: () => prozonExcelImportsScreen(),
+      };
+      return (definitionScreens[activeSubTab] || definitionScreens.companyParams)();
+    },
+    managementTop: () => {
+      const managementScreens = {
+        documentTypes: ["Belge Türleri Listesi", "Belge türleri oluşturup, düzenleyebilirsiniz.", "invoice", "managementDocumentTypes", "Yeni Belge Türü"],
+        laws: ["Kanunlar", "Kanun ve teşvik parametrelerini bu ekrandan yönetebilirsiniz.", "shield", "managementLaws", "Yeni Kanun"],
+        minimumWage: ["Asgari Ücret Parametreleri", "Asgari ücret ve işveren maliyeti parametrelerini yönetebilirsiniz.", "wallet", "minimumWageParams", "Yeni Parametre"],
+        sgkParams: ["SGK Parametreleri", "SGK oran ve parametrelerini listeleyebilirsiniz.", "shield", "sgkParameterDefinitions", "Yeni SGK Parametresi"],
+        payrollParams: ["Bordro Parametreleri", "Bordro hesaplama parametrelerini yönetebilirsiniz.", "invoice", "managementPayrollParams", "Yeni Bordro Parametresi"],
+        other: ["Diğer Parametreler", "Sistem geneli yardımcı parametreleri yönetebilirsiniz.", "settings", "managementOtherParams", "Yeni Parametre"],
+      };
+      const [title, subtitle, icon, moduleId, primaryLabel] = managementScreens[activeSubTab] || managementScreens.documentTypes;
+      const module = getModule(moduleId);
+      return prozonListScreen({
+        title,
+        subtitle,
+        icon,
+        moduleId,
+        primaryLabel,
+        helpQuery: `${title} prozon yönetim`,
+        groupable: true,
+        columns: module.columns,
+        records: getScopedRecords(module),
+      });
+    },
   };
   tabContents.companyTop = screenFactories.companyTop();
   tabContents.personnelTop = screenFactories.personnelTop();
@@ -10581,6 +11199,81 @@ document.addEventListener("click", (event) => {
     severanceInnerTab = manageButton.dataset.tab || "seniority";
     renderPayrollCenter();
     renderIcons();
+    return;
+  }
+
+  if (action === "company-param-tab") {
+    companyParameterTab = manageButton.dataset.tab || "roadMeal";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "person-def-tab") {
+    personDefinitionTab = manageButton.dataset.tab || "workCalendars";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "benefit-def-tab") {
+    benefitDefinitionTab = manageButton.dataset.tab || "benefitTypes";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "accounting-def-tab") {
+    accountingDefinitionTab = manageButton.dataset.tab || "accountingChart";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "definition-save") {
+    window.alert(trText("Şirket parametreleri kaydedildi."));
+    return;
+  }
+
+  if (action === "definition-export-module") {
+    downloadExport(manageButton.dataset.module || activeModuleId);
+    return;
+  }
+
+  if (action === "definition-import-open") {
+    definitionExcelImportType = manageButton.dataset.type || definitionExcelImportType;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "definition-import-template") {
+    const headers = ["Sicil No", "TC Kimlik No", "Ad Soyad", "İşyeri", "Açıklama"];
+    downloadHtmlExcel(`${definitionExcelImportType}.xls`, definitionExcelImportType, headers, [["", "", "", "", ""]]);
+    return;
+  }
+
+  if (action === "definition-import-run") {
+    const fileInput = document.querySelector("#definitionImportFile");
+    const file = fileInput?.files?.[0];
+    if (!file) {
+      window.alert(trText("Lütfen aktarılacak Excel dosyasını seçin."));
+      return;
+    }
+    const importModule = getModule("excelImportLogs");
+    importModule.records.unshift({
+      id: createId("excelImportLogs"),
+      type: definitionExcelImportType,
+      fileName: file.name,
+      date: new Date().toLocaleString("tr-TR"),
+      rowCount: "Kontrol bekliyor",
+      status: "Aktarıldı",
+      note: "Dosya alındı ve aktarım geçmişine işlendi.",
+    });
+    saveRecords();
+    renderPayrollCenter();
+    renderIcons();
+    window.alert(trText("Excel aktarımı kaydedildi."));
     return;
   }
 
