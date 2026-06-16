@@ -1749,6 +1749,15 @@ let prozonChartManagerOpen = false;
 let selectedMessageThreadId = "";
 let selectedReportPerson = "";
 let selectedRatingCompany = "all";
+let compensationReportCalculated = false;
+let compensationReportOptions = {
+  unpaidLeavesMoveSeniority: false,
+  unpaidReportsMoveSeniority: false,
+  includeOss: false,
+  includeExtras: false,
+  date: new Date().toISOString().slice(0, 10),
+};
+let personBalanceFilter = "Tümü";
 let pendingCalendarDate = "";
 let currentLanguage = localStorage.getItem("arti-destek-language") || "tr";
 let currentUser = null;
@@ -3997,6 +4006,257 @@ function renderDashboard() {
         .join("")}
     </section>
   `;
+}
+
+function getPersonLatestPayroll(personName) {
+  return getScopedRecords(getModule("payroll"))
+    .filter((record) => normalizeText(record.person) === normalizeText(personName))
+    .sort((a, b) => String(b.period || "").localeCompare(String(a.period || "")))[0];
+}
+
+function daysBetweenDates(startValue, endValue) {
+  const start = dateFromAny(startValue);
+  const end = dateFromAny(endValue);
+  if (!start || !end) return 0;
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((end - start) / 86400000) + 1);
+}
+
+function getNoticeWeeks(days) {
+  if (days < 180) return 2;
+  if (days < 540) return 4;
+  if (days < 1080) return 6;
+  return 8;
+}
+
+function buildCompensationLoadRows() {
+  const reportDate = compensationReportOptions.date || new Date().toISOString().slice(0, 10);
+  return getScopedRecords(getModule("personnel")).map((person) => {
+    const payroll = getPersonLatestPayroll(person.name);
+    const startDate = person.startDate || person.seniorityDate || payroll?.paymentDate || reportDate;
+    const seniorityDays = daysBetweenDates(startDate, reportDate);
+    const seniorityYears = seniorityDays / 365;
+    const grossBase = parseMoney(payroll?.grossSalary || person.grossSalary);
+    const extraBase = compensationReportOptions.includeExtras ? parseMoney(payroll?.bonus) + parseMoney(payroll?.overtime) : 0;
+    const ossBase = compensationReportOptions.includeOss ? grossBase * 0.03 : 0;
+    const gross = Math.max(0, grossBase + extraBase + ossBase);
+    const severanceGross = seniorityYears >= 1 ? Math.min(gross, defaultPayrollTaxRates.severanceCeiling) * seniorityYears : 0;
+    const severanceLoad = Math.max(0, severanceGross - severanceGross * defaultPayrollTaxRates.stampTax);
+    const noticeGross = seniorityDays > 0 ? (gross / 30) * getNoticeWeeks(seniorityDays) * 7 : 0;
+    const noticeTax = grossToNet(noticeGross, { cumulativeTaxBase: parseMoney(payroll?.cumulativeTaxBase) }).incomeTax;
+    const noticeLoad = Math.max(0, noticeGross - noticeTax - noticeGross * defaultPayrollTaxRates.stampTax);
+    return {
+      id: `comp-${person.id}`,
+      person: person.name || "",
+      identityNo: person.identityNo || "",
+      birthday: person.birthDate || person.birthday || "",
+      firstSgkDate: person.firstSgkDate || person.startDate || "",
+      startDate,
+      seniorityReferenceDate: person.seniorityDate || startDate,
+      validSeniorityReferenceDate: startDate,
+      groupStartDate: person.groupStartDate || startDate,
+      exitDate: person.exitDate || "",
+      basisExitDate: reportDate,
+      grossSalary: formatMoney(gross),
+      severanceLoad: formatMoney(severanceLoad),
+      noticeLoad: formatMoney(noticeLoad),
+      totalLoad: formatMoney(severanceLoad + noticeLoad),
+    };
+  });
+}
+
+function buildPersonBalanceRows(filter = personBalanceFilter) {
+  return getScopedRecords(getModule("personnel"))
+    .map((person) => {
+      const payrollRows = getScopedRecords(getModule("payroll")).filter((record) => normalizeText(record.person) === normalizeText(person.name));
+      const debt = payrollRows.reduce((sum, record) => sum + parseMoney(record.advance) + parseMoney(record.deduction), 0);
+      const credit = payrollRows.reduce((sum, record) => sum + (parseMoney(record.netPayable) || parseMoney(record.netSalary)) + parseMoney(record.bonus) + parseMoney(record.overtime), 0);
+      const debtBalance = Math.max(0, debt - credit);
+      const creditBalance = Math.max(0, credit - debt);
+      const balanceType = debtBalance > 0 ? "Borç" : creditBalance > 0 ? "Alacak" : "Tümü";
+      return {
+        id: `bal-${person.id}`,
+        balanceType,
+        registryNo: person.registryNo || "",
+        identityNo: person.identityNo || "",
+        person: person.name || "",
+        debt: formatMoney(debt),
+        credit: formatMoney(credit),
+        debtBalance: formatMoney(debtBalance),
+        creditBalance: formatMoney(creditBalance),
+        currency: "TL",
+      };
+    })
+    .filter((row) => filter === "Tümü" || row.balanceType === filter);
+}
+
+function buildCostCenterRows() {
+  return getScopedRecords(getModule("payroll")).map((record, index) => ({
+    id: `cc-${record.id || index}`,
+    slipNo: record.id || `FIS-${String(index + 1).padStart(3, "0")}`,
+    costCenter: record.companyName || record.workplace || "GENEL",
+    amount: record.netPayable || record.netSalary || "0 TL",
+  }));
+}
+
+function getReportRowsForExport(reportId) {
+  if (reportId === "compensationLoad") {
+    const rows = buildCompensationLoadRows();
+    return {
+      title: "Personel Tazminat Yükü Raporu",
+      headers: ["AD SOYAD", "TCKİMLİKNO", "İŞE BAŞLAMA", "BAZ AYRILIŞ", "BRÜT ÜCRET", "KIDEM YÜKÜ", "İHBAR YÜKÜ", "TOPLAM YÜK"],
+      rows: rows.map((row) => [row.person, row.identityNo, row.startDate, row.basisExitDate, row.grossSalary, row.severanceLoad, row.noticeLoad, row.totalLoad]),
+    };
+  }
+  if (reportId === "personBalances") {
+    const rows = buildPersonBalanceRows();
+    return {
+      title: "Personel Bakiyeleri Raporu",
+      headers: ["B/A", "SİCİL NO", "TC KİMLİK NO", "AD SOYAD", "BORÇ", "ALACAK", "BORÇ BAKİYESİ", "ALACAK BAKİYESİ", "DÖVİZ"],
+      rows: rows.map((row) => [row.balanceType, row.registryNo, row.identityNo, row.person, row.debt, row.credit, row.debtBalance, row.creditBalance, row.currency]),
+    };
+  }
+  if (reportId === "costCenter") {
+    const rows = buildCostCenterRows();
+    return {
+      title: "Masraf Merkezi Raporu",
+      headers: ["FİŞ NO", "MASRAF MERKEZİ", "TUTAR"],
+      rows: rows.map((row) => [row.slipNo, row.costCenter, row.amount]),
+    };
+  }
+  const records = getScopedRecords(getModule("personnel"));
+  return {
+    title: reportId === "allCompanyPersonnel" ? "Detaylı Personel Raporu Tüm Şirketler" : "Detaylı Personel Raporu",
+    headers: ["AD SOYAD", "SON ÇALIŞILAN İŞYERİ", "İLİ", "TCKİMLİKNO", "SGK SİCİL NO", "SİCİL NO"],
+    rows: records.map((person) => [person.name || "", person.companyName || "", person.city || "", person.identityNo || "", person.sgkNo || "", person.registryNo || ""]),
+  };
+}
+
+function exportReportExcel(reportId) {
+  const report = getReportRowsForExport(reportId);
+  downloadHtmlExcel(`${report.title}.xls`, report.title, report.headers, report.rows);
+}
+
+function printTabularReport(reportId) {
+  const report = getReportRowsForExport(reportId);
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+  const logoUrl = new URL("assets/arti-destek-logo.png", window.location.href).href;
+  printWindow.document.write(`
+    <!doctype html>
+    <html lang="tr">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${escapeHtml(report.title)}</title>
+        <style>
+          body { margin: 24px; color: #263240; font-family: Arial, sans-serif; }
+          header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #3056ff; padding-bottom: 14px; margin-bottom: 22px; }
+          img { width: 140px; }
+          h1 { margin: 0; font-size: 22px; }
+          small { color: #667085; }
+          table { width: 100%; border-collapse: collapse; font-size: 11px; }
+          th, td { border: 1px solid #d7dce5; padding: 7px 8px; text-align: left; }
+          th { background: #eef3ff; color: #1d4ed8; font-weight: 700; }
+          tfoot td { font-weight: 700; background: #f8fafc; }
+          @media print { body { margin: 10mm; } }
+        </style>
+      </head>
+      <body>
+        <header>
+          <img src="${logoUrl}" alt="Artı Destek" />
+          <div>
+            <h1>${escapeHtml(report.title)}</h1>
+            <small>${new Date().toLocaleString("tr-TR")}</small>
+          </div>
+        </header>
+        <table>
+          <thead><tr>${report.headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr></thead>
+          <tbody>${report.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
+        </table>
+        <script>window.addEventListener("load", () => window.print());</script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+function renderWorkCertificatePreview() {
+  const personName = selectedReportPerson && selectedReportPerson !== "__all__" ? selectedReportPerson : "";
+  if (!personName) return `<div class="muted" style="padding: 72px 24px; text-align: center;">${escapeHtml(trText("Rapor almak için personel seçiniz."))}</div>`;
+  const person = getScopedRecords(getModule("personnel")).find((record) => normalizeText(record.name) === normalizeText(personName));
+  if (!person) return "";
+  return `
+    <div style="background:#fff; max-width:760px; min-height:520px; margin:28px auto; padding:42px; box-shadow:0 12px 34px rgba(15,23,42,.12);">
+      <h2 style="text-align:center; margin-top:0;">${escapeHtml(trText("ÇALIŞMA BELGESİ"))}</h2>
+      <p>${escapeHtml(person.name || "")} adlı personelin ${escapeHtml(person.companyName || currentUser?.companyName || "şirketimiz")} bünyesinde ${escapeHtml(formatDate(person.startDate) || "-")} tarihinden itibaren ${escapeHtml(person.role || "personel")} olarak çalıştığını gösterir belgedir.</p>
+      <p><strong>${escapeHtml(trText("T.C. Kimlik No"))}:</strong> ${escapeHtml(person.identityNo || "-")}</p>
+      <p><strong>${escapeHtml(trText("Departman"))}:</strong> ${escapeHtml(person.department || "-")}</p>
+      <p><strong>${escapeHtml(trText("Düzenleme Tarihi"))}:</strong> ${escapeHtml(new Date().toLocaleDateString("tr-TR"))}</p>
+      <br /><br />
+      <p style="text-align:right;"><strong>${escapeHtml(currentUser?.displayName || "Yetkili")}</strong><br />${escapeHtml(trText("İmza"))}</p>
+    </div>
+  `;
+}
+
+function downloadWorkCertificateReport() {
+  const selectedPerson = document.querySelector("#workCertificatePerson")?.value || "";
+  const includeSalary = Boolean(document.querySelector("#workCertificateSalary")?.checked);
+  selectedReportPerson = selectedPerson;
+  const personnelRecords =
+    selectedPerson === "__all__"
+      ? getScopedRecords(getModule("personnel"))
+      : getScopedRecords(getModule("personnel")).filter((person) => normalizeText(person.name) === normalizeText(selectedPerson));
+  if (!personnelRecords.length) {
+    alert("Lütfen çalışma belgesi için personel seçin.");
+    return;
+  }
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) return;
+  const logoUrl = new URL("assets/arti-destek-logo.png", window.location.href).href;
+  printWindow.document.write(`
+    <!doctype html>
+    <html lang="tr">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Çalışma Belgesi Raporu</title>
+        <style>
+          body { margin: 0; background: #eef1f5; color: #1f2937; font-family: Arial, sans-serif; }
+          .page { width: 190mm; min-height: 265mm; margin: 12mm auto; background: #fff; padding: 22mm; box-sizing: border-box; page-break-after: always; }
+          header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #3056ff; padding-bottom: 14px; margin-bottom: 28px; }
+          img { width: 140px; }
+          h1 { text-align: center; margin: 40px 0; font-size: 24px; letter-spacing: 0; }
+          p { font-size: 15px; line-height: 1.7; }
+          .signature { margin-top: 70px; text-align: right; }
+          @media print { body { background: #fff; } .page { margin: 0; box-shadow: none; } }
+        </style>
+      </head>
+      <body>
+        ${personnelRecords
+          .map((person) => {
+            const payrollRecord = getPersonLatestPayroll(person.name);
+            return `
+              <section class="page">
+                <header><img src="${logoUrl}" alt="Artı Destek" /><strong>${new Date().toLocaleDateString("tr-TR")}</strong></header>
+                <h1>ÇALIŞMA BELGESİ</h1>
+                <p>${escapeHtml(person.name || "")} adlı personelin ${escapeHtml(person.companyName || currentUser?.companyName || "şirketimiz")} bünyesinde ${escapeHtml(formatDate(person.startDate) || "-")} tarihinden itibaren ${escapeHtml(person.role || "personel")} olarak çalıştığını gösterir belgedir.</p>
+                <p><strong>T.C. Kimlik No:</strong> ${escapeHtml(person.identityNo || "-")}</p>
+                <p><strong>Departman:</strong> ${escapeHtml(person.department || "-")}</p>
+                <p><strong>Görev:</strong> ${escapeHtml(person.role || "-")}</p>
+                ${includeSalary ? `<p><strong>Ücret:</strong> ${escapeHtml(payrollRecord?.grossSalary || person.grossSalary || "-")}</p>` : ""}
+                <p>İşbu belge, ilgili personelin talebi üzerine düzenlenmiştir.</p>
+                <div class="signature"><strong>${escapeHtml(currentUser?.displayName || "Yetkili")}</strong><br />İmza</div>
+              </section>
+            `;
+          })
+          .join("")}
+        <script>window.addEventListener("load", () => window.print());</script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  renderPayrollCenter();
+  renderIcons();
 }
 
 function renderPayrollCenter() {
@@ -7308,18 +7568,112 @@ function renderPayrollCenter() {
         columns: [["selected", "SEÇ", "select", ["Evet", "Hayır"]], ["budgetCode", "BÜTÇE KODU"], ["person", "PERSONEL"], ["workplace", "İŞYERİ"], ["startDate", "BAŞLANGIÇ TARİHİ", "date"], ["endDate", "BİTİŞ TARİHİ", "date"], ["targetAmount", "HEDEF BÜTÇE"], ["actualAmount", "GERÇEKLEŞEN"], ["variance", "FARK"], ["description", "AÇIKLAMA"], ["status", "DURUMU", "select", ["Aktif", "Pasif", "Taslak"]]],
         records: getScopedRecords(getModule("personBudgetTargets")),
       }),
-    reports: () =>
-      prozonListScreen({
-        title: "Detaylı Personel Raporu",
-        subtitle: "Bu ekranda personellerinizin bilgilerini detaylı şekilde raporlayabilirsiniz.",
-        icon: "barChart",
-        moduleId: "reports",
-        primaryLabel: "Excel'e Aktar",
-        helpQuery: "detaylı personel raporu bordro raporlama",
-        groupable: true,
-        columns: [["__fullName", "AD SOYAD"], ["__workplace", "SON ÇALIŞILAN İŞYERİ"], ["city", "İLİ"], ["identityNo", "TCKİMLİKNO"], ["registryNo", "SGK SİCİL NO"], ["__code", "SİCİL NO"]],
-        records: personnel,
-      }),
+    reports: () => {
+      const reportScreens = {
+        detailedPersonnel: () =>
+          prozonListScreen({
+            title: "Detaylı Personel Raporu",
+            subtitle: "Bu ekranda personellerinizin bilgilerini detaylı şekilde raporlayabilirsiniz.",
+            icon: "barChart",
+            moduleId: "",
+            helpQuery: "detaylı personel raporu bordro raporlama",
+            groupable: true,
+            toolbar: `<button class="primary" type="button" data-action="report-excel" data-report="detailedPersonnel">Excel'e Aktar</button>`,
+            columns: [["__fullName", "AD SOYAD"], ["__workplace", "SON ÇALIŞILAN İŞYERİ"], ["city", "İLİ"], ["identityNo", "TCKİMLİKNO"], ["registryNo", "SGK SİCİL NO"], ["__code", "SİCİL NO"], ["__firstName", "AD"], ["__lastName", "SOYAD"]],
+            records: personnel,
+          }),
+        allCompanyPersonnel: () =>
+          prozonListScreen({
+            title: "Detaylı Personel Raporu Tüm Şirketler",
+            subtitle: "Bu ekranda tüm şirketlerde bulunan personellerinizin bilgilerini detaylı şekilde raporlayabilirsiniz.",
+            icon: "barChart",
+            moduleId: "",
+            helpQuery: "detaylı personel raporu tüm şirketler",
+            groupable: true,
+            toolbar: `<button class="primary" type="button" data-action="report-excel" data-report="allCompanyPersonnel">Excel'e Aktar</button>`,
+            columns: [["__fullName", "AD SOYAD"], ["__workplace", "SON ÇALIŞILAN İŞYERİ"], ["city", "İLİ"], ["identityNo", "TCKİMLİKNO"], ["registryNo", "SGK SİCİL NO"], ["__code", "SİCİL NO"], ["__firstName", "AD"], ["__lastName", "SOYAD"]],
+            records: getScopedRecords(getModule("personnel")),
+          }),
+        compensationLoad: () =>
+          prozonListScreen({
+            title: "Personel Tazminat Yükü Raporu",
+            subtitle: "Bu ekranda personellerin belirttiğiniz ay sonu işten çıkışı yapıldığında oluşacak tazminat yüklerini görebilirsiniz.",
+            icon: "wallet",
+            moduleId: "",
+            helpQuery: "personel tazminat yükü raporu kıdem ihbar",
+            groupable: true,
+            toolbar: `
+              <label class="payroll-check"><input id="compUnpaidLeaves" type="checkbox" ${compensationReportOptions.unpaidLeavesMoveSeniority ? "checked" : ""} /> Ücretsiz İzinler Kıdemi Ötelesin</label>
+              <label class="payroll-check"><input id="compUnpaidReports" type="checkbox" ${compensationReportOptions.unpaidReportsMoveSeniority ? "checked" : ""} /> Ücretsiz Raporlar Kıdemi Ötelesin</label>
+              <label class="payroll-check"><input id="compIncludeOss" type="checkbox" ${compensationReportOptions.includeOss ? "checked" : ""} /> ÖSS Dahil Et</label>
+              <label class="payroll-check"><input id="compIncludeExtras" type="checkbox" ${compensationReportOptions.includeExtras ? "checked" : ""} /> Ek Ödemeleri Dahil Et</label>
+              <label>Tarih: <input id="compReportDate" type="date" value="${escapeHtml(compensationReportOptions.date)}" /></label>
+              <button class="primary" type="button" data-action="compensation-calc">Hesapla</button>
+            `,
+            columns: [["person", "AD SOYAD"], ["identityNo", "TCKİMLİKNO"], ["birthday", "DOĞUM TARİHİ", "date"], ["firstSgkDate", "İLK SGK GİRİŞ TARİHİ", "date"], ["startDate", "İŞE BAŞLAMA TARİHİ", "date"], ["seniorityReferenceDate", "KIDEM REFERANS TARİHİ", "date"], ["validSeniorityReferenceDate", "GEÇERLİ KIDEM REFERANS TARİHİ", "date"], ["groupStartDate", "GRUBA GİRİŞ TARİHİ", "date"], ["exitDate", "İŞTEN AYRILMA TARİHİ", "date"], ["basisExitDate", "BAZ ALINACAK AYRILIŞ TARİHİ", "date"], ["grossSalary", "BRÜT ÜCRET"], ["severanceLoad", "KIDEM YÜKÜ"], ["noticeLoad", "İHBAR YÜKÜ"], ["totalLoad", "TOPLAM YÜK"]],
+            records: compensationReportCalculated ? buildCompensationLoadRows() : [],
+          }),
+        personBalances: () =>
+          prozonListScreen({
+            title: "Personel Bakiyeleri",
+            subtitle: "Personel borç ve alacak bakiyelerini bordro kayıtlarından listeleyebilirsiniz.",
+            icon: "wallet",
+            moduleId: "",
+            helpQuery: "personel bakiyeleri bordro raporu",
+            groupable: true,
+            toolbar: `
+              <label>B/A:
+                <select id="personBalanceType">
+                  ${["Tümü", "Borç", "Alacak"].map((option) => `<option value="${escapeHtml(option)}" ${personBalanceFilter === option ? "selected" : ""}>${escapeHtml(option)}</option>`).join("")}
+                </select>
+              </label>
+              <button type="button" data-action="person-balance-list"><span data-icon="checklist"></span> Listele</button>
+              <label class="payroll-check"><input id="personBalanceDateRange" type="checkbox" /> Tarih Aralığı</label>
+              <button type="button" data-action="person-balance-report"><span data-icon="invoice"></span> Raporla</button>
+            `,
+            columns: [["balanceType", "B/A"], ["registryNo", "SİCİL NO"], ["identityNo", "TC KİMLİK NO"], ["person", "AD SOYAD"], ["debt", "BORÇ"], ["credit", "ALACAK"], ["debtBalance", "BORÇ BAKİYESİ"], ["creditBalance", "ALACAK BAKİYESİ"], ["currency", "DÖVİZ"]],
+            records: buildPersonBalanceRows(),
+          }),
+        workCertificate: () => {
+          const selected = selectedReportPerson || "";
+          return `
+            <section class="prozon-list-screen work-certificate-screen">
+              <header class="prozon-list-heading">
+                <div class="prozon-title-block">
+                  <span data-icon="presentation"></span>
+                  <div>
+                    <h2>${escapeHtml(trText("Çalışma Belgesi Raporu"))}</h2>
+                    <p>${escapeHtml(trText("Bu ekranda istediğiniz personel çalışma belgesinin raporunu alabilirsiniz."))}</p>
+                  </div>
+                </div>
+                <div class="prozon-list-actions">
+                  <label>Personel: <select id="workCertificatePerson"><option value="">${escapeHtml(trText("Seçiniz..."))}</option><option value="__all__">${escapeHtml(trText("Tümü"))}</option>${personnel.map((person) => `<option value="${escapeHtml(person.name || "")}" ${selected === person.name ? "selected" : ""}>${escapeHtml(person.name || "")}</option>`).join("")}</select></label>
+                  <label>İşyeri: <select id="workCertificateWorkplace"><option value="">${escapeHtml(trText("Seçiniz..."))}</option>${companies.map((company) => `<option value="${escapeHtml(company.name || "")}">${escapeHtml(company.name || "")}</option>`).join("")}</select></label>
+                  <label class="payroll-check"><input id="workCertificateSalary" type="checkbox" /> ${escapeHtml(trText("Ücret Bilgisini Getir"))}</label>
+                  <button class="primary" type="button" data-action="work-certificate-report">${escapeHtml(trText("Rapor Al"))}</button>
+                </div>
+              </header>
+              <div class="work-certificate-viewer">
+                <div class="certificate-toolbar"><span data-icon="refresh"></span><select><option>${escapeHtml(trText("Seç..."))}</option></select><span data-icon="grid"></span><span data-icon="message"></span><button type="button" disabled>0 sayfa</button><button type="button">100%</button><span data-icon="download"></span></div>
+                <article id="workCertificatePreview">${renderWorkCertificatePreview()}</article>
+              </div>
+            </section>
+          `;
+        },
+        costCenter: () =>
+          prozonListScreen({
+            title: "Masraf Merkezi Raporu",
+            subtitle: "Bu ekranda masraf merkezi raporunu alabilirsiniz.",
+            icon: "presentation",
+            moduleId: "",
+            helpQuery: "masraf merkezi bordro raporu",
+            toolbar: `<label>Masraf Merkezi: <select><option>TÜMÜ</option>${companies.map((company) => `<option>${escapeHtml(company.name || "")}</option>`).join("")}</select></label><button type="button" data-action="report-excel" data-report="costCenter"><span data-icon="search"></span></button>`,
+            columns: [["slipNo", "FİŞ NO"], ["costCenter", "MASRAF MERKEZİ"], ["amount", "TUTAR"]],
+            records: buildCostCenterRows(),
+          }),
+      };
+      return (reportScreens[activeSubTab] || reportScreens.detailedPersonnel)();
+    },
     definitionsTop: () => prozonParameterScreen(),
     managementTop: () =>
       prozonListScreen({
@@ -10235,6 +10589,43 @@ document.addEventListener("click", (event) => {
   const manageActions = ["add", "edit", "delete", "toggle-status", "payroll-accounting", "payroll-management", "payroll-publish", "payroll-seen", "approval-complete", "notification-read"];
   if (manageActions.includes(action) && !canManageRecords()) return;
 
+  if (action === "report-excel") {
+    exportReportExcel(manageButton.dataset.report || prozonActiveSubTabs.reports || "detailedPersonnel");
+    return;
+  }
+
+  if (action === "compensation-calc") {
+    compensationReportOptions = {
+      unpaidLeavesMoveSeniority: Boolean(document.querySelector("#compUnpaidLeaves")?.checked),
+      unpaidReportsMoveSeniority: Boolean(document.querySelector("#compUnpaidReports")?.checked),
+      includeOss: Boolean(document.querySelector("#compIncludeOss")?.checked),
+      includeExtras: Boolean(document.querySelector("#compIncludeExtras")?.checked),
+      date: document.querySelector("#compReportDate")?.value || new Date().toISOString().slice(0, 10),
+    };
+    compensationReportCalculated = true;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "person-balance-list") {
+    personBalanceFilter = document.querySelector("#personBalanceType")?.value || "Tümü";
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (action === "person-balance-report") {
+    personBalanceFilter = document.querySelector("#personBalanceType")?.value || personBalanceFilter;
+    printTabularReport("personBalances");
+    return;
+  }
+
+  if (action === "work-certificate-report") {
+    downloadWorkCertificateReport();
+    return;
+  }
+
   if (action === "payroll-calc") {
     const amount = parseMoney(document.querySelector("#payrollCalcAmount")?.value);
     const cumulative = parseMoney(document.querySelector("#payrollCalcCumulative")?.value);
@@ -10511,6 +10902,13 @@ document.addEventListener("input", (event) => {
 
   if (event.target.id === "ratingCompanySelect") {
     selectedRatingCompany = event.target.value;
+    renderPayrollCenter();
+    renderIcons();
+    return;
+  }
+
+  if (event.target.id === "workCertificatePerson") {
+    selectedReportPerson = event.target.value;
     renderPayrollCenter();
     renderIcons();
     return;
