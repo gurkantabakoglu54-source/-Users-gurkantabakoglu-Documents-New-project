@@ -1243,6 +1243,120 @@ const modules = [
     ],
   },
   {
+    id: "financeBanks",
+    title: "Banka Tanımlamaları",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Finans", "Banka Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["bankCode", "Banka Kodu"],
+      ["bankName", "Banka Adı"],
+      ["branchName", "Şube Adı"],
+      ["branchCode", "Şube Kodu"],
+      ["accountNo", "Hesap No"],
+      ["iban", "IBAN"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD", "GBP"]],
+      ["openingDate", "Açılış Tarihi", "date"],
+      ["status", "Durumu", "select", ["Aktif", "Pasif"]],
+    ],
+    records: [
+      { id: "fb1", bankCode: "001", bankName: "Garanti BBVA", branchName: "Sakarya", branchCode: "0540", accountNo: "100001", iban: "TR00 0000 0000 0000 0000 0000 01", currency: "TL", openingDate: "2026-01-01", status: "Aktif" },
+      { id: "fb2", bankCode: "002", bankName: "İş Bankası", branchName: "Merkez", branchCode: "0001", accountNo: "100002", iban: "TR00 0000 0000 0000 0000 0000 02", currency: "TL", openingDate: "2026-01-01", status: "Aktif" },
+    ],
+  },
+  {
+    id: "financeBankSlips",
+    title: "Banka Fişleri",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Finans", "Banka Fişleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["slipNo", "Fiş No"],
+      ["slipDate", "Fiş Tarihi", "date"],
+      ["bankName", "Banka"],
+      ["transactionType", "İşlem Tipi", "select", ["Giriş", "Çıkış", "Virman", "Tahsilat", "Ödeme"]],
+      ["description", "Açıklama"],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD", "GBP"]],
+      ["documentNo", "Belge No"],
+      ["file", "Fiş Dosyası", "file"],
+      ["status", "Durumu", "select", ["Taslak", "Onaylandı", "İptal"]],
+    ],
+    records: [
+      { id: "fbs1", slipNo: "BF-2026-001", slipDate: "2026-06-05", bankName: "Garanti BBVA", transactionType: "Ödeme", description: "Mayıs bordro ödemesi", amount: "75.050 TL", currency: "TL", documentNo: "BNK-001", file: "", status: "Taslak" },
+    ],
+  },
+  {
+    id: "financeCashAccounts",
+    title: "Kasa Tanımlamaları",
+    icon: "wallet",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Finans", "Kasa Tanımlamaları"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["cashCode", "Kasa Kodu"],
+      ["cashName", "Kasa Adı"],
+      ["responsible", "Sorumlu"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD", "GBP"]],
+      ["openingBalance", "Açılış Bakiyesi"],
+      ["openingDate", "Açılış Tarihi", "date"],
+      ["status", "Durumu", "select", ["Aktif", "Pasif"]],
+    ],
+    records: [
+      { id: "fc1", cashCode: "KASA-001", cashName: "Merkez Kasa", responsible: "Muhasebe", currency: "TL", openingBalance: "0 TL", openingDate: "2026-01-01", status: "Aktif" },
+    ],
+  },
+  {
+    id: "financeCashSlips",
+    title: "Kasa Fişleri",
+    icon: "invoice",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Finans", "Kasa Fişleri"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["slipNo", "Fiş No"],
+      ["slipDate", "Fiş Tarihi", "date"],
+      ["cashName", "Kasa"],
+      ["transactionType", "İşlem Tipi", "select", ["Tahsilat", "Ödeme", "Masraf", "Virman"]],
+      ["description", "Açıklama"],
+      ["amount", "Tutar"],
+      ["currency", "Döviz", "select", ["TL", "EUR", "USD", "GBP"]],
+      ["documentNo", "Belge No"],
+      ["file", "Fiş Dosyası", "file"],
+      ["status", "Durumu", "select", ["Taslak", "Onaylandı", "İptal"]],
+    ],
+    records: [
+      { id: "fcs1", slipNo: "KF-2026-001", slipDate: "2026-06-05", cashName: "Merkez Kasa", transactionType: "Masraf", description: "Ofis gideri", amount: "1.250 TL", currency: "TL", documentNo: "KSA-001", file: "", status: "Taslak" },
+    ],
+  },
+  {
+    id: "personBudgetTargets",
+    title: "Personel Hedef Bütçe",
+    icon: "chart",
+    breadcrumb: ["Panel", "Bordro Merkezi", "Hedef Bütçe", "Personel Hedef Bütçe"],
+    navHidden: true,
+    dashboardHidden: true,
+    columns: [
+      ["selected", "Seç", "select", ["Evet", "Hayır"]],
+      ["budgetCode", "Bütçe Kodu"],
+      ["person", "Personel"],
+      ["workplace", "İşyeri"],
+      ["startDate", "Başlangıç Tarihi", "date"],
+      ["endDate", "Bitiş Tarihi", "date"],
+      ["targetAmount", "Hedef Bütçe"],
+      ["actualAmount", "Gerçekleşen"],
+      ["variance", "Fark"],
+      ["description", "Açıklama"],
+      ["status", "Durumu", "select", ["Aktif", "Pasif", "Taslak"]],
+    ],
+    records: [
+      { id: "pbt1", selected: "Evet", budgetCode: "HB-2026-001", person: "Zehra Battal", workplace: "Artı Destek", startDate: "2026-06-01", endDate: "2026-06-30", targetAmount: "45.000 TL", actualAmount: "42.500 TL", variance: "2.500 TL", description: "Haziran personel maliyet hedefi", status: "Aktif" },
+      { id: "pbt2", selected: "Hayır", budgetCode: "HB-2026-002", person: "Faruk Türker", workplace: "TOPDAL PLASTİK", startDate: "2026-06-01", endDate: "2026-06-30", targetAmount: "62.000 TL", actualAmount: "58.000 TL", variance: "4.000 TL", description: "Operasyon bütçe takibi", status: "Aktif" },
+    ],
+  },
+  {
     id: "matbuForms",
     title: "Matbu Formlar",
     icon: "invoice",
@@ -2601,6 +2715,40 @@ function hydrateRecord(module, record) {
       collectionDate: "",
       ...record,
       status: normalizeInvoiceStatus(record.status),
+    };
+  }
+
+  if (["financeBanks", "financeCashAccounts"].includes(module.id)) {
+    return {
+      currency: "TL",
+      openingDate: "",
+      status: "Aktif",
+      ...record,
+    };
+  }
+
+  if (["financeBankSlips", "financeCashSlips"].includes(module.id)) {
+    return {
+      slipDate: new Date().toISOString().slice(0, 10),
+      transactionType: module.id === "financeBankSlips" ? "Ödeme" : "Masraf",
+      amount: "0 TL",
+      currency: "TL",
+      file: "",
+      status: "Taslak",
+      ...record,
+    };
+  }
+
+  if (module.id === "personBudgetTargets") {
+    return {
+      selected: "Hayır",
+      startDate: "",
+      endDate: "",
+      targetAmount: "0 TL",
+      actualAmount: "0 TL",
+      variance: "0 TL",
+      status: "Taslak",
+      ...record,
     };
   }
 
@@ -7096,26 +7244,69 @@ function renderPayrollCenter() {
         records: getScopedRecords(module),
       });
     },
-    financeTop: () =>
-      prozonListScreen({
-        title: activeSubTab === "banks" ? "Banka Tanım Listesi" : "Finans Listesi",
-        subtitle: "Bu formda banka tanımlarını listeleyebilirsiniz.",
-        icon: "wallet",
-        moduleId: "bankBes",
-        primaryLabel: "Yeni Banka",
-        helpQuery: "banka tanımları bordro banka fişleri",
-        columns: [["bankName", "BANKA ADI"], ["person", "PERSONEL"], ["iban", "IBAN"], ["besStatus", "BES", "select"], ["paymentStatus", "ÖDEME DURUMU", "select"]],
-        records: bankBesRecords,
-      }),
+    financeTop: () => {
+      const financeScreens = {
+        banks: {
+          title: "Banka Tanım Listesi",
+          subtitle: "Bu formda banka tanımlarını listeleyebilir ve oluşturabilirsiniz.",
+          icon: "wallet",
+          moduleId: "financeBanks",
+          primaryLabel: "Yeni Banka",
+          helpQuery: "banka tanımları bordro banka fişleri",
+          columns: [["bankCode", "BANKA KODU"], ["bankName", "BANKA ADI"], ["branchName", "ŞUBE ADI"], ["branchCode", "ŞUBE KODU"], ["accountNo", "HESAP NO"], ["iban", "IBAN"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD", "GBP"]], ["openingDate", "AÇILIŞ TARİHİ", "date"], ["status", "DURUMU", "select", ["Aktif", "Pasif"]]],
+          toolbar: `<input type="date" value="2026-06-05" />`,
+        },
+        bankSlips: {
+          title: "Banka Fişleri",
+          subtitle: "Bu formda banka fişlerini ekleyebilir, düzenleyebilir ve silebilirsiniz.",
+          icon: "invoice",
+          moduleId: "financeBankSlips",
+          primaryLabel: "Yeni Fiş",
+          helpQuery: "banka fişi muhasebe ödeme tahsilat",
+          columns: [["slipNo", "FİŞ NO"], ["slipDate", "FİŞ TARİHİ", "date"], ["bankName", "BANKA"], ["transactionType", "İŞLEM TİPİ", "select", ["Giriş", "Çıkış", "Virman", "Tahsilat", "Ödeme"]], ["description", "AÇIKLAMA"], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD", "GBP"]], ["documentNo", "BELGE NO"], ["status", "DURUMU", "select", ["Taslak", "Onaylandı", "İptal"]]],
+          toolbar: `<input type="date" value="2026-06-05" /><input type="date" value="2026-07-05" />`,
+        },
+        cash: {
+          title: "Kasa Tanım Listesi",
+          subtitle: "Bu formda kasa tanımlarını listeleyebilir ve oluşturabilirsiniz.",
+          icon: "wallet",
+          moduleId: "financeCashAccounts",
+          primaryLabel: "Yeni Kasa",
+          helpQuery: "kasa tanımları muhasebe",
+          columns: [["cashCode", "KASA KODU"], ["cashName", "KASA ADI"], ["responsible", "SORUMLU"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD", "GBP"]], ["openingBalance", "AÇILIŞ BAKİYESİ"], ["openingDate", "AÇILIŞ TARİHİ", "date"], ["status", "DURUMU", "select", ["Aktif", "Pasif"]]],
+          toolbar: `<input type="date" value="2026-06-05" />`,
+        },
+        cashSlips: {
+          title: "Kasa Fişleri",
+          subtitle: "Bu formda kasa fişlerini ekleyebilir, düzenleyebilir ve silebilirsiniz.",
+          icon: "invoice",
+          moduleId: "financeCashSlips",
+          primaryLabel: "Yeni Fiş",
+          helpQuery: "kasa fişi muhasebe masraf ödeme",
+          columns: [["slipNo", "FİŞ NO"], ["slipDate", "FİŞ TARİHİ", "date"], ["cashName", "KASA"], ["transactionType", "İŞLEM TİPİ", "select", ["Tahsilat", "Ödeme", "Masraf", "Virman"]], ["description", "AÇIKLAMA"], ["amount", "TUTAR"], ["currency", "DÖVİZ", "select", ["TL", "EUR", "USD", "GBP"]], ["documentNo", "BELGE NO"], ["status", "DURUMU", "select", ["Taslak", "Onaylandı", "İptal"]]],
+          toolbar: `<input type="date" value="2026-06-05" /><input type="date" value="2026-07-05" />`,
+        },
+      };
+      const screen = financeScreens[activeSubTab] || financeScreens.banks;
+      const module = getModule(screen.moduleId);
+      return prozonListScreen({
+        ...screen,
+        groupable: true,
+        records: getScopedRecords(module),
+      });
+    },
     budgetTop: () =>
       prozonListScreen({
         title: "Personel Hedef Bütçe",
-        subtitle: "Karşılaştırma yapmak için bütçe taslaklarını seçiniz.",
+        subtitle: "Karşılaştırma yapmak için hedef bütçe kayıtlarını seçiniz.",
         icon: "chart",
-        moduleId: "reports",
+        moduleId: "personBudgetTargets",
+        primaryLabel: "Yeni Hedef Bütçe",
         helpQuery: "personel hedef bütçe bordro maliyet raporu",
-        columns: [["status", "SEÇ", "select"], ["title", "TANIM"], ["period", "BAŞLANGIÇ TA...", "date"], ["period", "BİTİŞ TARİHİ", "date"], ["type", "AÇIKLAMA"]],
-        records: reports,
+        groupable: true,
+        toolbar: `<input type="date" value="2026-06-01" /><input type="date" value="2026-06-30" />`,
+        columns: [["selected", "SEÇ", "select", ["Evet", "Hayır"]], ["budgetCode", "BÜTÇE KODU"], ["person", "PERSONEL"], ["workplace", "İŞYERİ"], ["startDate", "BAŞLANGIÇ TARİHİ", "date"], ["endDate", "BİTİŞ TARİHİ", "date"], ["targetAmount", "HEDEF BÜTÇE"], ["actualAmount", "GERÇEKLEŞEN"], ["variance", "FARK"], ["description", "AÇIKLAMA"], ["status", "DURUMU", "select", ["Aktif", "Pasif", "Taslak"]]],
+        records: getScopedRecords(getModule("personBudgetTargets")),
       }),
     reports: () =>
       prozonListScreen({
@@ -7861,6 +8052,18 @@ function isOptionalField(module, key) {
     "offerFile",
     "withholding",
     "collectionDate",
+    "branchName",
+    "branchCode",
+    "accountNo",
+    "iban",
+    "openingDate",
+    "openingBalance",
+    "responsible",
+    "documentNo",
+    "description",
+    "actualAmount",
+    "variance",
+    "endDate",
   ].includes(key) || (module.id === "projects" && (key === "endDate" || key.endsWith("Count")));
 }
 
