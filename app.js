@@ -11118,7 +11118,7 @@ document.addEventListener("click", (event) => {
         return;
       }
       if (moduleId) {
-        document.querySelector(`[data-module="${CSS.escape(moduleId)}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        switchModule(moduleId);
       }
       return;
     }

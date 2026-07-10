@@ -1,0 +1,19 @@
+{
+  "name": "Bireysel Finans Dashboard",
+  "short_name": "Bireysel Finans",
+  "description": "Gürkan Tabakoğlu için gelir, gider, bütçe ve planlı ödeme dashboard'u.",
+  "start_url": "./bireysel-dashboard.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef3f8",
+  "theme_color": "#10243f",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/bireysel-finans-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

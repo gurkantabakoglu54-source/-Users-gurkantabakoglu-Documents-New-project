@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bireysel Finans Dashboard</title>
+    <meta name="theme-color" content="#10243f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Bireysel Finans" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="bireysel-dashboard.webmanifest" />
+    <link rel="icon" href="assets/bireysel-finans-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/bireysel-finans-icon.svg" />
+    <link rel="stylesheet" href="bireysel-dashboard.css" />
+  </head>
+  <body>
+    <div class="finance-shell">
+      <aside class="finance-sidebar" id="financeSidebar">
+        <div class="finance-brand">
+          <label class="finance-profile-photo" title="Profil resmi yükle">
+            <img id="profilePhotoPreview" alt="Gürkan Tabakoğlu" hidden />
+            <span>GT</span>
+            <input id="profilePhotoInput" type="file" accept="image/*" hidden />
+          </label>
+          <span>GURKAN TABAKOGLU</span>
+        </div>
+        <nav class="finance-nav" aria-label="Dashboard menüsü">
+          <button class="active" type="button" data-view="dashboard">Dashboard</button>
+          <button type="button" data-view="calendar">Takvim</button>
+          <button type="button" data-view="upcoming">Yaklaşan Ödemeler</button>
+          <button type="button" data-view="transactions">Ödenecek İşlemler</button>
+          <button type="button" data-view="completed">Tamamlanan Ödemeler</button>
+          <button type="button" data-view="budgets">Bütçeler</button>
+          <button type="button" data-view="charts">Grafikler</button>
+        </nav>
+      </aside>
+
+      <main class="finance-main">
+        <header class="finance-topbar">
+          <button class="icon-menu" id="menuToggle" type="button" aria-label="Menüyü aç/kapat">☰</button>
+          <div>
+            <span id="viewEyebrow">Kurumsal görünüm</span>
+            <h1 id="viewTitle">Dashboard</h1>
+          </div>
+          <div class="finance-actions">
+            <label class="period-control">
+              Dönem
+              <select id="periodSelect"></select>
+            </label>
+            <button class="btn secondary" type="button" data-view="charts">Grafikler</button>
+            <button class="btn install" id="installAppButton" type="button" hidden>Uygulamayı Yükle</button>
+            <button class="btn income" type="button" data-open-form="income">+ Gelir</button>
+            <button class="btn expense" type="button" data-open-form="expense">+ Gider</button>
+          </div>
+        </header>
+
+        <section class="overdue-alert" id="overdueAlert" hidden></section>
+        <section id="appView"></section>
+      </main>
+    </div>
+
+    <dialog class="finance-modal" id="transactionDialog">
+      <form id="transactionForm" class="finance-form">
+        <input type="hidden" name="id" />
+        <input type="hidden" name="type" />
+        <header>
+          <h2 id="transactionDialogTitle">İşlem</h2>
+          <button type="button" data-close-dialog="transactionDialog">×</button>
+        </header>
+        <div class="form-grid">
+          <label>Açıklama<input name="title" required /></label>
+          <label>Kategori<input name="category" required /></label>
+          <label>Hesap<input name="account" required /></label>
+          <label>Tutar<input name="amount" inputmode="decimal" required /></label>
+          <label>İşlem Tarihi<input name="date" type="date" required /></label>
+          <label>Son Ödeme Tarihi<input name="dueDate" type="date" /></label>
+          <label>Durum
+            <select name="status">
+              <option>Beklemede</option>
+              <option>Planlandı</option>
+              <option>Tamamlandı</option>
+            </select>
+          </label>
+          <label>Not<input name="note" /></label>
+        </div>
+        <footer>
+          <button class="btn secondary" type="button" data-close-dialog="transactionDialog">Vazgeç</button>
+          <button class="btn primary" type="submit">Kaydet</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="finance-modal" id="budgetDialog">
+      <form id="budgetForm" class="finance-form">
+        <input type="hidden" name="id" />
+        <header>
+          <h2 id="budgetDialogTitle">Bütçe</h2>
+          <button type="button" data-close-dialog="budgetDialog">×</button>
+        </header>
+        <div class="form-grid">
+          <label>Ay<input name="month" type="month" required /></label>
+          <label>Kalem<input name="category" required /></label>
+          <label>Bütçe<input name="limit" inputmode="decimal" required /></label>
+          <label>Renk
+            <select name="color">
+              <option value="#2563eb">Kurumsal Mavi</option>
+              <option value="#0f766e">Petrol Yeşili</option>
+              <option value="#7c3aed">Mor</option>
+              <option value="#ca8a04">Altın</option>
+              <option value="#dc2626">Kırmızı</option>
+            </select>
+          </label>
+        </div>
+        <footer>
+          <button class="btn secondary" type="button" data-close-dialog="budgetDialog">Vazgeç</button>
+          <button class="btn primary" type="submit">Kaydet</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="bireysel-dashboard.js"></script>
+  </body>
+</html>
